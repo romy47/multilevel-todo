@@ -107,40 +107,28 @@ class HomeScreen extends StatelessWidget {
 
   Widget todos() {
     return Container(
-      color: Colors.blue[100],
-      // constraints: BoxConstraints.expand(height: 200.0),
-      child: Consumer<TodoProvider>(
-        builder: (context, todoProvider, child) {
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: todoProvider.todos.length,
-            itemBuilder: (context, index) {
-              final item = todoProvider.todos[index];
-              return ListTile(
-                title: Text(item.title),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // new IconButton(
-                    //   icon: new Icon(Icons.arrow_circle_up),
-                    //   onPressed: () {},
-                    // ),
-                    new IconButton(
-                      icon: new Icon(Icons.arrow_circle_down),
-                      onPressed: () {
-                        todoProvider.changeTodoSTatus(item, TodoStatus.onGoing);
-                      },
-                    ),
-                  ],
-                ),
-                // subtitle: Text(item.status.toString())
-              );
-            },
+        color: Colors.blue[100],
+        width: double.infinity,
+        // constraints: BoxConstraints.expand(height: 200.0),
+        child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+          return Wrap(
+            children: todoProvider.todos
+                .map((e) => Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
+                      child: Chip(
+                        backgroundColor: Colors.white,
+                        avatar: CircleAvatar(
+                          backgroundColor: Colors.blue[200],
+                          child: Icon(Icons.radio_button_unchecked),
+                        ),
+                        label: Text(e.title),
+                      ),
+                    ))
+                .toList()
+                .cast<Widget>(),
           );
-        },
-      ),
-    );
+        }));
   }
 
   Widget onGoing() {
