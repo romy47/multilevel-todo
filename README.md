@@ -1,10 +1,8 @@
-# second_attempt
+# Multi-level todo
 
-A new Flutter project.
+A multilevel todo-app built with flutter for android devices.
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
 
