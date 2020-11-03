@@ -9,6 +9,22 @@ class TodoProvider extends ChangeNotifier {
     // Todo('Goru kena', TodoStatus.todo),
   ];
 
+  int _selectedProjectIndex = 0;
+  double _minProject = 0.0;
+  double _maxProject = 5.0;
+
+  String getSelectedProjectIndexLabel() {
+    if (_selectedProjectIndex == 0) {
+      return 'zero';
+    } else {
+      return 'non-zero';
+    }
+  }
+
+  double get minProjectIndex => _minProject;
+
+  double get maxProjectIndex => _maxProject;
+
   void changeTodoSTatus(Todo todo, TodoStatus status) {
     _todos.firstWhere((element) => element.title == todo.title).status = status;
     notifyListeners();
@@ -18,6 +34,13 @@ class TodoProvider extends ChangeNotifier {
     _todos.insert(0, todo);
     notifyListeners();
   }
+
+  void setSelectedProjectIndex(int index) {
+    _selectedProjectIndex = index;
+    notifyListeners();
+  }
+
+  int get projectIndex => _selectedProjectIndex;
 
   List<Todo> get todos =>
       _todos.where((element) => element.status == TodoStatus.todo).toList();

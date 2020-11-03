@@ -91,6 +91,7 @@ class HomeScreen extends StatelessWidget {
               })),
         ],
       ),
+      bottomSheet: Container(height: 100.0, child: ProjectSlider()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
           Navigator.push(
@@ -153,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                           child: todoChip(e, Colors.blue[200]),
                         ),
                         child: todoChip(e, Colors.blue[200]),
-                        childWhenDragging: Container(),
+                        childWhenDragging: todoChip(e, Colors.grey[200]),
                       ),
                     ))
                 .toList()
@@ -191,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                           child: todoChip(e, Colors.blue[200]),
                         ),
                         child: todoChip(e, Colors.blue[200]),
-                        childWhenDragging: Container(),
+                        childWhenDragging: todoChip(e, Colors.grey[200]),
                       ),
                     ))
                 .toList()
@@ -221,7 +222,7 @@ class HomeScreen extends StatelessWidget {
                           child: todoChip(e, Colors.blue[200]),
                         ),
                         child: todoChip(e, Colors.blue[200]),
-                        childWhenDragging: Container(),
+                        childWhenDragging: todoChip(e, Colors.grey[200]),
                       ),
                     ))
                 .toList()
@@ -229,6 +230,35 @@ class HomeScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class ProjectSlider extends StatefulWidget {
+  @override
+  ProjectSsliderState createState() => ProjectSsliderState();
+}
+
+class ProjectSsliderState extends State<ProjectSlider> {
+  var _selectedProject = 0.0;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+        return Slider(
+          value: todoProvider.projectIndex.toDouble(),
+          min: todoProvider.minProjectIndex,
+          max: todoProvider.maxProjectIndex,
+          divisions: todoProvider.maxProjectIndex.toInt(),
+          label: _selectedProject.toString(),
+          onChanged: (double value) {
+            // setState(() => _selectedProject = value);
+            todoProvider.setSelectedProjectIndex(value.toInt());
+            //   Provider.of<TodoProvider>(context, listen: false)
+            //       .setSelectedProjectIndex(value.toInt());
+          },
+        );
+      }),
     );
   }
 }
