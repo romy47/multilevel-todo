@@ -13,32 +13,39 @@ class HomeScreen extends StatelessWidget {
         title: Text('Awesome Todo'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-              width: double.maxFinite,
-              child: DragTarget(onWillAccept: (data) {
-                return true;
-              }, onAccept: (data) {
-                Provider.of<TodoProvider>(context, listen: false)
-                    .changeTodoSTatus(data, TodoStatus.todo);
-              }, builder:
-                  (BuildContext context, List<Todo> incoming, rejected) {
-                return Column(
-                  children: [
-                    Container(
-                      color: Colors.blue[100],
-                      width: double.maxFinite,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "Todos",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+          Flexible(
+            fit: FlexFit.tight,
+            child: Container(
+                width: double.maxFinite,
+                child: DragTarget(onWillAccept: (data) {
+                  return true;
+                }, onAccept: (data) {
+                  Provider.of<TodoProvider>(context, listen: false)
+                      .changeTodoSTatus(data, TodoStatus.todo);
+                }, builder:
+                    (BuildContext context, List<Todo> incoming, rejected) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        color: Colors.blue[100],
+                        width: double.maxFinite,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          "Todos",
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
                       ),
-                    ),
-                    todos(),
-                  ],
-                );
-              })),
+                      todos(),
+                    ],
+                  );
+                })),
+          ),
           Container(
               width: double.maxFinite,
               child: DragTarget(onWillAccept: (data) {
@@ -49,6 +56,8 @@ class HomeScreen extends StatelessWidget {
               }, builder:
                   (BuildContext context, List<Todo> incoming, rejected) {
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       color: Colors.amber[100],
@@ -74,6 +83,8 @@ class HomeScreen extends StatelessWidget {
               }, builder:
                   (BuildContext context, List<Todo> incoming, rejected) {
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       color: Colors.green[100],
@@ -91,7 +102,7 @@ class HomeScreen extends StatelessWidget {
               })),
         ],
       ),
-      bottomSheet: Container(height: 100.0, child: ProjectSlider()),
+      // bottomSheet: Container(height: 100.0, child: ProjectSlider()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
           Navigator.push(
@@ -138,29 +149,36 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget todos() {
-    return Container(
-        color: Colors.blue[100],
-        width: double.infinity,
-        child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
-          return Wrap(
-            children: todoProvider.todos
-                .map((e) => Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
-                      child: Draggable(
-                        data: e,
-                        feedback: Material(
-                          color: Colors.transparent,
-                          child: todoChip(e, Colors.blue[200]),
-                        ),
-                        child: todoChip(e, Colors.blue[200]),
-                        childWhenDragging: todoChip(e, Colors.grey[200]),
-                      ),
-                    ))
-                .toList()
-                .cast<Widget>(),
-          );
-        }));
+    return Flexible(
+      fit: FlexFit.tight,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+            color: Colors.blue[100],
+            width: double.infinity,
+            child:
+                Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+              return Wrap(
+                children: todoProvider.todos
+                    .map((e) => Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.0, horizontal: 5.0),
+                          child: Draggable(
+                            data: e,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: todoChip(e, Colors.blue[200]),
+                            ),
+                            child: todoChip(e, Colors.blue[200]),
+                            childWhenDragging: todoChip(e, Colors.grey[200]),
+                          ),
+                        ))
+                    .toList()
+                    .cast<Widget>(),
+              );
+            })),
+      ),
+    );
   }
 
   Widget todoChip(Todo todo, Color color) {
@@ -175,60 +193,66 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget onGoing() {
-    return Container(
-      width: double.infinity,
-      color: Colors.amber[100],
-      child: Consumer<TodoProvider>(
-        builder: (context, todoProvider, child) {
-          return Wrap(
-            children: todoProvider.ongoingTodos
-                .map((e) => Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
-                      child: Draggable(
-                        data: e,
-                        feedback: Material(
-                          color: Colors.transparent,
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+        width: double.infinity,
+        color: Colors.amber[100],
+        child: Consumer<TodoProvider>(
+          builder: (context, todoProvider, child) {
+            return Wrap(
+              children: todoProvider.ongoingTodos
+                  .map((e) => Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 5.0),
+                        child: Draggable(
+                          data: e,
+                          feedback: Material(
+                            color: Colors.transparent,
+                            child: todoChip(e, Colors.blue[200]),
+                          ),
                           child: todoChip(e, Colors.blue[200]),
+                          childWhenDragging: todoChip(e, Colors.grey[200]),
                         ),
-                        child: todoChip(e, Colors.blue[200]),
-                        childWhenDragging: todoChip(e, Colors.grey[200]),
-                      ),
-                    ))
-                .toList()
-                .cast<Widget>(),
-          );
-        },
+                      ))
+                  .toList()
+                  .cast<Widget>(),
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget finished() {
-    return Container(
-      width: double.infinity,
-      color: Colors.green[100],
-      // constraints: BoxConstraints.expand(height: 200.0),
-      child: Consumer<TodoProvider>(
-        builder: (context, todoProvider, child) {
-          return Wrap(
-            children: todoProvider.finishedTodos
-                .map((e) => Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
-                      child: Draggable(
-                        data: e,
-                        feedback: Material(
-                          color: Colors.transparent,
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+        width: double.infinity,
+        color: Colors.green[100],
+        // constraints: BoxConstraints.expand(height: 200.0),
+        child: Consumer<TodoProvider>(
+          builder: (context, todoProvider, child) {
+            return Wrap(
+              children: todoProvider.finishedTodos
+                  .map((e) => Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 5.0),
+                        child: Draggable(
+                          data: e,
+                          feedback: Material(
+                            color: Colors.transparent,
+                            child: todoChip(e, Colors.blue[200]),
+                          ),
                           child: todoChip(e, Colors.blue[200]),
+                          childWhenDragging: todoChip(e, Colors.grey[200]),
                         ),
-                        child: todoChip(e, Colors.blue[200]),
-                        childWhenDragging: todoChip(e, Colors.grey[200]),
-                      ),
-                    ))
-                .toList()
-                .cast<Widget>(),
-          );
-        },
+                      ))
+                  .toList()
+                  .cast<Widget>(),
+            );
+          },
+        ),
       ),
     );
   }
