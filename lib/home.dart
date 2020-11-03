@@ -7,57 +7,88 @@ import 'package:second_attempt/providers/todo_provider.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print('Starting');
     return Scaffold(
       appBar: AppBar(
         title: Text('Awesome Todo'),
       ),
       body: Column(
         children: [
-          Column(
-            children: [
-              Container(
-                color: Colors.blue[100],
-                width: double.maxFinite,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  "Todos",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-              ),
-              todos(),
-            ],
-          ),
-          Column(
-            children: [
-              Container(
-                color: Colors.amber[100],
-                width: double.maxFinite,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  "Ongoing",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-              ),
-              onGoing(),
-            ],
-          ),
-          Column(
-            children: [
-              Container(
-                color: Colors.green[100],
-                width: double.maxFinite,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  "Finished",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-              ),
-              finished(),
-            ],
-          )
+          Container(
+              width: double.maxFinite,
+              child: DragTarget(onWillAccept: (data) {
+                return true;
+              }, onAccept: (data) {
+                Provider.of<TodoProvider>(context, listen: false)
+                    .changeTodoSTatus(data, TodoStatus.todo);
+              }, builder:
+                  (BuildContext context, List<Todo> incoming, rejected) {
+                return Column(
+                  children: [
+                    Container(
+                      color: Colors.blue[100],
+                      width: double.maxFinite,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        "Todos",
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      ),
+                    ),
+                    todos(),
+                  ],
+                );
+              })),
+          Container(
+              width: double.maxFinite,
+              child: DragTarget(onWillAccept: (data) {
+                return true;
+              }, onAccept: (data) {
+                Provider.of<TodoProvider>(context, listen: false)
+                    .changeTodoSTatus(data, TodoStatus.onGoing);
+              }, builder:
+                  (BuildContext context, List<Todo> incoming, rejected) {
+                return Column(
+                  children: [
+                    Container(
+                      color: Colors.amber[100],
+                      width: double.maxFinite,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        "Ongoing",
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      ),
+                    ),
+                    onGoing(),
+                  ],
+                );
+              })),
+          Container(
+              width: double.maxFinite,
+              child: DragTarget(onWillAccept: (data) {
+                return true;
+              }, onAccept: (data) {
+                Provider.of<TodoProvider>(context, listen: false)
+                    .changeTodoSTatus(data, TodoStatus.finished);
+              }, builder:
+                  (BuildContext context, List<Todo> incoming, rejected) {
+                return Column(
+                  children: [
+                    Container(
+                      color: Colors.green[100],
+                      width: double.maxFinite,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        "Finished",
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      ),
+                    ),
+                    finished(),
+                  ],
+                );
+              })),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -109,20 +140,20 @@ class HomeScreen extends StatelessWidget {
     return Container(
         color: Colors.blue[100],
         width: double.infinity,
-        // constraints: BoxConstraints.expand(height: 200.0),
         child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
           return Wrap(
             children: todoProvider.todos
                 .map((e) => Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
-                      child: Chip(
-                        backgroundColor: Colors.white,
-                        avatar: CircleAvatar(
-                          backgroundColor: Colors.blue[200],
-                          child: Icon(Icons.radio_button_unchecked),
+                      child: Draggable(
+                        data: e,
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: todoChip(e, Colors.blue[200]),
                         ),
-                        label: Text(e.title),
+                        child: todoChip(e, Colors.blue[200]),
+                        childWhenDragging: Container(),
                       ),
                     ))
                 .toList()
@@ -131,41 +162,40 @@ class HomeScreen extends StatelessWidget {
         }));
   }
 
+  Widget todoChip(Todo todo, Color color) {
+    return Chip(
+      backgroundColor: Colors.white,
+      avatar: CircleAvatar(
+        backgroundColor: color,
+        child: Icon(Icons.radio_button_unchecked),
+      ),
+      label: Text(todo.title),
+    );
+  }
+
   Widget onGoing() {
     return Container(
+      width: double.infinity,
       color: Colors.amber[100],
-      // constraints: BoxConstraints.expand(height: 200.0),
       child: Consumer<TodoProvider>(
         builder: (context, todoProvider, child) {
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: todoProvider.ongoingTodos.length,
-            itemBuilder: (context, index) {
-              final item = todoProvider.ongoingTodos[index];
-              return ListTile(
-                title: Text(item.title),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    new IconButton(
-                      icon: new Icon(Icons.arrow_circle_up),
-                      onPressed: () {
-                        todoProvider.changeTodoSTatus(item, TodoStatus.todo);
-                      },
-                    ),
-                    new IconButton(
-                      icon: new Icon(Icons.arrow_circle_down),
-                      onPressed: () {
-                        todoProvider.changeTodoSTatus(
-                            item, TodoStatus.finished);
-                      },
-                    ),
-                  ],
-                ),
-                // subtitle: Text(item.status.toString())
-              );
-            },
+          return Wrap(
+            children: todoProvider.ongoingTodos
+                .map((e) => Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
+                      child: Draggable(
+                        data: e,
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: todoChip(e, Colors.blue[200]),
+                        ),
+                        child: todoChip(e, Colors.blue[200]),
+                        childWhenDragging: Container(),
+                      ),
+                    ))
+                .toList()
+                .cast<Widget>(),
           );
         },
       ),
@@ -174,38 +204,28 @@ class HomeScreen extends StatelessWidget {
 
   Widget finished() {
     return Container(
+      width: double.infinity,
       color: Colors.green[100],
       // constraints: BoxConstraints.expand(height: 200.0),
       child: Consumer<TodoProvider>(
         builder: (context, todoProvider, child) {
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: todoProvider.finishedTodos.length,
-            itemBuilder: (context, index) {
-              final item = todoProvider.finishedTodos[index];
-              return ListTile(
-                title: Text(item.title),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    new IconButton(
-                      icon: new Icon(Icons.arrow_circle_up),
-                      onPressed: () {
-                        todoProvider.changeTodoSTatus(item, TodoStatus.onGoing);
-                      },
-                    ),
-                    // new IconButton(
-                    //   icon: new Icon(Icons.arrow_circle_down),
-                    //   onPressed: () {
-                    //     todoProvider.changeTodoSTatus(item, TodoStatus.onGoing);
-                    //   },
-                    // ),
-                  ],
-                ),
-                // subtitle: Text(item.status.toString())
-              );
-            },
+          return Wrap(
+            children: todoProvider.finishedTodos
+                .map((e) => Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 5.0),
+                      child: Draggable(
+                        data: e,
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: todoChip(e, Colors.blue[200]),
+                        ),
+                        child: todoChip(e, Colors.blue[200]),
+                        childWhenDragging: Container(),
+                      ),
+                    ))
+                .toList()
+                .cast<Widget>(),
           );
         },
       ),
