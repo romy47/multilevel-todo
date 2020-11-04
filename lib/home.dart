@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:second_attempt/create_todo.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/tabbed_home.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -134,12 +135,13 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              title: Text('Item 2'),
+              title: Text('Tabbed View'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
                 Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TabbedHomeScreen()));
               },
             ),
           ],
@@ -258,31 +260,31 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class ProjectSlider extends StatefulWidget {
-  @override
-  ProjectSsliderState createState() => ProjectSsliderState();
-}
+// class ProjectSlider extends StatefulWidget {
+//   @override
+//   ProjectSsliderState createState() => ProjectSsliderState();
+// }
 
-class ProjectSsliderState extends State<ProjectSlider> {
-  var _selectedProject = 0.0;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
-        return Slider(
-          value: todoProvider.projectIndex.toDouble(),
-          min: todoProvider.minProjectIndex,
-          max: todoProvider.maxProjectIndex,
-          divisions: todoProvider.maxProjectIndex.toInt(),
-          label: _selectedProject.toString(),
-          onChanged: (double value) {
-            // setState(() => _selectedProject = value);
-            todoProvider.setSelectedProjectIndex(value.toInt());
-            //   Provider.of<TodoProvider>(context, listen: false)
-            //       .setSelectedProjectIndex(value.toInt());
-          },
-        );
-      }),
-    );
-  }
-}
+// class ProjectSsliderState extends State<ProjectSlider> {
+//   var _selectedProject = 0.0;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+//         return Slider(
+//           value: todoProvider.projectIndex.toDouble(),
+//           min: todoProvider.minProjectIndex,
+//           max: todoProvider.maxProjectIndex,
+//           divisions: todoProvider.maxProjectIndex.toInt(),
+//           label: _selectedProject.toString(),
+//           onChanged: (double value) {
+//             // setState(() => _selectedProject = value);
+//             todoProvider.setSelectedProjectIndex(value.toInt());
+//             //   Provider.of<TodoProvider>(context, listen: false)
+//             //       .setSelectedProjectIndex(value.toInt());
+//           },
+//         );
+//       }),
+//     );
+//   }
+// }
