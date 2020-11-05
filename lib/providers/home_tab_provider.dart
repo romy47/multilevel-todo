@@ -5,8 +5,8 @@ import '../models/todo_model.dart';
 
 class HomeTabProvider extends ChangeNotifier {
   List<Project> _projects = [
-    Project('Assignment', '01'),
-    Project('Cooking', '02'),
+    Project('Assignment', '01', 0xff443a49),
+    Project('Cooking', '02', 0xff443a49),
   ];
   List<Project> get projects => _projects;
   void addProject(Project project) {

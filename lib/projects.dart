@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:second_attempt/models/project_model.dart';
 
 import 'providers/home_tab_provider.dart';
 
-class Projects extends StatelessWidget {
+class Projects extends StatefulWidget {
+  @override
+  _ProjectsState createState() => _ProjectsState();
+}
+
+class _ProjectsState extends State<Projects> {
+  Color pickerColor = Color(0xff443a49);
+  Color currentColor = Color(0xff443a49);
+
+  void changeColor(Color color) {
+    setState(() => pickerColor = color);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,6 +51,7 @@ class Projects extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return InkWell(
                           child: Card(
+                            color: new Color(tabProvider.projects[index].color),
                             child: Padding(
                               padding: EdgeInsets.all(16.0),
                               child: Text(
@@ -57,7 +72,7 @@ class Projects extends StatelessWidget {
   }
 
   void createProjectDialog(context) {
-    final _todoTitleTextController = TextEditingController();
+    final projectTitleTextController = TextEditingController();
     Alert(
         context: context,
         title: "Create Project",
@@ -75,24 +90,21 @@ class Projects extends StatelessWidget {
                   return null;
                 }
               },
-              controller: _todoTitleTextController,
+              controller: projectTitleTextController,
             ),
+            BlockPicker(
+              pickerColor: currentColor,
+              onColorChanged: changeColor,
+            )
           ],
         ),
         buttons: [
           DialogButton(
             onPressed: () => {
               Navigator.pop(context),
-              // Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
-              //     _todoTitleTextController.text,
-              //     Provider.of<TodoProvider>(context, listen: false)
-              //         .selectedProjectId,
-              //     _todoTitleTextController.text,
-              //     TodoStatus.todo)),
-              // Scaffold.of(context).showSnackBar(SnackBar(
-              //     content: Text('"' +
-              //         _todoTitleTextController.text +
-              //         '" is added as a Todo')))
+              Provider.of<HomeTabProvider>(context, listen: false).addProject(
+                  Project(projectTitleTextController.text,
+                      projectTitleTextController.text, pickerColor.value)),
             },
             child: Text(
               "Create",

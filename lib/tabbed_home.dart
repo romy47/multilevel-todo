@@ -24,8 +24,11 @@ class TabbedHomeScreen extends StatelessWidget {
         return CustomTabView(
           initPosition: initPosition,
           itemCount: tabProvider.projects.length,
-          tabBuilder: (context, index) =>
-              Tab(text: tabProvider.projects[index].title),
+          tabBuilder: (context, index) => Tab(
+              child: Text(tabProvider.projects[index].title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: new Color(tabProvider.projects[index].color)))),
           pageBuilder: (context, index) => Center(
               // child: Text(tabProvider.projects[index].title)
               child: HomeScreen(tabProvider.projects[index].id)),
