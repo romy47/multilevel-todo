@@ -9,6 +9,11 @@ class HomeTabProvider extends ChangeNotifier {
     Project('Cooking', '02', 0xff443a49),
   ];
   List<Project> get projects => _projects;
+
+  Project getProject(String projectId) {
+    return _projects.firstWhere((element) => element.id == projectId);
+  }
+
   void addProject(Project project) {
     _projects.add(project);
     notifyListeners();
