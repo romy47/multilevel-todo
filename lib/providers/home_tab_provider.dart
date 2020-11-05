@@ -1,39 +1,36 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:second_attempt/models/project_model.dart';
 import '../models/todo_model.dart';
 
 class HomeTabProvider extends ChangeNotifier {
+  List<Project> _projects = [
+    Project('Assignment', '01'),
+    Project('Cooking', '02'),
+  ];
+  List<Project> get projects => _projects;
+  void addProject(Project project) {
+    _projects.add(project);
+    notifyListeners();
+  }
+
+  void removeProjects(Project project) {
+    _projects.removeWhere((element) => element == project);
+    notifyListeners();
+  }
+
   List<Tab> _tabs = [
     Tab(icon: Icon(Icons.directions_car), text: 'car'),
     Tab(icon: Icon(Icons.directions_transit), text: 'transit'),
-    // Tab(icon: Icon(Icons.directions_bike), text: 'bike'),
   ];
-
-  // TabController _tc;
-
   List<Tab> get tabs => _tabs;
-  // TabController get tabController => _tc;
-
-  HomeTabProvider() {
-    // makeNewTabController();
-  }
-
-  // void makeNewTabController() {
-  //   _tc = TabController(
-  //     length: _tabs.length,
-  //     initialIndex: _tabs.length - 1,
-  //   );
-  // }
-
   void addTab(String name) {
     _tabs.add(Tab(icon: Icon(Icons.star_border_outlined), text: name));
-    // makeNewTabController();
     notifyListeners();
   }
 
   void removeTab(String name) {
     _tabs.removeWhere((element) => element.text == name);
-    // makeNewTabController();
     notifyListeners();
   }
 }

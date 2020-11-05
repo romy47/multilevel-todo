@@ -50,7 +50,11 @@ class _TodoFormWidgetState extends State<TodoFormWidget> {
                   {
                     Provider.of<TodoProvider>(context, listen: false)
                         .addNewTodo(Todo(
-                            _todoTitleTextController.text, TodoStatus.todo)),
+                            _todoTitleTextController.text,
+                            Provider.of<TodoProvider>(context, listen: false)
+                                .selectedProjectId,
+                            _todoTitleTextController.text,
+                            TodoStatus.todo)),
                     Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text('"' +
                             _todoTitleTextController.text +

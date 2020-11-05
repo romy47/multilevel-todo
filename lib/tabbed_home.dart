@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:second_attempt/create_todo.dart';
+import 'package:second_attempt/home.dart';
+import 'package:second_attempt/models/project_model.dart';
+import 'package:second_attempt/projects.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
+import 'package:second_attempt/providers/todo_provider.dart';
+
+import 'models/todo_model.dart';
 
 class TabbedHomeScreen extends StatelessWidget {
   @override
@@ -16,11 +23,12 @@ class TabbedHomeScreen extends StatelessWidget {
       body: Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
         return CustomTabView(
           initPosition: initPosition,
-          itemCount: tabProvider.tabs.length,
+          itemCount: tabProvider.projects.length,
           tabBuilder: (context, index) =>
-              Tab(text: tabProvider.tabs[index].text),
-          pageBuilder: (context, index) =>
-              Center(child: Text(tabProvider.tabs[index].text)),
+              Tab(text: tabProvider.projects[index].title),
+          pageBuilder: (context, index) => Center(
+              // child: Text(tabProvider.projects[index].title)
+              child: HomeScreen(tabProvider.projects[index].id)),
           onPositionChange: (index) {
             print('current position: $index');
             initPosition = index;
@@ -30,7 +38,8 @@ class TabbedHomeScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
-          Provider.of<HomeTabProvider>(context, listen: false).addTab('huhu')
+          // Provider.of<HomeTabProvider>(context, listen: false).addTab('huhu')
+          _openPopup(context)
         },
         tooltip: 'Add Todo',
         child: const Icon(Icons.add),
@@ -46,17 +55,64 @@ class TabbedHomeScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text('Create Todo'),
+              title: Text('Projects'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateTodo()));
+                    MaterialPageRoute(builder: (context) => Projects()));
               },
             ),
           ],
         ),
       ),
     );
+  }
+
+  _openPopup(context) {
+    final _todoTitleTextController = TextEditingController();
+    Alert(
+        context: context,
+        title: "Create Todo",
+        content: Column(
+          children: <Widget>[
+            TextFormField(
+              decoration: InputDecoration(
+                // icon: Icon(Icons.),
+                labelText: 'Task Name',
+              ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Please name your todo';
+                } else {
+                  return null;
+                }
+              },
+              controller: _todoTitleTextController,
+            ),
+            ProjectDropDown()
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () => {
+              Navigator.pop(context),
+              Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
+                  _todoTitleTextController.text,
+                  Provider.of<TodoProvider>(context, listen: false)
+                      .selectedProjectId,
+                  _todoTitleTextController.text,
+                  TodoStatus.todo)),
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('"' +
+                      _todoTitleTextController.text +
+                      '" is added as a Todo')))
+            },
+            child: Text(
+              "Create",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
   }
 }
 
@@ -81,6 +137,57 @@ class CustomTabView extends StatefulWidget {
 
   @override
   _CustomTabsState createState() => _CustomTabsState();
+}
+
+class ProjectDropDown extends StatefulWidget {
+  @override
+  _ProjectDropDownState createState() => _ProjectDropDownState();
+}
+
+class _ProjectDropDownState extends State<ProjectDropDown> {
+  List<Project> projects;
+  String selectedProjectId;
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: DropdownButton<String>(
+            isExpanded: true,
+            items: tabProvider.projects.map((Project project) {
+              return new DropdownMenuItem<String>(
+                value: project.id,
+                child: (project.id == selectedProjectId)
+                    ? new Text(
+                        project.title,
+                        style: TextStyle(color: Colors.blue[300]),
+                      )
+                    : new Text(
+                        project.title,
+                        style: TextStyle(color: Colors.black),
+                      ),
+              );
+            }).toList(),
+            hint: selectedProjectId == null
+                ? Text('Select Project')
+                : Text(
+                    tabProvider.projects
+                        .firstWhere(
+                            (project) => project.id == selectedProjectId)
+                        .title,
+                    style: TextStyle(color: Colors.blue),
+                  ),
+            onChanged: (newVal) {
+              this.setState(() {
+                selectedProjectId = newVal;
+                Provider.of<TodoProvider>(context, listen: false)
+                    .selectProjectId(newVal);
+              });
+            }),
+      );
+    });
+    ;
+  }
 }
 
 class _CustomTabsState extends State<CustomTabView>

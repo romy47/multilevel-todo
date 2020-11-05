@@ -6,54 +6,24 @@ import 'package:second_attempt/providers/todo_provider.dart';
 import 'package:second_attempt/tabbed_home.dart';
 
 class HomeScreen extends StatelessWidget {
+  final String projectId;
+  HomeScreen(this.projectId) {}
   @override
   Widget build(BuildContext context) {
     print('Starting');
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Awesome Todo'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            fit: FlexFit.tight,
-            child: Container(
-                width: double.maxFinite,
-                child: DragTarget(onWillAccept: (data) {
-                  return true;
-                }, onAccept: (data) {
-                  Provider.of<TodoProvider>(context, listen: false)
-                      .changeTodoSTatus(data, TodoStatus.todo);
-                }, builder:
-                    (BuildContext context, List<Todo> incoming, rejected) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        color: Colors.blue[100],
-                        width: double.maxFinite,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Todos",
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                        ),
-                      ),
-                      todos(),
-                    ],
-                  );
-                })),
-          ),
-          Container(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          fit: FlexFit.tight,
+          child: Container(
               width: double.maxFinite,
               child: DragTarget(onWillAccept: (data) {
                 return true;
               }, onAccept: (data) {
                 Provider.of<TodoProvider>(context, listen: false)
-                    .changeTodoSTatus(data, TodoStatus.onGoing);
+                    .changeTodoSTatus(data, TodoStatus.todo);
               }, builder:
                   (BuildContext context, List<Todo> incoming, rejected) {
                 return Column(
@@ -61,93 +31,75 @@ class HomeScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      color: Colors.amber[100],
+                      color: Colors.blue[100],
                       width: double.maxFinite,
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Text(
-                        "Ongoing",
+                        "Todos",
                         style: TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     ),
-                    onGoing(),
+                    todos(),
                   ],
                 );
               })),
-          Container(
-              width: double.maxFinite,
-              child: DragTarget(onWillAccept: (data) {
-                return true;
-              }, onAccept: (data) {
-                Provider.of<TodoProvider>(context, listen: false)
-                    .changeTodoSTatus(data, TodoStatus.finished);
-              }, builder:
-                  (BuildContext context, List<Todo> incoming, rejected) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      color: Colors.green[100],
-                      width: double.maxFinite,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "Finished",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                      ),
-                    ),
-                    finished(),
-                  ],
-                );
-              })),
-        ],
-      ),
-      // bottomSheet: Container(height: 100.0, child: ProjectSlider()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CreateTodo()))
-        },
-        tooltip: 'Add Todo',
-        child: const Icon(Icons.add),
-      ),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('User Name'),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('Create Todo'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateTodo()));
-              },
-            ),
-            ListTile(
-              title: Text('Tabbed View'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TabbedHomeScreen()));
-              },
-            ),
-          ],
         ),
-      ),
+        Container(
+            width: double.maxFinite,
+            child: DragTarget(onWillAccept: (data) {
+              return true;
+            }, onAccept: (data) {
+              Provider.of<TodoProvider>(context, listen: false)
+                  .changeTodoSTatus(data, TodoStatus.onGoing);
+            }, builder: (BuildContext context, List<Todo> incoming, rejected) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    color: Colors.amber[100],
+                    width: double.maxFinite,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      "Ongoing",
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    ),
+                  ),
+                  onGoing(),
+                ],
+              );
+            })),
+        Container(
+            width: double.maxFinite,
+            child: DragTarget(onWillAccept: (data) {
+              return true;
+            }, onAccept: (data) {
+              Provider.of<TodoProvider>(context, listen: false)
+                  .changeTodoSTatus(data, TodoStatus.finished);
+            }, builder: (BuildContext context, List<Todo> incoming, rejected) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    color: Colors.green[100],
+                    width: double.maxFinite,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      "Finished",
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    ),
+                  ),
+                  finished(),
+                ],
+              );
+            })),
+      ],
     );
+    // bottomSheet: Container(height: 100.0, child: ProjectSlider()),
   }
 
   Widget todos() {
@@ -161,7 +113,8 @@ class HomeScreen extends StatelessWidget {
             child:
                 Consumer<TodoProvider>(builder: (context, todoProvider, child) {
               return Wrap(
-                children: todoProvider.todos
+                children: todoProvider
+                    .getTasksByLevel(TodoStatus.todo, projectId)
                     .map((e) => Padding(
                           padding: EdgeInsets.symmetric(
                               vertical: 0.0, horizontal: 5.0),
@@ -203,7 +156,8 @@ class HomeScreen extends StatelessWidget {
         child: Consumer<TodoProvider>(
           builder: (context, todoProvider, child) {
             return Wrap(
-              children: todoProvider.ongoingTodos
+              children: todoProvider
+                  .getTasksByLevel(TodoStatus.onGoing, projectId)
                   .map((e) => Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 5.0),
@@ -236,7 +190,8 @@ class HomeScreen extends StatelessWidget {
         child: Consumer<TodoProvider>(
           builder: (context, todoProvider, child) {
             return Wrap(
-              children: todoProvider.finishedTodos
+              children: todoProvider
+                  .getTasksByLevel(TodoStatus.finished, projectId)
                   .map((e) => Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 5.0),

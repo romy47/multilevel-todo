@@ -8,6 +8,22 @@ class TodoProvider extends ChangeNotifier {
     // Todo('Halka jogging', TodoStatus.todo),
     // Todo('Goru kena', TodoStatus.todo),
   ];
+  String _selectedProjectId;
+
+  String get selectedProjectId => _selectedProjectId;
+
+  List<Todo> getTasksByLevel(TodoStatus status, String projectId) {
+    List<Todo> tasks =
+        _todos.where((element) => element.status == status).toList();
+    if (projectId != null) {
+      tasks = tasks.where((element) => element.projectId == projectId).toList();
+    }
+    return tasks;
+  }
+
+  void selectProjectId(String id) {
+    this._selectedProjectId = id;
+  }
 
   void changeTodoSTatus(Todo todo, TodoStatus status) {
     _todos.firstWhere((element) => element.title == todo.title).status = status;
@@ -18,13 +34,4 @@ class TodoProvider extends ChangeNotifier {
     _todos.insert(0, todo);
     notifyListeners();
   }
-
-  List<Todo> get todos =>
-      _todos.where((element) => element.status == TodoStatus.todo).toList();
-
-  List<Todo> get ongoingTodos =>
-      _todos.where((element) => element.status == TodoStatus.onGoing).toList();
-
-  List<Todo> get finishedTodos =>
-      _todos.where((element) => element.status == TodoStatus.finished).toList();
 }
