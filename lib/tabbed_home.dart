@@ -21,17 +21,21 @@ class TabbedHomeScreen extends StatelessWidget {
         title: Text('Awesome Todo'),
       ),
       body: Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+        List<Project> projects = [
+          Project('All', 'all', Colors.black.value),
+          ...tabProvider.projects
+        ];
         return CustomTabView(
           initPosition: initPosition,
-          itemCount: tabProvider.projects.length,
+          itemCount: projects.length,
           tabBuilder: (context, index) => Tab(
-              child: Text(tabProvider.projects[index].title,
+              child: Text(projects[index].title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: new Color(tabProvider.projects[index].color)))),
+                      color: new Color(projects[index].color)))),
           pageBuilder: (context, index) => Center(
-              // child: Text(tabProvider.projects[index].title)
-              child: HomeScreen(tabProvider.projects[index].id)),
+              // child: Text(projects[index].title)
+              child: HomeScreen(projects[index].id)),
           onPositionChange: (index) {
             print('current position: $index');
             initPosition = index;

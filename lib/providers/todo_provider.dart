@@ -15,7 +15,7 @@ class TodoProvider extends ChangeNotifier {
   List<Todo> getTasksByLevel(TodoStatus status, String projectId) {
     List<Todo> tasks =
         _todos.where((element) => element.status == status).toList();
-    if (projectId != null) {
+    if (projectId != 'all') {
       tasks = tasks.where((element) => element.projectId == projectId).toList();
     }
     return tasks;
