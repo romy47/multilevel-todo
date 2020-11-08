@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:second_attempt/dashboard.dart';
 import 'package:second_attempt/projects.dart';
 import 'package:second_attempt/tabbed_home.dart';
 
@@ -11,10 +12,7 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  List<Widget> _widgetOptions = <Widget>[
-    TabbedHome(),
-    Projects(),
-  ];
+  List<Widget> _widgetOptions = <Widget>[TabbedHome(), Projects(), Dasjboard()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -25,9 +23,6 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: const Text('Rapid Todo')),
-      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -42,9 +37,13 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon:
-                  SizedBox(width: 10, height: 10, child: Icon(Icons.business)),
+              icon: SizedBox(width: 10, height: 10, child: Icon(Icons.list)),
               label: 'Projects',
+            ),
+            BottomNavigationBarItem(
+              icon:
+                  SizedBox(width: 10, height: 10, child: Icon(Icons.dashboard)),
+              label: 'Dashboard',
             ),
           ],
           currentIndex: _selectedIndex,

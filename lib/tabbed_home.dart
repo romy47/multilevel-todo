@@ -24,6 +24,9 @@ class _TabbedHomeState extends State<TabbedHome> {
         ...tabProvider.projects
       ];
       return Scaffold(
+        appBar: AppBar(
+          title: Center(child: const Text('Rapid Todo')),
+        ),
         body: CustomTabView(
           initPosition: initPosition,
           itemCount: projects.length,
