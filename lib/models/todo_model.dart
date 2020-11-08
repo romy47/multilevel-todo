@@ -5,7 +5,7 @@ class Todo {
   TodoStatus status;
   DateTime due;
   String repeat;
-  Todo(this.id, this.projectId, this.title, this.status) {}
+  Todo(this.id, this.projectId, this.title, this.status, this.due);
 }
 
 enum TodoStatus { todo, onGoing, finished }

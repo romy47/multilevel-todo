@@ -278,7 +278,14 @@ class _NewTodoAlertState extends State<NewTodoAlert> {
                   _todoTitleTextController.text,
                   this.selectedProjectId,
                   _todoTitleTextController.text,
-                  TodoStatus.todo)),
+                  TodoStatus.todo,
+                  new DateTime(
+                    this.selectedDueDate.year,
+                    this.selectedDueDate.month,
+                    this.selectedDueDate.day,
+                  )
+                  // this.selectedDueDate
+                  )),
               Scaffold.of(context).showSnackBar(SnackBar(
                   content: Text('"' +
                       _todoTitleTextController.text +

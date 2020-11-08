@@ -158,13 +158,76 @@ class HomeScreen extends StatelessWidget {
 
   Widget todoChip(Todo todo, Color color) {
     return Chip(
-      backgroundColor: Colors.white,
-      avatar: CircleAvatar(
-        backgroundColor: color,
-        child: Icon(Icons.navigate_next),
-      ),
-      label: Text(todo.title),
-    );
+        backgroundColor: Colors.white,
+        avatar: CircleAvatar(
+          backgroundColor: color,
+          child: Icon(Icons.navigate_next),
+        ),
+        // label: Text(todo.title),
+        label: RichText(
+          text: TextSpan(
+            text: todo.title,
+            style: TextStyle(color: Colors.black),
+            children: <TextSpan>[
+              TextSpan(
+                  text: ' ' +
+                      todo.due
+                          .difference(DateTime(
+                            DateTime.now().year,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                          ))
+                          .inDays
+                          .toString() +
+                      ' days',
+                  style: TextStyle(color: Colors.red)),
+              // TextSpan(text: ' world!'),
+            ],
+          ),
+        ));
+  }
+
+  Widget ongoingChip(Todo todo, Color color) {
+    return Chip(
+        backgroundColor: Colors.white,
+        avatar: CircleAvatar(
+          backgroundColor: color,
+          child: Icon(Icons.navigate_next),
+        ),
+        // label: Text(todo.title),
+        label: RichText(
+          text: TextSpan(
+            text: todo.title,
+            style: TextStyle(color: Colors.black),
+            children: <TextSpan>[
+              TextSpan(text: '', style: TextStyle(color: Colors.red)),
+              // TextSpan(text: ' world!'),
+            ],
+          ),
+        ));
+  }
+
+  Widget finishedChip(Todo todo, Color color) {
+    return Chip(
+        backgroundColor: Colors.white,
+        avatar: CircleAvatar(
+          backgroundColor: color,
+          child: Icon(Icons.navigate_next),
+        ),
+        // label: Text(todo.title),
+        label: RichText(
+          text: TextSpan(
+            text: todo.title,
+            style: TextStyle(
+              color: Colors.black,
+              decoration: TextDecoration.lineThrough,
+            ),
+            children: <TextSpan>[
+              TextSpan(text: '', style: TextStyle(color: Colors.red)),
+              // TextSpan(text: ' world!'),
+            ],
+          ),
+        ));
   }
 
   Widget onGoing() {
@@ -185,20 +248,20 @@ class HomeScreen extends StatelessWidget {
                           data: e,
                           feedback: Material(
                             color: Colors.transparent,
-                            child: todoChip(
+                            child: ongoingChip(
                                 e,
                                 new Color(Provider.of<HomeTabProvider>(context,
                                         listen: false)
                                     .getProject(e.projectId)
                                     .color)),
                           ),
-                          child: todoChip(
+                          child: ongoingChip(
                               e,
                               new Color(Provider.of<HomeTabProvider>(context,
                                       listen: false)
                                   .getProject(e.projectId)
                                   .color)),
-                          childWhenDragging: todoChip(
+                          childWhenDragging: ongoingChip(
                               e,
                               new Color(Provider.of<HomeTabProvider>(context,
                                       listen: false)
@@ -234,20 +297,20 @@ class HomeScreen extends StatelessWidget {
                           data: e,
                           feedback: Material(
                             color: Colors.transparent,
-                            child: todoChip(
+                            child: finishedChip(
                                 e,
                                 new Color(Provider.of<HomeTabProvider>(context,
                                         listen: false)
                                     .getProject(e.projectId)
                                     .color)),
                           ),
-                          child: todoChip(
+                          child: finishedChip(
                               e,
                               new Color(Provider.of<HomeTabProvider>(context,
                                       listen: false)
                                   .getProject(e.projectId)
                                   .color)),
-                          childWhenDragging: todoChip(
+                          childWhenDragging: finishedChip(
                               e,
                               new Color(Provider.of<HomeTabProvider>(context,
                                       listen: false)
