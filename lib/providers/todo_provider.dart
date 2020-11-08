@@ -2,15 +2,10 @@ import 'package:flutter/foundation.dart';
 import '../models/todo_model.dart';
 
 class TodoProvider extends ChangeNotifier {
-  List<Todo> _todos = [
-    // Todo('Eat dinner', TodoStatus.todo),
-    // Todo('Cook breakfast', TodoStatus.todo),
-    // Todo('Halka jogging', TodoStatus.todo),
-    // Todo('Goru kena', TodoStatus.todo),
-  ];
-  String _selectedProjectId;
+  List<Todo> _todos = [];
+  // String _selectedProjectId;
 
-  String get selectedProjectId => _selectedProjectId;
+  // String get selectedProjectId => _selectedProjectId;
 
   List<Todo> getTasksByLevel(TodoStatus status, String projectId) {
     List<Todo> tasks =
@@ -21,9 +16,9 @@ class TodoProvider extends ChangeNotifier {
     return tasks;
   }
 
-  void selectProjectId(String id) {
-    this._selectedProjectId = id;
-  }
+  // void selectProjectId(String id) {
+  //   this._selectedProjectId = id;
+  // }
 
   void changeTodoSTatus(Todo todo, TodoStatus status) {
     _todos.firstWhere((element) => element.title == todo.title).status = status;

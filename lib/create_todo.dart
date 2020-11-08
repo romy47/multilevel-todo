@@ -49,12 +49,8 @@ class _TodoFormWidgetState extends State<TodoFormWidget> {
                 if (_todoFormKey.currentState.validate())
                   {
                     Provider.of<TodoProvider>(context, listen: false)
-                        .addNewTodo(Todo(
-                            _todoTitleTextController.text,
-                            Provider.of<TodoProvider>(context, listen: false)
-                                .selectedProjectId,
-                            _todoTitleTextController.text,
-                            TodoStatus.todo)),
+                        .addNewTodo(Todo(_todoTitleTextController.text, '007',
+                            _todoTitleTextController.text, TodoStatus.todo)),
                     Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text('"' +
                             _todoTitleTextController.text +

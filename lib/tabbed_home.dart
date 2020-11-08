@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:second_attempt/create_todo.dart';
 import 'package:second_attempt/home.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/projects.dart';
@@ -10,7 +10,17 @@ import 'package:second_attempt/providers/todo_provider.dart';
 
 import 'models/todo_model.dart';
 
-class TabbedHomeScreen extends StatelessWidget {
+class TabbedHomeScreen extends StatefulWidget {
+  @override
+  _TabbedHomeScreenState createState() => _TabbedHomeScreenState();
+}
+
+class _TabbedHomeScreenState extends State<TabbedHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Starting');
@@ -45,8 +55,12 @@ class TabbedHomeScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
-          // Provider.of<HomeTabProvider>(context, listen: false).addTab('huhu')
-          _openPopup(context)
+          // _openPopup(context)
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return NewTodoAlert();
+              })
         },
         tooltip: 'Add Todo',
         child: const Icon(Icons.add),
@@ -74,53 +88,6 @@ class TabbedHomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  _openPopup(context) {
-    final _todoTitleTextController = TextEditingController();
-    Alert(
-        context: context,
-        title: "Create Todo",
-        content: Column(
-          children: <Widget>[
-            TextFormField(
-              decoration: InputDecoration(
-                // icon: Icon(Icons.),
-                labelText: 'Task Name',
-              ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please name your todo';
-                } else {
-                  return null;
-                }
-              },
-              controller: _todoTitleTextController,
-            ),
-            ProjectDropDown()
-          ],
-        ),
-        buttons: [
-          DialogButton(
-            onPressed: () => {
-              Navigator.pop(context),
-              Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
-                  _todoTitleTextController.text,
-                  Provider.of<TodoProvider>(context, listen: false)
-                      .selectedProjectId,
-                  _todoTitleTextController.text,
-                  TodoStatus.todo)),
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('"' +
-                      _todoTitleTextController.text +
-                      '" is added as a Todo')))
-            },
-            child: Text(
-              "Create",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ]).show();
-  }
 }
 
 class CustomTabView extends StatefulWidget {
@@ -144,57 +111,6 @@ class CustomTabView extends StatefulWidget {
 
   @override
   _CustomTabsState createState() => _CustomTabsState();
-}
-
-class ProjectDropDown extends StatefulWidget {
-  @override
-  _ProjectDropDownState createState() => _ProjectDropDownState();
-}
-
-class _ProjectDropDownState extends State<ProjectDropDown> {
-  List<Project> projects;
-  String selectedProjectId;
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5),
-        child: DropdownButton<String>(
-            isExpanded: true,
-            items: tabProvider.projects.map((Project project) {
-              return new DropdownMenuItem<String>(
-                value: project.id,
-                child: (project.id == selectedProjectId)
-                    ? new Text(
-                        project.title,
-                        style: TextStyle(color: Colors.blue[300]),
-                      )
-                    : new Text(
-                        project.title,
-                        style: TextStyle(color: Colors.black),
-                      ),
-              );
-            }).toList(),
-            hint: selectedProjectId == null
-                ? Text('Select Project')
-                : Text(
-                    tabProvider.projects
-                        .firstWhere(
-                            (project) => project.id == selectedProjectId)
-                        .title,
-                    style: TextStyle(color: Colors.blue),
-                  ),
-            onChanged: (newVal) {
-              this.setState(() {
-                selectedProjectId = newVal;
-                Provider.of<TodoProvider>(context, listen: false)
-                    .selectProjectId(newVal);
-              });
-            }),
-      );
-    });
-    ;
-  }
 }
 
 class _CustomTabsState extends State<CustomTabView>
@@ -319,5 +235,158 @@ class _CustomTabsState extends State<CustomTabView>
     if (widget.onScroll is ValueChanged<double>) {
       widget.onScroll(controller.animation.value);
     }
+  }
+}
+
+class NewTodoAlert extends StatefulWidget {
+  @override
+  _NewTodoAlertState createState() => _NewTodoAlertState();
+}
+
+class _NewTodoAlertState extends State<NewTodoAlert> {
+  String selectedProjectId;
+  String selectedDueDateOption;
+  String selectedRepeat;
+  DateTime selectedDueDate = new DateTime.now();
+  final _todoTitleTextController = TextEditingController();
+  List<String> repeatOptions = ['Daily', 'Weekly'];
+  List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Pick Date'];
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Container(
+        child: Column(children: [
+          TextFormField(
+            decoration: InputDecoration(
+              // icon: Icon(Icons.),
+              labelText: 'Task Name',
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please name your todo';
+              } else {
+                return null;
+              }
+            },
+            controller: _todoTitleTextController,
+          ),
+          projectDropDown(context),
+          dueDateDropDown(context),
+          RaisedButton(
+            onPressed: () => {
+              Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
+                  _todoTitleTextController.text,
+                  this.selectedProjectId,
+                  _todoTitleTextController.text,
+                  TodoStatus.todo)),
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('"' +
+                      _todoTitleTextController.text +
+                      '" is added as a Todo')))
+            },
+            child: Text('Create Todo'),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Widget projectDropDown(context) {
+    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: DropdownButton<String>(
+            value: selectedProjectId,
+            isExpanded: true,
+            items: tabProvider.projects.map((Project project) {
+              return new DropdownMenuItem<String>(
+                value: project.id,
+                child: (project.id == selectedProjectId)
+                    ? new Text(
+                        project.title,
+                        style: TextStyle(color: Colors.blue[300]),
+                      )
+                    : new Text(
+                        project.title,
+                        style: TextStyle(color: Colors.black),
+                      ),
+              );
+            }).toList(),
+            hint: selectedProjectId == null
+                ? Text('Select Project')
+                : Text(
+                    tabProvider.projects
+                        .firstWhere(
+                            (project) => project.id == selectedProjectId)
+                        .title,
+                    style: TextStyle(color: Colors.blue),
+                  ),
+            onChanged: (newVal) {
+              setState(() {
+                selectedProjectId = newVal;
+              });
+            }),
+      );
+    });
+  }
+
+  Widget dueDateDropDown(context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: DropdownButton<String>(
+          value: selectedDueDateOption,
+          isExpanded: true,
+          items: this.dueDateOptions.map((String option) {
+            return new DropdownMenuItem<String>(
+              value: option,
+              child: (option == selectedDueDateOption)
+                  ? new Text(
+                      option,
+                      style: TextStyle(color: Colors.blue[300]),
+                    )
+                  : new Text(
+                      option,
+                      style: TextStyle(color: Colors.black),
+                    ),
+            );
+          }).toList(),
+          hint: selectedDueDateOption == null
+              ? Text('Select Due Date')
+              : Text(
+                  // dueDateOptions
+                  //     .firstWhere((option) => option == selectedDueDateOption),
+                  DateFormat('yyyy-MM-dd – kk:mm').format(selectedDueDate),
+                  style: TextStyle(color: Colors.blue),
+                ),
+          onChanged: (newVal) {
+            this.setState(() {
+              final now = DateTime.now();
+              this.selectedDueDateOption = newVal;
+              if (newVal == 'Pick Date') {
+                _selectDate(context);
+              } else if (newVal == 'Today') {
+                selectedDueDate = now;
+              } else if (newVal == 'Tomorrow') {
+                selectedDueDate = DateTime(now.year, now.month, now.day + 1);
+              } else if (newVal == 'Next Week') {
+                selectedDueDate = DateTime(now.year, now.month, now.day + 7);
+              }
+              print('New State is  ' + this.selectedDueDateOption);
+            });
+          }),
+    );
+  }
+
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: this.selectedDueDate, // Refer step 1
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDueDate)
+      setState(() {
+        selectedDueDate = picked;
+      });
   }
 }
