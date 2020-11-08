@@ -11,7 +11,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     print('Starting');
     return Container(
-      color: Colors.blue[100],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -20,6 +19,7 @@ class HomeScreen extends StatelessWidget {
             fit: FlexFit.tight,
             child: Container(
                 width: double.maxFinite,
+                color: Colors.blue[100],
                 child: DragTarget(onWillAccept: (data) {
                   return true;
                 }, onAccept: (data) {
@@ -46,35 +46,40 @@ class HomeScreen extends StatelessWidget {
                   );
                 })),
           ),
-          Container(
-              width: double.maxFinite,
-              child: DragTarget(onWillAccept: (data) {
-                return true;
-              }, onAccept: (data) {
-                Provider.of<TodoProvider>(context, listen: false)
-                    .changeTodoSTatus(data, TodoStatus.onGoing);
-              }, builder:
-                  (BuildContext context, List<Todo> incoming, rejected) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      color: Colors.amber[100],
-                      width: double.maxFinite,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "Ongoing",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+          Flexible(
+            fit: FlexFit.tight,
+            child: Container(
+                width: double.maxFinite,
+                color: Colors.amber[100],
+                child: DragTarget(onWillAccept: (data) {
+                  return true;
+                }, onAccept: (data) {
+                  Provider.of<TodoProvider>(context, listen: false)
+                      .changeTodoSTatus(data, TodoStatus.onGoing);
+                }, builder:
+                    (BuildContext context, List<Todo> incoming, rejected) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        color: Colors.amber[100],
+                        width: double.maxFinite,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          "Today's Goal",
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
                       ),
-                    ),
-                    onGoing(),
-                  ],
-                );
-              })),
+                      onGoing(),
+                    ],
+                  );
+                })),
+          ),
           Container(
               width: double.maxFinite,
+              color: Colors.green[100],
               child: DragTarget(onWillAccept: (data) {
                 return true;
               }, onAccept: (data) {

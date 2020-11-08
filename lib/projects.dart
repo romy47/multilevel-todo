@@ -20,54 +20,45 @@ class _ProjectsState extends State<Projects> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Create Todo'),
-        ),
-        body: Center(
-          child: Scaffold(
-              body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              InkWell(
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        'Create New Project',
+    return Scaffold(
+        body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Create New Project',
+                ),
+              ),
+            ),
+            onTap: () => {createProjectDialog(context)}),
+        Container(
+          child:
+              Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: tabProvider.projects.length,
+              itemBuilder: (context, index) {
+                return InkWell(
+                    child: Card(
+                      color: new Color(tabProvider.projects[index].color),
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          tabProvider.projects[index].title,
+                        ),
                       ),
                     ),
-                  ),
-                  onTap: () => {createProjectDialog(context)}),
-              Container(
-                child: Consumer<HomeTabProvider>(
-                    builder: (context, tabProvider, child) {
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: tabProvider.projects.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                          child: Card(
-                            color: new Color(tabProvider.projects[index].color),
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text(
-                                tabProvider.projects[index].title,
-                              ),
-                            ),
-                          ),
-                          onTap: () => {});
-                    },
-                  );
-                }),
-              )
-            ],
-          )),
-        ),
-      ),
-    );
+                    onTap: () => {});
+              },
+            );
+          }),
+        )
+      ],
+    ));
   }
 
   void createProjectDialog(context) {

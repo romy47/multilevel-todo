@@ -1,41 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:second_attempt/home.dart';
 import 'package:second_attempt/models/project_model.dart';
-import 'package:second_attempt/projects.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
 
 import 'models/todo_model.dart';
 
-class TabbedHomeScreen extends StatefulWidget {
+class TabbedHome extends StatefulWidget {
   @override
-  _TabbedHomeScreenState createState() => _TabbedHomeScreenState();
+  _TabbedHomeState createState() => _TabbedHomeState();
 }
 
-class _TabbedHomeScreenState extends State<TabbedHomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class _TabbedHomeState extends State<TabbedHome> {
+  int initPosition = 0;
 
   @override
   Widget build(BuildContext context) {
-    print('Starting');
-    List<String> data = ['Page 0', 'Page 1', 'Page 2'];
-    int initPosition = 0;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Awesome Todo'),
-      ),
-      body: Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
-        List<Project> projects = [
-          Project('All', 'all', Colors.black.value),
-          ...tabProvider.projects
-        ];
-        return CustomTabView(
+    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+      List<Project> projects = [
+        Project('All', 'all', Colors.black.value),
+        ...tabProvider.projects
+      ];
+      return Scaffold(
+        body: CustomTabView(
           initPosition: initPosition,
           itemCount: projects.length,
           tabBuilder: (context, index) => Tab(
@@ -51,44 +40,103 @@ class _TabbedHomeScreenState extends State<TabbedHomeScreen> {
             initPosition = index;
           },
           onScroll: (position) => print('$position'),
-        );
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          // _openPopup(context)
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return NewTodoAlert();
-              })
-        },
-        tooltip: 'Add Todo',
-        child: const Icon(Icons.add),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('User Name'),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('Projects'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Projects()));
-              },
-            ),
-          ],
         ),
-      ),
-    );
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => {
+            // _openPopup(context)
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return NewTodoAlert();
+                })
+          },
+          tooltip: 'Add Todo',
+          child: const Icon(Icons.add),
+        ),
+      );
+    });
   }
 }
+
+// class TabbedHomeScreen extends StatefulWidget {
+//   @override
+//   _TabbedHomeScreenState createState() => _TabbedHomeScreenState();
+// }
+
+// class _TabbedHomeScreenState extends State<TabbedHomeScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     print('Starting');
+//     List<String> data = ['Page 0', 'Page 1', 'Page 2'];
+//     int initPosition = 0;
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Awesome Todo'),
+//       ),
+//       body: Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+//         List<Project> projects = [
+//           Project('All', 'all', Colors.black.value),
+//           ...tabProvider.projects
+//         ];
+//         return CustomTabView(
+//           initPosition: initPosition,
+//           itemCount: projects.length,
+//           tabBuilder: (context, index) => Tab(
+//               child: Text(projects[index].title,
+//                   style: TextStyle(
+//                       fontWeight: FontWeight.bold,
+//                       color: new Color(projects[index].color)))),
+//           pageBuilder: (context, index) => Center(
+//               // child: Text(projects[index].title)
+//               child: HomeScreen(projects[index].id)),
+//           onPositionChange: (index) {
+//             print('current position: $index');
+//             initPosition = index;
+//           },
+//           onScroll: (position) => print('$position'),
+//         );
+//       }),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () => {
+//           // _openPopup(context)
+//           showDialog(
+//               context: context,
+//               builder: (BuildContext context) {
+//                 return NewTodoAlert();
+//               })
+//         },
+//         tooltip: 'Add Todo',
+//         child: const Icon(Icons.add),
+//       ),
+//       drawer: Drawer(
+//         child: ListView(
+//           padding: EdgeInsets.zero,
+//           children: <Widget>[
+//             DrawerHeader(
+//               child: Text('User Name'),
+//               decoration: BoxDecoration(
+//                 color: Colors.blue,
+//               ),
+//             ),
+//             ListTile(
+//               title: Text('Projects'),
+//               onTap: () {
+//                 Navigator.pop(context);
+//                 Navigator.push(context,
+//                     MaterialPageRoute(builder: (context) => Projects()));
+//               },
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class CustomTabView extends StatefulWidget {
   final int itemCount;
@@ -286,6 +334,7 @@ class _NewTodoAlertState extends State<NewTodoAlert> {
                   )
                   // this.selectedDueDate
                   )),
+              Navigator.of(context).pop(),
               Scaffold.of(context).showSnackBar(SnackBar(
                   content: Text('"' +
                       _todoTitleTextController.text +

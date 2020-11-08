@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/navigation_bar.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
-import 'package:second_attempt/tabbed_home.dart';
-import 'home.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,7 +24,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: TabbedHomeScreen(),
+        home: AppNavigationBar(),
       ),
     );
   }
