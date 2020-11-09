@@ -5,7 +5,14 @@ class Todo {
   TodoStatus status;
   DateTime due;
   String repeat;
-  Todo(this.id, this.projectId, this.title, this.status, this.due);
+  DateTime createdAt;
+  DateTime finishedAt;
+  Todo(this.id, this.projectId, this.title, this.status, this.due) {
+    this.createdAt = DateTime.now();
+  }
+  void setFinishedDate(DateTime fd) {
+    this.finishedAt = fd;
+  }
 }
 
 enum TodoStatus { todo, onGoing, finished }
