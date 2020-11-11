@@ -10,9 +10,6 @@ class Todo {
   Todo(this.id, this.projectId, this.title, this.status, this.due) {
     this.createdAt = DateTime.now();
   }
-  void setFinishedDate(DateTime fd) {
-    this.finishedAt = fd;
-  }
 }
 
 enum TodoStatus { todo, onGoing, finished }

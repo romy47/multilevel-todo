@@ -35,104 +35,244 @@ class _DasjboardState extends State<Dasjboard> {
       body: Center(
         child: Container(
           // scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            // Container
-            children: [
-              Card(
-                elevation: 7,
-                child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                                child: Text('Today',
-                                    style: TextStyle(fontSize: 17.0)))),
-                        Row(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              // Container
+              children: [
+                Card(
+                  elevation: 7,
+                  child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        children: [
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                  child: Text('Today',
+                                      style: TextStyle(fontSize: 17.0)))),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 185,
+                                width: 185,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      right: BorderSide(
+                                          width: 2, color: Colors.grey[200]),
+                                    ),
+                                  ),
+                                  child: Stack(children: <Widget>[
+                                    DonutPieChart.withSampleData(context),
+                                    Center(
+                                        child: Container(
+                                      margin:
+                                          const EdgeInsets.only(bottom: 40.0),
+                                      child: Text(
+                                        percentage.toString() + "%",
+                                        style: TextStyle(
+                                            fontSize: 25.0,
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ))
+                                  ]),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.0),
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.only(bottom: 7.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Future Tasks ',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              Text(
+                                                finishedTodoCount.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(bottom: 5.0),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: Colors.grey[300],
+                                                width: 2,
+                                              ),
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.only(bottom: 5.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Overdue Tasks ',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              Text(
+                                                finishedTodoCount.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(bottom: 7.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Today's Bonus",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              Text(
+                                                '0/' +
+                                                    finishedTodoCount
+                                                        .toString(),
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ]),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      )),
+                ),
+                Card(
+                  elevation: 7,
+                  child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: 185,
-                              width: 185,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    right: BorderSide(
-                                        width: 2, color: Colors.grey[200]),
-                                  ),
-                                ),
-                                child: Stack(children: <Widget>[
-                                  DonutPieChart.withSampleData(context),
-                                  Center(
-                                      child: Container(
-                                    margin: const EdgeInsets.only(bottom: 40.0),
-                                    child: Text(
-                                      percentage.toString() + "%",
-                                      style: TextStyle(
-                                          fontSize: 25.0,
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ))
-                                ]),
-                              ),
-                            ),
-                            // Column(
-                            //   mainAxisAlignment: MainAxisAlignment.start,
-                            //   textDirection: TextDirection.rtl,
-                            //   children: [
-                            //     Text(
-                            //       '✔️Finished ' + finishedTodoCount.toString(),
-                            //       style: TextStyle(
-                            //         fontSize: 20.0,
-                            //       ),
-                            //     ),
-                            //     Text(
-                            //       'Remaining ' + onGoingTodoCount.toString(),
-                            //       style: TextStyle(
-                            //         fontSize: 20.0,
-                            //       ),
-                            //     ),
-                            //     const Divider(
-                            //       color: Colors.black,
-                            //       height: 20,
-                            //       thickness: 5,
-                            //       indent: 20,
-                            //       endIndent: 0,
-                            //     ),
-                            //     Text(
-                            //       'Bonus      ' + '0',
-                            //       style: TextStyle(
-                            //         fontSize: 20.0,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // )
-                          ],
-                        )
-                      ],
-                    )),
-              ),
-              Card(
-                elevation: 7,
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('Streaks', style: TextStyle(fontSize: 17.0)),
+                            Container(
+                                margin: EdgeInsets.only(bottom: 8),
+                                child: Text('Streaks',
+                                    style: TextStyle(fontSize: 17.0))),
+                            getStreakRow('No Overdue', 10, 5),
+                            getStreakRow('Daily Tasker', 10, 5),
+                            getStreakRow('Daily Planner', 10, 5),
+                            getStreakRow('Bonus Tasker', 10, 5),
+                          ])
+                      // child: Text('Streaks', style: TextStyle(fontSize: 17.0)),
+                      ),
                 ),
-              ),
-              Card(
-                elevation: 7,
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('History', style: TextStyle(fontSize: 17.0)),
-                ),
-              ),
-            ],
+                Card(
+                    elevation: 7,
+                    child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                  margin: EdgeInsets.only(bottom: 8),
+                                  child: Text('Last Week',
+                                      style: TextStyle(fontSize: 17.0))),
+                              Container(
+                                  margin: EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(Icons.cancel),
+                                      Icon(Icons.check),
+                                      Opacity(
+                                          opacity: 0.0,
+                                          child: Icon(Icons.check)),
+                                      Icon(Icons.check),
+                                      Icon(Icons.check),
+                                      Icon(Icons.star),
+                                      Opacity(
+                                          opacity: 0.0,
+                                          child: Icon(Icons.check)),
+                                    ],
+                                  )),
+                              Container(
+                                  width: double.maxFinite,
+                                  height: 200,
+                                  child: FinishedTaskBarChart.withSampleData())
+                            ]))),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget getStreakRow(String text, int count, int best) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 5.0),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey[300],
+            width: 2,
+          ),
+        ),
+      ),
+      padding: EdgeInsets.only(bottom: 5.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 17,
+            ),
+          ),
+          Text(
+            count.toString() + ' days',
+            style: TextStyle(
+              fontSize: 17,
+            ),
+          ),
+          Text(
+            'Best ' + best.toString() + ' days',
+            style: TextStyle(
+              fontSize: 17,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -197,22 +337,6 @@ class DonutPieChart extends StatelessWidget {
             .getTasksByLevel(TodoStatus.finished, 'all')
             .length,
         Colors.green[300]));
-
-    // Provider.of<HomeTabProvider>(context, listen: false)
-    //     .projects
-    //     .forEach((pro) {
-    //   if (Provider.of<TodoProvider>(context, listen: false)
-    //           .getTasksByLevel(TodoStatus.finished, pro.id)
-    //           .length >
-    //       0) {
-    //     data.add(new TodoCompletion(
-    //         '✔️' + pro.title,
-    //         Provider.of<TodoProvider>(context, listen: false)
-    //             .getTasksByLevel(TodoStatus.finished, pro.id)
-    //             .length,
-    //         new Color(pro.color)));
-    //   }
-    // });
     return [
       new charts.Series<TodoCompletion, String>(
         id: 'completion',
@@ -309,4 +433,59 @@ class TodoCompletion {
   final int amount;
   final Color color;
   TodoCompletion(this.category, this.amount, this.color);
+}
+
+class FinishedTaskBarChart extends StatelessWidget {
+  final List<charts.Series> seriesList;
+  final bool animate;
+
+  FinishedTaskBarChart(this.seriesList, {this.animate});
+
+  /// Creates a [BarChart] with sample data and no transition.
+  factory FinishedTaskBarChart.withSampleData() {
+    return new FinishedTaskBarChart(
+      _createSampleData(),
+      // Disable animations for image tests.
+      animate: false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new charts.BarChart(
+      seriesList,
+      animate: animate,
+    );
+  }
+
+  /// Create one series with sample hard coded data.
+  static List<charts.Series<TodoCompletionPerDay, String>> _createSampleData() {
+    final data = [
+      new TodoCompletionPerDay('Today', 5),
+      new TodoCompletionPerDay('Mon', 2),
+      new TodoCompletionPerDay('Sun', 0),
+      new TodoCompletionPerDay('Sat', 2),
+      new TodoCompletionPerDay('Fri', 4),
+      new TodoCompletionPerDay('Thu', 6),
+      new TodoCompletionPerDay('Wed', 1),
+    ];
+
+    return [
+      new charts.Series<TodoCompletionPerDay, String>(
+        id: 'Sales',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (TodoCompletionPerDay day, _) => day.day,
+        measureFn: (TodoCompletionPerDay day, _) => day.finishedTasks,
+        data: data,
+      )
+    ];
+  }
+}
+
+/// Sample ordinal data type.
+class TodoCompletionPerDay {
+  final String day;
+  final int finishedTasks;
+
+  TodoCompletionPerDay(this.day, this.finishedTasks);
 }

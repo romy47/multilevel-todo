@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:second_attempt/dashboard.dart';
 import 'package:second_attempt/projects.dart';
 import 'package:second_attempt/tabbed_home.dart';
+import 'package:second_attempt/timeline.dart';
 
 class AppNavigationBar extends StatefulWidget {
   @override
@@ -12,7 +13,12 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  List<Widget> _widgetOptions = <Widget>[TabbedHome(), Projects(), Dasjboard()];
+  List<Widget> _widgetOptions = <Widget>[
+    TabbedHome(),
+    Projects(),
+    Dasjboard(),
+    ProjectTimeline()
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,19 +37,25 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
         child: BottomNavigationBar(
           showSelectedLabels: false,
           showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: SizedBox(width: 10, height: 10, child: Icon(Icons.home)),
-              label: 'Home',
+              label: 'H',
             ),
             BottomNavigationBarItem(
               icon: SizedBox(width: 10, height: 10, child: Icon(Icons.list)),
-              label: 'Projects',
+              label: 'P',
             ),
             BottomNavigationBarItem(
               icon:
                   SizedBox(width: 10, height: 10, child: Icon(Icons.dashboard)),
-              label: 'Dashboard',
+              label: 'D',
+            ),
+            BottomNavigationBarItem(
+              icon:
+                  SizedBox(width: 10, height: 10, child: Icon(Icons.timeline)),
+              label: 'H',
             ),
           ],
           currentIndex: _selectedIndex,
