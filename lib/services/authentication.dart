@@ -51,9 +51,14 @@ emailSignin(String email, String password) async {
 }
 
 signoutUser() async {
+  // try {} catch (e) {
+  //   print(e.toString());
+  // }
   User user = fireBaseAuth.currentUser;
-  if (user.providerData[1].providerId == 'google.com') {
+  if (user.providerData.length > 1 &&
+      user.providerData[1].providerId == 'google.com') {
     await googleSignin.disconnect();
+  } else {
+    await fireBaseAuth.signOut();
   }
-  await fireBaseAuth.signOut();
 }
