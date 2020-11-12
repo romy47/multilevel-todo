@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:second_attempt/dashboard.dart';
 import 'package:second_attempt/projects.dart';
+import 'package:second_attempt/services/authentication.dart';
 import 'package:second_attempt/signup.dart';
 import 'package:second_attempt/tabbed_home.dart';
 import 'package:second_attempt/timeline.dart';
@@ -90,6 +91,13 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
                   Navigator.pop(context);
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Signup()));
+                },
+              ),
+              ListTile(
+                title: Text('Log out'),
+                onTap: () {
+                  Navigator.pop(context);
+                  signoutUser();
                 },
               ),
             ],

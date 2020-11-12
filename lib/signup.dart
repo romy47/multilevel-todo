@@ -3,6 +3,8 @@ import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:second_attempt/services/authentication.dart';
 
+import 'login.dart';
+
 class Signup extends StatefulWidget {
   @override
   _State createState() => _State();
@@ -95,7 +97,8 @@ class _State extends State<Signup> {
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        //signup screen
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Login()));
                       },
                     )
                   ],
