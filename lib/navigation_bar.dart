@@ -33,6 +33,7 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(title: Text('Rapid Todo')),
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
         ),

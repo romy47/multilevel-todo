@@ -12,9 +12,14 @@ googleSignIn() async {
     AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken);
-    await fireBaseAuth
-        .signInWithCredential(credential)
-        .then((user) => {print(fireBaseAuth.currentUser.uid)});
+    await fireBaseAuth.signInWithCredential(credential).then((user) => {
+          print(fireBaseAuth.currentUser.uid),
+          // Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (BuildContext context) => AppNavigationBar())),
+          // Navigator.pop(context)
+        });
   }
 }
 
@@ -22,7 +27,13 @@ emailSignup(String email, String password) async {
   try {
     await fireBaseAuth
         .createUserWithEmailAndPassword(email: email, password: password)
-        .then((user) => {print(fireBaseAuth.currentUser.uid)});
+        .then((user) => {
+              print(fireBaseAuth.currentUser.uid),
+              // Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (BuildContext context) => AppNavigationBar())),
+            });
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
       print('The password provided is too weak.');
