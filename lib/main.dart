@@ -17,56 +17,57 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<TodoProvider>(create: (_) => TodoProvider()),
-        ChangeNotifierProvider<HomeTabProvider>(
-            create: (_) => HomeTabProvider())
-      ],
-      child: MaterialApp(
-        title: 'Awesome Todo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: StreamBuilder<User>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                User user = snapshot.data;
-                if (user == null) {
-                  return AuthTab();
-                }
-                print("User is: " + user.uid);
-                return
-                    // MultiProvider(
-                    // providers: [
-                    //   ChangeNotifierProvider<TodoProvider>(
-                    //       create: (_) => TodoProvider()),
-                    //   ChangeNotifierProvider<HomeTabProvider>(
-                    //       create: (_) => HomeTabProvider())
-                    // ],
-                    // child: MaterialApp(
-                    //   title: 'Awesome Todo',
-                    //   theme: ThemeData(
-                    //     primarySwatch: Colors.blue,
-                    //     visualDensity: VisualDensity.adaptivePlatformDensity,
-                    //   ),
-                    //   home: AppNavigationBar(),
-                    // ),
-                    // child:
-                    AppNavigationBar();
-                // );
-              } else {
-                return Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-            }),
+    return
+        // MultiProvider(
+        //   providers: [
+        //     ChangeNotifierProvider<TodoProvider>(create: (_) => TodoProvider()),
+        //     ChangeNotifierProvider<HomeTabProvider>(
+        //         create: (_) => HomeTabProvider())
+        //   ],
+        //   child:
+        MaterialApp(
+      title: 'Awesome Todo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: StreamBuilder<User>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              User user = snapshot.data;
+              if (user == null) {
+                return AuthTab();
+              }
+              print("User is: " + user.uid);
+              return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider<TodoProvider>(
+                      create: (_) => TodoProvider()),
+                  ChangeNotifierProvider<HomeTabProvider>(
+                      create: (_) => HomeTabProvider())
+                ],
+                child: MaterialApp(
+                  title: 'Awesome Todo',
+                  theme: ThemeData(
+                    primarySwatch: Colors.blue,
+                    visualDensity: VisualDensity.adaptivePlatformDensity,
+                  ),
+                  home: AppNavigationBar(),
+                ),
+                // child:
+                // AppNavigationBar()
+              );
+            } else {
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          }),
     );
+    // );
 
     // return MultiProvider(
     //   providers: [
