@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:second_attempt/create_project.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'providers/home_tab_provider.dart';
 
@@ -36,7 +37,12 @@ class _ProjectsState extends State<Projects> {
                     ),
                   ),
                 ),
-                onTap: () => {createProjectDialog(context)}),
+                onTap: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateProject()))
+                    }),
             Container(
               child: Consumer<HomeTabProvider>(
                   builder: (context, tabProvider, child) {
@@ -62,6 +68,11 @@ class _ProjectsState extends State<Projects> {
             )
           ],
         ));
+  }
+
+  void createProject(String a, String b, int c) {
+    Provider.of<HomeTabProvider>(context, listen: false)
+        .addProject(Project(a, b, c));
   }
 
   void createProjectDialog(context) {
@@ -94,10 +105,12 @@ class _ProjectsState extends State<Projects> {
         buttons: [
           DialogButton(
             onPressed: () => {
+              // Provider.of<HomeTabProvider>(context, listen: false).addProject(
+              //     Project(projectTitleTextController.text,
+              //         projectTitleTextController.text, pickerColor.value)),
+              createProject(projectTitleTextController.text,
+                  projectTitleTextController.text, pickerColor.value),
               Navigator.pop(context),
-              Provider.of<HomeTabProvider>(context, listen: false).addProject(
-                  Project(projectTitleTextController.text,
-                      projectTitleTextController.text, pickerColor.value)),
             },
             child: Text(
               "Create",

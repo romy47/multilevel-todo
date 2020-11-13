@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/create_todo.dart';
 import 'package:second_attempt/home.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
@@ -43,12 +44,8 @@ class _TabbedHomeState extends State<TabbedHome> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => {
-            // _openPopup(context)
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return NewTodoAlert();
-                })
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CreateTodoScreen()))
           },
           tooltip: 'Add Todo',
           child: const Icon(Icons.add),
@@ -57,86 +54,6 @@ class _TabbedHomeState extends State<TabbedHome> {
     });
   }
 }
-
-// class TabbedHomeScreen extends StatefulWidget {
-//   @override
-//   _TabbedHomeScreenState createState() => _TabbedHomeScreenState();
-// }
-
-// class _TabbedHomeScreenState extends State<TabbedHomeScreen> {
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     print('Starting');
-//     List<String> data = ['Page 0', 'Page 1', 'Page 2'];
-//     int initPosition = 0;
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Awesome Todo'),
-//       ),
-//       body: Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
-//         List<Project> projects = [
-//           Project('All', 'all', Colors.black.value),
-//           ...tabProvider.projects
-//         ];
-//         return CustomTabView(
-//           initPosition: initPosition,
-//           itemCount: projects.length,
-//           tabBuilder: (context, index) => Tab(
-//               child: Text(projects[index].title,
-//                   style: TextStyle(
-//                       fontWeight: FontWeight.bold,
-//                       color: new Color(projects[index].color)))),
-//           pageBuilder: (context, index) => Center(
-//               // child: Text(projects[index].title)
-//               child: HomeScreen(projects[index].id)),
-//           onPositionChange: (index) {
-//             print('current position: $index');
-//             initPosition = index;
-//           },
-//           onScroll: (position) => print('$position'),
-//         );
-//       }),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () => {
-//           // _openPopup(context)
-//           showDialog(
-//               context: context,
-//               builder: (BuildContext context) {
-//                 return NewTodoAlert();
-//               })
-//         },
-//         tooltip: 'Add Todo',
-//         child: const Icon(Icons.add),
-//       ),
-//       drawer: Drawer(
-//         child: ListView(
-//           padding: EdgeInsets.zero,
-//           children: <Widget>[
-//             DrawerHeader(
-//               child: Text('User Name'),
-//               decoration: BoxDecoration(
-//                 color: Colors.blue,
-//               ),
-//             ),
-//             ListTile(
-//               title: Text('Projects'),
-//               onTap: () {
-//                 Navigator.pop(context);
-//                 Navigator.push(context,
-//                     MaterialPageRoute(builder: (context) => Projects()));
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class CustomTabView extends StatefulWidget {
   final int itemCount;
@@ -283,166 +200,5 @@ class _CustomTabsState extends State<CustomTabView>
     if (widget.onScroll is ValueChanged<double>) {
       widget.onScroll(controller.animation.value);
     }
-  }
-}
-
-class NewTodoAlert extends StatefulWidget {
-  @override
-  _NewTodoAlertState createState() => _NewTodoAlertState();
-}
-
-class _NewTodoAlertState extends State<NewTodoAlert> {
-  String selectedProjectId;
-  String selectedDueDateOption;
-  String selectedRepeat;
-  DateTime selectedDueDate = new DateTime.now();
-  final _todoTitleTextController = TextEditingController();
-  List<String> repeatOptions = ['Daily', 'Weekly'];
-  List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Pick Date'];
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      content: Container(
-        child: Column(children: [
-          TextFormField(
-            decoration: InputDecoration(
-              // icon: Icon(Icons.),
-              labelText: 'Task Name',
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please name your todo';
-              } else {
-                return null;
-              }
-            },
-            controller: _todoTitleTextController,
-          ),
-          projectDropDown(context),
-          dueDateDropDown(context),
-          RaisedButton(
-            onPressed: () => {
-              Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
-                  _todoTitleTextController.text,
-                  this.selectedProjectId,
-                  _todoTitleTextController.text,
-                  TodoStatus.todo,
-                  new DateTime(
-                    this.selectedDueDate.year,
-                    this.selectedDueDate.month,
-                    this.selectedDueDate.day,
-                  )
-                  // this.selectedDueDate
-                  )),
-              Navigator.of(context).pop(),
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('"' +
-                      _todoTitleTextController.text +
-                      '" is added as a Todo')))
-            },
-            child: Text('Create Todo'),
-          )
-        ]),
-      ),
-    );
-  }
-
-  Widget projectDropDown(context) {
-    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5),
-        child: DropdownButton<String>(
-            value: selectedProjectId,
-            isExpanded: true,
-            items: tabProvider.projects.map((Project project) {
-              return new DropdownMenuItem<String>(
-                value: project.id,
-                child: (project.id == selectedProjectId)
-                    ? new Text(
-                        project.title,
-                        style: TextStyle(color: Colors.blue[300]),
-                      )
-                    : new Text(
-                        project.title,
-                        style: TextStyle(color: Colors.black),
-                      ),
-              );
-            }).toList(),
-            hint: selectedProjectId == null
-                ? Text('Select Project')
-                : Text(
-                    tabProvider.projects
-                        .firstWhere(
-                            (project) => project.id == selectedProjectId)
-                        .title,
-                    style: TextStyle(color: Colors.blue),
-                  ),
-            onChanged: (newVal) {
-              setState(() {
-                selectedProjectId = newVal;
-              });
-            }),
-      );
-    });
-  }
-
-  Widget dueDateDropDown(context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5),
-      child: DropdownButton<String>(
-          value: selectedDueDateOption,
-          isExpanded: true,
-          items: this.dueDateOptions.map((String option) {
-            return new DropdownMenuItem<String>(
-              value: option,
-              child: (option == selectedDueDateOption)
-                  ? new Text(
-                      option,
-                      style: TextStyle(color: Colors.blue[300]),
-                    )
-                  : new Text(
-                      option,
-                      style: TextStyle(color: Colors.black),
-                    ),
-            );
-          }).toList(),
-          hint: selectedDueDateOption == null
-              ? Text('Select Due Date')
-              : Text(
-                  // dueDateOptions
-                  //     .firstWhere((option) => option == selectedDueDateOption),
-                  DateFormat('yyyy-MM-dd – kk:mm').format(selectedDueDate),
-                  style: TextStyle(color: Colors.blue),
-                ),
-          onChanged: (newVal) {
-            this.setState(() {
-              final now = DateTime.now();
-              this.selectedDueDateOption = newVal;
-              if (newVal == 'Pick Date') {
-                _selectDate(context);
-              } else if (newVal == 'Today') {
-                selectedDueDate = now;
-              } else if (newVal == 'Tomorrow') {
-                selectedDueDate = DateTime(now.year, now.month, now.day + 1);
-              } else if (newVal == 'Next Week') {
-                selectedDueDate = DateTime(now.year, now.month, now.day + 7);
-              }
-              print('New State is  ' + this.selectedDueDateOption);
-            });
-          }),
-    );
-  }
-
-  _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: this.selectedDueDate, // Refer step 1
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null && picked != selectedDueDate)
-      setState(() {
-        selectedDueDate = picked;
-      });
   }
 }
