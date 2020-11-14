@@ -19,10 +19,10 @@ class _TabbedHomeState extends State<TabbedHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+    return Consumer<List<Project>>(builder: (context, projectsStream, child) {
       List<Project> projects = [
         Project('All', 'all', Colors.black.value, 'all'),
-        ...tabProvider.projects
+        ...(projectsStream == null) ? [] : projectsStream
       ];
       return Scaffold(
         body: CustomTabView(

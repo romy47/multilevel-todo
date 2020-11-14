@@ -44,20 +44,20 @@ class _ProjectsState extends State<Projects> {
                               builder: (context) => CreateProject()))
                     }),
             Container(
-              child: Consumer<HomeTabProvider>(
-                  builder: (context, tabProvider, child) {
+              child:
+                  Consumer<List<Project>>(builder: (context, projects, child) {
                 return ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: tabProvider.projects.length,
+                  itemCount: (projects == null) ? 0 : projects.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                         child: Card(
-                          color: new Color(tabProvider.projects[index].color),
+                          color: new Color(projects[index].color),
                           child: Padding(
                             padding: EdgeInsets.all(16.0),
                             child: Text(
-                              tabProvider.projects[index].title,
+                              projects[index].title,
                             ),
                           ),
                         ),

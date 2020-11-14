@@ -7,7 +7,7 @@ class Project {
   Project.fromJson(Map<String, dynamic> parsedJSON)
       : title = parsedJSON['title'],
         id = parsedJSON['id'],
-        color = int.parse(parsedJSON['color']),
+        color = parsedJSON['color'],
         uid = parsedJSON['uid'];
 
   @override
