@@ -70,10 +70,10 @@ class _ProjectsState extends State<Projects> {
         ));
   }
 
-  void createProject(String a, String b, int c) {
-    Provider.of<HomeTabProvider>(context, listen: false)
-        .addProject(Project(a, b, c));
-  }
+  // void createProject(String a, String b, int c) {
+  //   Provider.of<HomeTabProvider>(context, listen: false)
+  //       .addProject(Project(a, b, c));
+  // }
 
   void createProjectDialog(context) {
     final projectTitleTextController = TextEditingController();
@@ -108,9 +108,9 @@ class _ProjectsState extends State<Projects> {
               // Provider.of<HomeTabProvider>(context, listen: false).addProject(
               //     Project(projectTitleTextController.text,
               //         projectTitleTextController.text, pickerColor.value)),
-              createProject(projectTitleTextController.text,
-                  projectTitleTextController.text, pickerColor.value),
-              Navigator.pop(context),
+              // createProject(projectTitleTextController.text,
+              //     projectTitleTextController.text, pickerColor.value),
+              // Navigator.pop(context),
             },
             child: Text(
               "Create",

@@ -7,6 +7,9 @@ import 'package:second_attempt/login.dart';
 import 'package:second_attempt/navigation_bar.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/services/database_service.dart';
+
+import 'models/project_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +48,11 @@ class MyApp extends StatelessWidget {
                   ChangeNotifierProvider<TodoProvider>(
                       create: (_) => TodoProvider()),
                   ChangeNotifierProvider<HomeTabProvider>(
-                      create: (_) => HomeTabProvider())
+                      create: (_) => HomeTabProvider()),
+                  StreamProvider<List<Project>>.value(
+                      value: new DatabaseServices(
+                              FirebaseAuth.instance.currentUser.uid)
+                          .getUserProjectList()),
                 ],
                 child: MaterialApp(
                   title: 'Awesome Todo',

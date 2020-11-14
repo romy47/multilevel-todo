@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:second_attempt/models/project_model.dart';
+import 'package:second_attempt/services/database_service.dart';
 import 'providers/home_tab_provider.dart';
 
 class CreateProject extends StatefulWidget {
@@ -28,10 +29,10 @@ class _CreateProjectState extends State<CreateProject> {
         body: createProjectDialog(context));
   }
 
-  void createProject(String a, String b, int c) {
-    Provider.of<HomeTabProvider>(context, listen: false)
-        .addProject(Project(a, b, c));
-  }
+  // void createProject(String a, String b, int c) {
+  //   Provider.of<HomeTabProvider>(context, listen: false)
+  //       .addProject(Project(a, b, c));
+  // }
 
   Widget createProjectDialog(context) {
     return Container(
@@ -58,7 +59,14 @@ class _CreateProjectState extends State<CreateProject> {
           onPressed: () => {
             Provider.of<HomeTabProvider>(context, listen: false).addProject(
                 Project(projectTitleTextController.text,
-                    projectTitleTextController.text, pickerColor.value)),
+                    projectTitleTextController.text, pickerColor.value, 'sd')),
+
+            DatabaseServices(FirebaseAuth.instance.currentUser.uid).addProject(
+                new Project(
+                    projectTitleTextController.text,
+                    projectTitleTextController.text,
+                    pickerColor.value,
+                    FirebaseAuth.instance.currentUser.uid)),
             // createProject(projectTitleTextController.text,
             //     projectTitleTextController.text, pickerColor.value),
             Navigator.pop(context),

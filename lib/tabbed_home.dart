@@ -21,7 +21,7 @@ class _TabbedHomeState extends State<TabbedHome> {
   Widget build(BuildContext context) {
     return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
       List<Project> projects = [
-        Project('All', 'all', Colors.black.value),
+        Project('All', 'all', Colors.black.value, 'all'),
         ...tabProvider.projects
       ];
       return Scaffold(
