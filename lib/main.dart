@@ -2,11 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:second_attempt/authtab.dart';
-import 'package:second_attempt/login.dart';
-import 'package:second_attempt/navigation_bar.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/screens/auth_screen/auth_tab_screen.dart';
+import 'package:second_attempt/screens/main_navigation.dart';
 import 'package:second_attempt/services/database_service.dart';
 
 import 'models/project_model.dart';

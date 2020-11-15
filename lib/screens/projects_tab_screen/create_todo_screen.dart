@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/models/project_model.dart';
+import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
-
-import 'models/project_model.dart';
-import 'models/todo_model.dart';
 
 class CreateTodoScreen extends StatefulWidget {
   @override

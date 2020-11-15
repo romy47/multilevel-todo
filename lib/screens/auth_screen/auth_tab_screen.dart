@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:second_attempt/login.dart';
-import 'package:second_attempt/signup.dart';
+import 'package:second_attempt/screens/auth_screen/signup.dart';
+
+import 'login.dart';
 
 class AuthTab extends StatefulWidget {
   @override

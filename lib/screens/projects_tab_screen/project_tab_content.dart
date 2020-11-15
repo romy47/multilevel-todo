@@ -4,12 +4,11 @@ import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class ProjectTabContent extends StatelessWidget {
   final String projectId;
-  HomeScreen(this.projectId) {}
+  ProjectTabContent(this.projectId) {}
   @override
   Widget build(BuildContext context) {
-    print('Starting');
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

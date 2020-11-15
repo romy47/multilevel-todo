@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:second_attempt/dashboard.dart';
-import 'package:second_attempt/projects.dart';
+import 'package:second_attempt/screens/projects_list_screen/projects_screen.dart';
+import 'package:second_attempt/screens/projects_tab_screen/projects_tab_screen.dart';
+import 'package:second_attempt/screens/timeline_screen/timeline_screen.dart';
+import 'auth_screen/signup.dart';
 import 'package:second_attempt/services/authentication.dart';
-import 'package:second_attempt/signup.dart';
-import 'package:second_attempt/tabbed_home.dart';
-import 'package:second_attempt/timeline.dart';
+import 'dashboard_screen/dashboard_screen.dart';
 
-import 'login.dart';
+import 'auth_screen/login.dart';
 
 class AppNavigationBar extends StatefulWidget {
   @override
@@ -18,9 +18,9 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   List<Widget> _widgetOptions = <Widget>[
-    TabbedHome(),
+    ProjectsTab(),
     Projects(),
-    Dasjboard(),
+    Dashboard(),
     ProjectTimeline()
   ];
 

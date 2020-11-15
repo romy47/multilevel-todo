@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:second_attempt/create_project.dart';
 import 'package:second_attempt/models/project_model.dart';
-import 'providers/home_tab_provider.dart';
+
+import '../projects_list_screen/create_project_screen.dart';
 
 class Projects extends StatefulWidget {
   @override

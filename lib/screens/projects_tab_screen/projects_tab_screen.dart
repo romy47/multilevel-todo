@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:second_attempt/create_todo.dart';
-import 'package:second_attempt/home.dart';
 import 'package:second_attempt/models/project_model.dart';
-import 'package:second_attempt/providers/home_tab_provider.dart';
-import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/screens/projects_tab_screen/project_tab_content.dart';
+import 'create_todo_screen.dart';
 
-import 'models/todo_model.dart';
-
-class TabbedHome extends StatefulWidget {
+class ProjectsTab extends StatefulWidget {
   @override
-  _TabbedHomeState createState() => _TabbedHomeState();
+  _ProjectsTabState createState() => _ProjectsTabState();
 }
 
-class _TabbedHomeState extends State<TabbedHome> {
+class _ProjectsTabState extends State<ProjectsTab> {
   int initPosition = 0;
 
   @override
@@ -35,7 +30,7 @@ class _TabbedHomeState extends State<TabbedHome> {
                       color: new Color(projects[index].color)))),
           pageBuilder: (context, index) => Center(
               // child: Text(projects[index].title)
-              child: HomeScreen(projects[index].id)),
+              child: ProjectTabContent(projects[index].id)),
           onPositionChange: (index) {
             print('current position: $index');
             initPosition = index;

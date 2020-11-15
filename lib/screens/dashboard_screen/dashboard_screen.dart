@@ -5,12 +5,12 @@ import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
 
-class Dasjboard extends StatefulWidget {
+class Dashboard extends StatefulWidget {
   @override
-  _DasjboardState createState() => _DasjboardState();
+  _DashboardState createState() => _DashboardState();
 }
 
-class _DasjboardState extends State<Dasjboard> {
+class _DashboardState extends State<Dashboard> {
   int finishedTodoCount = 0;
   int onGoingTodoCount = 0;
   int percentage = 0;
