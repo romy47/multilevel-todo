@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/todo_model.dart';
-import 'package:second_attempt/providers/home_tab_provider.dart';
-import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/services/database_service.dart';
 
 class ProjectTabContent extends StatelessWidget {
   final String projectId;
@@ -22,7 +23,7 @@ class ProjectTabContent extends StatelessWidget {
                 child: DragTarget(onWillAccept: (data) {
                   return true;
                 }, onAccept: (data) {
-                  Provider.of<TodoProvider>(context, listen: false)
+                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                       .changeTodoSTatus(data, TodoStatus.todo);
                 }, builder:
                     (BuildContext context, List<Todo> incoming, rejected) {
@@ -53,7 +54,7 @@ class ProjectTabContent extends StatelessWidget {
                 child: DragTarget(onWillAccept: (data) {
                   return true;
                 }, onAccept: (data) {
-                  Provider.of<TodoProvider>(context, listen: false)
+                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                       .changeTodoSTatus(data, TodoStatus.onGoing);
                 }, builder:
                     (BuildContext context, List<Todo> incoming, rejected) {
@@ -82,7 +83,9 @@ class ProjectTabContent extends StatelessWidget {
               child: DragTarget(onWillAccept: (data) {
                 return true;
               }, onAccept: (data) {
-                Provider.of<TodoProvider>(context, listen: false)
+                // Provider.of<TodoProvider>(context, listen: false)
+                //     .changeTodoSTatus(data, TodoStatus.finished);
+                DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                     .changeTodoSTatus(data, TodoStatus.finished);
               }, builder:
                   (BuildContext context, List<Todo> incoming, rejected) {
@@ -118,11 +121,12 @@ class ProjectTabContent extends StatelessWidget {
         child: Container(
             color: Colors.blue[100],
             width: double.infinity,
-            child:
-                Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+            child: Consumer<List<Todo>>(builder: (context, todos, child) {
               return Wrap(
-                children: todoProvider
-                    .getTasksByLevel(TodoStatus.todo, projectId)
+                children: TodoHelper.getTasksByLevel(
+                        (todos == null) ? [] : todos,
+                        TodoStatus.todo,
+                        projectId)
                     .map((e) => Padding(
                           padding: EdgeInsets.symmetric(
                               vertical: 0.0, horizontal: 5.0),
@@ -132,24 +136,12 @@ class ProjectTabContent extends StatelessWidget {
                               color: Colors.transparent,
                               child: todoChip(
                                 e,
-                                new Color(Provider.of<HomeTabProvider>(context,
-                                        listen: false)
-                                    .getProject(e.projectId)
-                                    .color),
+                                new Color(e.projectColor),
                               ),
                             ),
-                            child: todoChip(
-                                e,
-                                new Color(Provider.of<HomeTabProvider>(context,
-                                        listen: false)
-                                    .getProject(e.projectId)
-                                    .color)),
-                            childWhenDragging: todoChip(
-                                e,
-                                new Color(Provider.of<HomeTabProvider>(context,
-                                        listen: false)
-                                    .getProject(e.projectId)
-                                    .color)),
+                            child: todoChip(e, new Color(e.projectColor)),
+                            childWhenDragging:
+                                todoChip(e, new Color(e.projectColor)),
                           ),
                         ))
                     .toList()
@@ -240,11 +232,11 @@ class ProjectTabContent extends StatelessWidget {
       child: Container(
         width: double.infinity,
         color: Colors.amber[100],
-        child: Consumer<TodoProvider>(
-          builder: (context, todoProvider, child) {
+        child: Consumer<List<Todo>>(
+          builder: (context, todos, child) {
             return Wrap(
-              children: todoProvider
-                  .getTasksByLevel(TodoStatus.onGoing, projectId)
+              children: TodoHelper.getTasksByLevel(
+                      todos, TodoStatus.onGoing, projectId)
                   .map((e) => Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 5.0),
@@ -252,25 +244,11 @@ class ProjectTabContent extends StatelessWidget {
                           data: e,
                           feedback: Material(
                             color: Colors.transparent,
-                            child: ongoingChip(
-                                e,
-                                new Color(Provider.of<HomeTabProvider>(context,
-                                        listen: false)
-                                    .getProject(e.projectId)
-                                    .color)),
+                            child: ongoingChip(e, new Color(e.projectColor)),
                           ),
-                          child: ongoingChip(
-                              e,
-                              new Color(Provider.of<HomeTabProvider>(context,
-                                      listen: false)
-                                  .getProject(e.projectId)
-                                  .color)),
-                          childWhenDragging: ongoingChip(
-                              e,
-                              new Color(Provider.of<HomeTabProvider>(context,
-                                      listen: false)
-                                  .getProject(e.projectId)
-                                  .color)),
+                          child: ongoingChip(e, new Color(e.projectColor)),
+                          childWhenDragging:
+                              ongoingChip(e, new Color(e.projectColor)),
                         ),
                       ))
                   .toList()
@@ -289,11 +267,11 @@ class ProjectTabContent extends StatelessWidget {
         width: double.infinity,
         color: Colors.green[100],
         // constraints: BoxConstraints.expand(height: 200.0),
-        child: Consumer<TodoProvider>(
-          builder: (context, todoProvider, child) {
+        child: Consumer<List<Todo>>(
+          builder: (context, todos, child) {
             return Wrap(
-              children: todoProvider
-                  .getTasksByLevel(TodoStatus.finished, projectId)
+              children: TodoHelper.getTasksByLevel(
+                      todos, TodoStatus.finished, projectId)
                   .map((e) => Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 5.0),
@@ -301,25 +279,11 @@ class ProjectTabContent extends StatelessWidget {
                           data: e,
                           feedback: Material(
                             color: Colors.transparent,
-                            child: finishedChip(
-                                e,
-                                new Color(Provider.of<HomeTabProvider>(context,
-                                        listen: false)
-                                    .getProject(e.projectId)
-                                    .color)),
+                            child: finishedChip(e, new Color(e.projectColor)),
                           ),
-                          child: finishedChip(
-                              e,
-                              new Color(Provider.of<HomeTabProvider>(context,
-                                      listen: false)
-                                  .getProject(e.projectId)
-                                  .color)),
-                          childWhenDragging: finishedChip(
-                              e,
-                              new Color(Provider.of<HomeTabProvider>(context,
-                                      listen: false)
-                                  .getProject(e.projectId)
-                                  .color)),
+                          child: finishedChip(e, new Color(e.projectColor)),
+                          childWhenDragging:
+                              finishedChip(e, new Color(e.projectColor)),
                         ),
                       ))
                   .toList()
@@ -331,32 +295,3 @@ class ProjectTabContent extends StatelessWidget {
     );
   }
 }
-
-// class ProjectSlider extends StatefulWidget {
-//   @override
-//   ProjectSsliderState createState() => ProjectSsliderState();
-// }
-
-// class ProjectSsliderState extends State<ProjectSlider> {
-//   var _selectedProject = 0.0;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
-//         return Slider(
-//           value: todoProvider.projectIndex.toDouble(),
-//           min: todoProvider.minProjectIndex,
-//           max: todoProvider.maxProjectIndex,
-//           divisions: todoProvider.maxProjectIndex.toInt(),
-//           label: _selectedProject.toString(),
-//           onChanged: (double value) {
-//             // setState(() => _selectedProject = value);
-//             todoProvider.setSelectedProjectIndex(value.toInt());
-//             //   Provider.of<TodoProvider>(context, listen: false)
-//             //       .setSelectedProjectIndex(value.toInt());
-//           },
-//         );
-//       }),
-//     );
-//   }
-// }

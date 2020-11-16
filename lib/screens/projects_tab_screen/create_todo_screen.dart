@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/services/database_service.dart';
 
 class CreateTodoScreen extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class CreateTodoScreen extends StatefulWidget {
 
 class _CreateTodoScreenState extends State<CreateTodoScreen> {
   String selectedProjectId;
+  Project selectedProject;
   String selectedDueDateOption;
   String selectedRepeat;
   DateTime selectedDueDate = new DateTime.now();
@@ -21,60 +24,81 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Pick Date'];
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        child: Column(children: [
-          TextFormField(
-            decoration: InputDecoration(
-              // icon: Icon(Icons.),
-              labelText: 'Task Name',
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please name your todo';
-              } else {
-                return null;
-              }
-            },
-            controller: _todoTitleTextController,
-          ),
-          projectDropDown(context),
-          dueDateDropDown(context),
-          RaisedButton(
-            onPressed: () => {
-              Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
-                  _todoTitleTextController.text,
-                  this.selectedProjectId,
-                  _todoTitleTextController.text,
-                  TodoStatus.todo,
-                  new DateTime(
-                    this.selectedDueDate.year,
-                    this.selectedDueDate.month,
-                    this.selectedDueDate.day,
-                  )
-                  // this.selectedDueDate
-                  )),
-              Navigator.of(context).pop(),
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('"' +
-                      _todoTitleTextController.text +
-                      '" is added as a Todo')))
-            },
-            child: Text('Create Todo'),
-          )
-        ]),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Create Todo'),
       ),
+      body: Column(children: [
+        TextFormField(
+          decoration: InputDecoration(
+            // icon: Icon(Icons.),
+            labelText: 'Task Name',
+          ),
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Please name your todo';
+            } else {
+              return null;
+            }
+          },
+          controller: _todoTitleTextController,
+        ),
+        projectDropDown(context),
+        dueDateDropDown(context),
+        RaisedButton(
+          onPressed: () => {
+            Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
+                '',
+                this.selectedProjectId,
+                _todoTitleTextController.text,
+                this.selectedProject.title,
+                this.selectedProject.color,
+                TodoStatus.todo.value,
+                this.selectedDueDate,
+                0,
+                new DateTime(
+                  this.selectedDueDate.year,
+                  this.selectedDueDate.month,
+                  this.selectedDueDate.day,
+                )
+                // this.selectedDueDate
+                )),
+            DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                .addTodo(new Todo(
+                    '',
+                    this.selectedProjectId,
+                    _todoTitleTextController.text,
+                    this.selectedProject.title,
+                    this.selectedProject.color,
+                    TodoStatus.todo.value,
+                    this.selectedDueDate,
+                    0,
+                    new DateTime(
+                      this.selectedDueDate.year,
+                      this.selectedDueDate.month,
+                      this.selectedDueDate.day,
+                    ))),
+            Navigator.of(context).pop(),
+            // Scaffold.of(context).showSnackBar(SnackBar(
+            //     content: Text('"' +
+            //         _todoTitleTextController.text +
+            //         '" is added as a Todo'))
+            //         )
+          },
+          child: Text('Create Todo'),
+        )
+      ]),
     );
   }
 
   Widget projectDropDown(context) {
-    return Consumer<HomeTabProvider>(builder: (context, tabProvider, child) {
+    return Consumer<List<Project>>(builder: (context, projects, child) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 5),
         child: DropdownButton<String>(
             value: selectedProjectId,
             isExpanded: true,
-            items: tabProvider.projects.map((Project project) {
+            items: projects.map((Project project) {
               return new DropdownMenuItem<String>(
                 value: project.id,
                 child: (project.id == selectedProjectId)
@@ -91,7 +115,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
             hint: selectedProjectId == null
                 ? Text('Select Project')
                 : Text(
-                    tabProvider.projects
+                    projects
                         .firstWhere(
                             (project) => project.id == selectedProjectId)
                         .title,
@@ -100,6 +124,8 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
             onChanged: (newVal) {
               setState(() {
                 selectedProjectId = newVal;
+                selectedProject = projects
+                    .firstWhere((element) => element.id == selectedProjectId);
               });
             }),
       );

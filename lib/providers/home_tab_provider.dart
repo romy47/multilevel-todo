@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:second_attempt/models/project_model.dart';
-import '../models/todo_model.dart';
 
 class HomeTabProvider extends ChangeNotifier {
   List<Project> _projects = [

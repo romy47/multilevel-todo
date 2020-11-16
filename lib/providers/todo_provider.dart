@@ -22,7 +22,7 @@ class TodoProvider extends ChangeNotifier {
 
   void changeTodoSTatus(Todo todo, TodoStatus status) {
     int index = _todos.indexWhere((element) => element.title == todo.title);
-    _todos[index].status = status;
+    _todos[index].status = status.value;
     if (status == TodoStatus.finished) {
       _todos[index].finishedAt = DateTime.now();
       print('Finished');

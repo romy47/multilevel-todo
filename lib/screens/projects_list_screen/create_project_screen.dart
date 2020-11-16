@@ -24,22 +24,16 @@ class _CreateProjectState extends State<CreateProject> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Center(child: const Text('Projects')),
+          title: Text('Create Project'),
         ),
         body: createProjectDialog(context));
   }
 
-  // void createProject(String a, String b, int c) {
-  //   Provider.of<HomeTabProvider>(context, listen: false)
-  //       .addProject(Project(a, b, c));
-  // }
-
   Widget createProjectDialog(context) {
-    return Container(
-      child: Column(children: <Widget>[
+    return Scaffold(
+      body: Column(children: <Widget>[
         TextFormField(
           decoration: InputDecoration(
-            // icon: Icon(Icons.),
             labelText: 'Project Name',
           ),
           validator: (value) {
@@ -51,24 +45,21 @@ class _CreateProjectState extends State<CreateProject> {
           },
           controller: projectTitleTextController,
         ),
-        BlockPicker(
-          pickerColor: currentColor,
-          onColorChanged: changeColor,
+        SizedBox(
+          height: 400.0,
+          child: BlockPicker(
+            pickerColor: currentColor,
+            onColorChanged: changeColor,
+          ),
         ),
         RaisedButton(
           onPressed: () => {
             Provider.of<HomeTabProvider>(context, listen: false).addProject(
                 Project(projectTitleTextController.text,
                     projectTitleTextController.text, pickerColor.value, 'sd')),
-
             DatabaseServices(FirebaseAuth.instance.currentUser.uid).addProject(
-                new Project(
-                    projectTitleTextController.text,
-                    projectTitleTextController.text,
-                    pickerColor.value,
-                    FirebaseAuth.instance.currentUser.uid)),
-            // createProject(projectTitleTextController.text,
-            //     projectTitleTextController.text, pickerColor.value),
+                new Project('', projectTitleTextController.text,
+                    pickerColor.value, FirebaseAuth.instance.currentUser.uid)),
             Navigator.pop(context),
           },
           child: Text(

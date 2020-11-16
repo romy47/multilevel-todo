@@ -23,17 +23,31 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
     Dashboard(),
     ProjectTimeline()
   ];
+  final List<String> titleList = [
+    "Rapido",
+    "Projects",
+    "Dashboard",
+    "Timeline"
+  ];
+  String currentTitle;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      currentTitle = titleList[_selectedIndex];
     });
+  }
+
+  @override
+  void initState() {
+    currentTitle = titleList[0];
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Rapid Todo')),
+        appBar: AppBar(title: Text(currentTitle)),
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
         ),

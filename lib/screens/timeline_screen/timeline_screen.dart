@@ -20,22 +20,21 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
     finishedTodos = Provider.of<TodoProvider>(context, listen: false)
         .getTasksByLevel(TodoStatus.finished, 'all');
     return Scaffold(
-        appBar: AppBar(
-          title: Center(child: const Text('Timeline')),
-        ),
+        // appBar: AppBar(
+        //   title: Center(child: const Text('Timeline')),
+        // ),
         body: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
-          finishedTodos =
-              todoProvider.getTasksByLevel(TodoStatus.finished, 'all');
-          return Scrollbar(
-            child: new ListView.builder(
-              controller: controller,
-              itemBuilder: (context, index) {
-                return projectTimelineTile(index);
-              },
-              itemCount: finishedTodos.length,
-            ),
-          );
-        }));
+      finishedTodos = todoProvider.getTasksByLevel(TodoStatus.finished, 'all');
+      return Scrollbar(
+        child: new ListView.builder(
+          controller: controller,
+          itemBuilder: (context, index) {
+            return projectTimelineTile(index);
+          },
+          itemCount: finishedTodos.length,
+        ),
+      );
+    }));
   }
 
   @override

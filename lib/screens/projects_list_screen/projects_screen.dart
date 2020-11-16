@@ -22,101 +22,48 @@ class _ProjectsState extends State<Projects> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Center(child: const Text('Projects')),
-        ),
+        // appBar: AppBar(
+        //   title: Center(child: const Text('Projects')),
+        // ),
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            InkWell(
-                child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'Create New Project',
-                    ),
-                  ),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Create New Project',
                 ),
-                onTap: () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CreateProject()))
-                    }),
-            Container(
-              child:
-                  Consumer<List<Project>>(builder: (context, projects, child) {
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: (projects == null) ? 0 : projects.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                        child: Card(
-                          color: new Color(projects[index].color),
-                          child: Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Text(
-                              projects[index].title,
-                            ),
-                          ),
-                        ),
-                        onTap: () => {});
-                  },
-                );
-              }),
-            )
-          ],
-        ));
-  }
-
-  // void createProject(String a, String b, int c) {
-  //   Provider.of<HomeTabProvider>(context, listen: false)
-  //       .addProject(Project(a, b, c));
-  // }
-
-  void createProjectDialog(context) {
-    final projectTitleTextController = TextEditingController();
-    Alert(
-        context: context,
-        title: "Create Project",
-        content: Column(
-          children: <Widget>[
-            TextFormField(
-              decoration: InputDecoration(
-                // icon: Icon(Icons.),
-                labelText: 'Project Name',
               ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please name your project';
-                } else {
-                  return null;
-                }
+            ),
+            onTap: () => {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CreateProject()))
+                }),
+        Container(
+          child: Consumer<List<Project>>(builder: (context, projects, child) {
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: (projects == null) ? 0 : projects.length,
+              itemBuilder: (context, index) {
+                return InkWell(
+                    child: Card(
+                      color: new Color(projects[index].color),
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          projects[index].title,
+                        ),
+                      ),
+                    ),
+                    onTap: () => {});
               },
-              controller: projectTitleTextController,
-            ),
-            BlockPicker(
-              pickerColor: currentColor,
-              onColorChanged: changeColor,
-            )
-          ],
-        ),
-        buttons: [
-          DialogButton(
-            onPressed: () => {
-              // Provider.of<HomeTabProvider>(context, listen: false).addProject(
-              //     Project(projectTitleTextController.text,
-              //         projectTitleTextController.text, pickerColor.value)),
-              // createProject(projectTitleTextController.text,
-              //     projectTitleTextController.text, pickerColor.value),
-              // Navigator.pop(context),
-            },
-            child: Text(
-              "Create",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ]).show();
+            );
+          }),
+        )
+      ],
+    ));
   }
 }

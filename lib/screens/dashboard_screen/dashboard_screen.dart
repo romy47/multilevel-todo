@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
@@ -16,11 +17,15 @@ class _DashboardState extends State<Dashboard> {
   int percentage = 0;
   @override
   Widget build(BuildContext context) {
-    onGoingTodoCount = Provider.of<TodoProvider>(context, listen: false)
-        .getTasksByLevel(TodoStatus.onGoing, 'all')
+    onGoingTodoCount = TodoHelper.getTasksByLevel(
+            Provider.of<List<Todo>>(context, listen: false),
+            TodoStatus.onGoing,
+            'all')
         .length;
-    finishedTodoCount = Provider.of<TodoProvider>(context, listen: false)
-        .getTasksByLevel(TodoStatus.finished, 'all')
+    finishedTodoCount = TodoHelper.getTasksByLevel(
+            Provider.of<List<Todo>>(context, listen: false),
+            TodoStatus.finished,
+            'all')
         .length;
     if (onGoingTodoCount + finishedTodoCount != 0) {
       percentage =
@@ -29,9 +34,9 @@ class _DashboardState extends State<Dashboard> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: const Text('Dashboard')),
-      ),
+      // appBar: AppBar(
+      //   title: Center(child: const Text('Dashboard')),
+      // ),
       body: Center(
         child: Container(
           // scrollDirection: Axis.vertical,
@@ -327,14 +332,18 @@ class DonutPieChart extends StatelessWidget {
     List<TodoCompletion> data = [];
     data.add(new TodoCompletion(
         'Remaining',
-        Provider.of<TodoProvider>(context, listen: false)
-            .getTasksByLevel(TodoStatus.onGoing, 'all')
+        TodoHelper.getTasksByLevel(
+                Provider.of<List<Todo>>(context, listen: false),
+                TodoStatus.onGoing,
+                'all')
             .length,
         Colors.grey[200]));
     data.add(new TodoCompletion(
         'Completed',
-        Provider.of<TodoProvider>(context, listen: false)
-            .getTasksByLevel(TodoStatus.finished, 'all')
+        TodoHelper.getTasksByLevel(
+                Provider.of<List<Todo>>(context, listen: false),
+                TodoStatus.finished,
+                'all')
             .length,
         Colors.green[300]));
     return [
@@ -351,82 +360,82 @@ class DonutPieChart extends StatelessWidget {
   }
 }
 
-class DonutPieChartComppleted extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
+// class DonutPieChartComppleted extends StatelessWidget {
+//   final List<charts.Series> seriesList;
+//   final bool animate;
 
-  DonutPieChartComppleted(this.seriesList, {this.animate});
+//   DonutPieChartComppleted(this.seriesList, {this.animate});
 
-  @override
-  Widget build(BuildContext context) {
-    return new charts.PieChart(
-      _createTodoCompletionData(context),
-      animate: animate,
-      defaultRenderer: new charts.ArcRendererConfig(
-        arcWidth: 15,
-        strokeWidthPx: 0,
-      ),
-      behaviors: [
-        new charts.DatumLegend(
-          position: charts.BehaviorPosition.bottom,
-          outsideJustification: charts.OutsideJustification.middleDrawArea,
-          horizontalFirst: false,
-          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-          showMeasures: true,
-          desiredMaxColumns: 2,
-          desiredMaxRows: 2,
-          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-          measureFormatter: (num value) {
-            return value == null ? '-' : "$value";
-          },
-          entryTextStyle: charts.TextStyleSpec(
-              color: charts.MaterialPalette.black,
-              fontFamily: 'Roboto',
-              fontSize: 16),
-        ),
-      ],
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return new charts.PieChart(
+//       _createTodoCompletionData(context),
+//       animate: animate,
+//       defaultRenderer: new charts.ArcRendererConfig(
+//         arcWidth: 15,
+//         strokeWidthPx: 0,
+//       ),
+//       behaviors: [
+//         new charts.DatumLegend(
+//           position: charts.BehaviorPosition.bottom,
+//           outsideJustification: charts.OutsideJustification.middleDrawArea,
+//           horizontalFirst: false,
+//           cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+//           showMeasures: true,
+//           desiredMaxColumns: 2,
+//           desiredMaxRows: 2,
+//           legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+//           measureFormatter: (num value) {
+//             return value == null ? '-' : "$value";
+//           },
+//           entryTextStyle: charts.TextStyleSpec(
+//               color: charts.MaterialPalette.black,
+//               fontFamily: 'Roboto',
+//               fontSize: 16),
+//         ),
+//       ],
+//     );
+//   }
 
-  factory DonutPieChartComppleted.withSampleData(context) {
-    return new DonutPieChartComppleted(
-      _createTodoCompletionData(context),
-      animate: true,
-    );
-  }
+//   factory DonutPieChartComppleted.withSampleData(context) {
+//     return new DonutPieChartComppleted(
+//       _createTodoCompletionData(context),
+//       animate: true,
+//     );
+//   }
 
-  static List<charts.Series<TodoCompletion, String>> _createTodoCompletionData(
-      context) {
-    List<TodoCompletion> data = [];
+//   static List<charts.Series<TodoCompletion, String>> _createTodoCompletionData(
+//       context) {
+//     List<TodoCompletion> data = [];
 
-    Provider.of<HomeTabProvider>(context, listen: false)
-        .projects
-        .forEach((pro) {
-      if (Provider.of<TodoProvider>(context, listen: false)
-              .getTasksByLevel(TodoStatus.finished, pro.id)
-              .length >
-          0) {
-        data.add(new TodoCompletion(
-            pro.title,
-            Provider.of<TodoProvider>(context, listen: false)
-                .getTasksByLevel(TodoStatus.finished, pro.id)
-                .length,
-            new Color(pro.color)));
-      }
-    });
-    return [
-      new charts.Series<TodoCompletion, String>(
-        id: 'completion2',
-        domainFn: (TodoCompletion todo, _) => todo.category,
-        measureFn: (TodoCompletion todo, _) => todo.amount,
-        data: data,
-        colorFn: (TodoCompletion todo, _) =>
-            charts.ColorUtil.fromDartColor(todo.color),
-        labelAccessorFn: (TodoCompletion todo, _) => '${todo.amount}',
-      )
-    ];
-  }
-}
+//     Provider.of<HomeTabProvider>(context, listen: false)
+//         .projects
+//         .forEach((pro) {
+//       if (Provider.of<TodoProvider>(context, listen: false)
+//               .getTasksByLevel(TodoStatus.finished, pro.id)
+//               .length >
+//           0) {
+//         data.add(new TodoCompletion(
+//             pro.title,
+//             Provider.of<TodoProvider>(context, listen: false)
+//                 .getTasksByLevel(TodoStatus.finished, pro.id)
+//                 .length,
+//             new Color(pro.color)));
+//       }
+//     });
+//     return [
+//       new charts.Series<TodoCompletion, String>(
+//         id: 'completion2',
+//         domainFn: (TodoCompletion todo, _) => todo.category,
+//         measureFn: (TodoCompletion todo, _) => todo.amount,
+//         data: data,
+//         colorFn: (TodoCompletion todo, _) =>
+//             charts.ColorUtil.fromDartColor(todo.color),
+//         labelAccessorFn: (TodoCompletion todo, _) => '${todo.amount}',
+//       )
+//     ];
+//   }
+// }
 
 class TodoCompletion {
   final String category;

@@ -9,6 +9,7 @@ import 'package:second_attempt/screens/main_navigation.dart';
 import 'package:second_attempt/services/database_service.dart';
 
 import 'models/project_model.dart';
+import 'models/todo_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +42,6 @@ class MyApp extends StatelessWidget {
               if (user == null) {
                 return AuthTab();
               }
-              print("User is: " + user.uid);
               return MultiProvider(
                 providers: [
                   ChangeNotifierProvider<TodoProvider>(
@@ -52,6 +52,10 @@ class MyApp extends StatelessWidget {
                       value: new DatabaseServices(
                               FirebaseAuth.instance.currentUser.uid)
                           .getUserProjectList()),
+                  StreamProvider<List<Todo>>.value(
+                      value: new DatabaseServices(
+                              FirebaseAuth.instance.currentUser.uid)
+                          .getUserTodoList()),
                 ],
                 child: MaterialApp(
                   title: 'Awesome Todo',
