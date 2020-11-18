@@ -2,12 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/helpers/todo_helper.dart';
+import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/services/database_service.dart';
 
 class ProjectTabContent extends StatelessWidget {
   final String projectId;
-  ProjectTabContent(this.projectId) {}
+  final List<Project> projects;
+  ProjectTabContent(this.projectId, this.projects) {}
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -99,7 +101,7 @@ class ProjectTabContent extends StatelessWidget {
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Text(
-                        "Finished",
+                        "Finished Today",
                         style: TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     ),
@@ -115,41 +117,44 @@ class ProjectTabContent extends StatelessWidget {
 
   Widget todos() {
     return Flexible(
-      fit: FlexFit.tight,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-            color: Colors.blue[100],
-            width: double.infinity,
-            child: Consumer<List<Todo>>(builder: (context, todos, child) {
-              return Wrap(
-                children: TodoHelper.getTasksByLevel(
-                        (todos == null) ? [] : todos,
-                        TodoStatus.todo,
-                        projectId)
-                    .map((e) => Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.0, horizontal: 5.0),
-                          child: Draggable(
-                            data: e,
-                            feedback: Material(
-                              color: Colors.transparent,
-                              child: todoChip(
-                                e,
-                                new Color(e.projectColor),
+        fit: FlexFit.tight,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Container(
+              color: Colors.blue[100],
+              width: double.infinity,
+              // child:
+              // Consumer<List<Project>>(builder: (context, projects, child) {
+              child: Consumer<List<Todo>>(builder: (context, todos, child) {
+                return Wrap(
+                  children: TodoHelper.getTasksWithProjectByLevel(
+                          projects,
+                          (todos == null) ? [] : todos,
+                          TodoStatus.todo,
+                          projectId)
+                      .map((e) => Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0.0, horizontal: 5.0),
+                            child: Draggable(
+                              data: e,
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child: todoChip(
+                                  e,
+                                  new Color(e.projectColor),
+                                ),
                               ),
+                              child: todoChip(e, new Color(e.projectColor)),
+                              childWhenDragging:
+                                  todoChip(e, new Color(e.projectColor)),
                             ),
-                            child: todoChip(e, new Color(e.projectColor)),
-                            childWhenDragging:
-                                todoChip(e, new Color(e.projectColor)),
-                          ),
-                        ))
-                    .toList()
-                    .cast<Widget>(),
-              );
-            })),
-      ),
-    );
+                          ))
+                      .toList()
+                      .cast<Widget>(),
+                );
+                // });
+              })),
+        ));
   }
 
   Widget todoChip(Todo todo, Color color) {
@@ -228,70 +233,74 @@ class ProjectTabContent extends StatelessWidget {
 
   Widget onGoing() {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Container(
-        width: double.infinity,
-        color: Colors.amber[100],
-        child: Consumer<List<Todo>>(
-          builder: (context, todos, child) {
-            return Wrap(
-              children: TodoHelper.getTasksByLevel(
-                      todos, TodoStatus.onGoing, projectId)
-                  .map((e) => Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 5.0),
-                        child: Draggable(
-                          data: e,
-                          feedback: Material(
-                            color: Colors.transparent,
-                            child: ongoingChip(e, new Color(e.projectColor)),
-                          ),
-                          child: ongoingChip(e, new Color(e.projectColor)),
-                          childWhenDragging:
-                              ongoingChip(e, new Color(e.projectColor)),
-                        ),
-                      ))
-                  .toList()
-                  .cast<Widget>(),
-            );
-          },
-        ),
-      ),
-    );
+        scrollDirection: Axis.vertical,
+        child: Container(
+            width: double.infinity,
+            color: Colors.amber[100],
+            // child: Consumer<List<Project>>(builder: (context, projects, child) {
+            child: Consumer<List<Todo>>(
+              builder: (context, todos, child) {
+                return Wrap(
+                  children: TodoHelper.getTasksWithProjectByLevel(
+                          projects, todos, TodoStatus.onGoing, projectId)
+                      .map((e) => Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0.0, horizontal: 5.0),
+                            child: Draggable(
+                              data: e,
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child:
+                                    ongoingChip(e, new Color(e.projectColor)),
+                              ),
+                              child: ongoingChip(e, new Color(e.projectColor)),
+                              childWhenDragging:
+                                  ongoingChip(e, new Color(e.projectColor)),
+                            ),
+                          ))
+                      .toList()
+                      .cast<Widget>(),
+                );
+              },
+            )
+            // }),
+            ));
   }
 
   Widget finished() {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
-        width: double.infinity,
-        color: Colors.green[100],
-        // constraints: BoxConstraints.expand(height: 200.0),
-        child: Consumer<List<Todo>>(
-          builder: (context, todos, child) {
-            return Wrap(
-              children: TodoHelper.getTasksByLevel(
-                      todos, TodoStatus.finished, projectId)
-                  .map((e) => Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 5.0),
-                        child: Draggable(
-                          data: e,
-                          feedback: Material(
-                            color: Colors.transparent,
+          width: double.infinity,
+          color: Colors.green[100],
+          // constraints: BoxConstraints.expand(height: 200.0),
+          // child: Consumer<List<Project>>(builder: (context, projects, child) {
+          child: Consumer<List<Todo>>(
+            builder: (context, todos, child) {
+              return Wrap(
+                children: TodoHelper.getTasksWithProjectByLevel(
+                        projects, todos, TodoStatus.finished, projectId)
+                    .map((e) => Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.0, horizontal: 5.0),
+                          child: Draggable(
+                            data: e,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: finishedChip(e, new Color(e.projectColor)),
+                            ),
                             child: finishedChip(e, new Color(e.projectColor)),
+                            childWhenDragging:
+                                finishedChip(e, new Color(e.projectColor)),
                           ),
-                          child: finishedChip(e, new Color(e.projectColor)),
-                          childWhenDragging:
-                              finishedChip(e, new Color(e.projectColor)),
-                        ),
-                      ))
-                  .toList()
-                  .cast<Widget>(),
-            );
-          },
-        ),
-      ),
+                        ))
+                    .toList()
+                    .cast<Widget>(),
+              );
+            },
+          )
+          // })
+          ),
     );
   }
 }

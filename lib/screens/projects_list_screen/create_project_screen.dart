@@ -58,7 +58,7 @@ class _CreateProjectState extends State<CreateProject> {
                 Project(projectTitleTextController.text,
                     projectTitleTextController.text, pickerColor.value, 'sd')),
             DatabaseServices(FirebaseAuth.instance.currentUser.uid).addProject(
-                new Project('', projectTitleTextController.text,
+                new Project(projectTitleTextController.text, '',
                     pickerColor.value, FirebaseAuth.instance.currentUser.uid)),
             Navigator.pop(context),
           },

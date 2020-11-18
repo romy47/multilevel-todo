@@ -30,7 +30,7 @@ class _ProjectsTabState extends State<ProjectsTab> {
                       color: new Color(projects[index].color)))),
           pageBuilder: (context, index) => Center(
               // child: Text(projects[index].title)
-              child: ProjectTabContent(projects[index].id)),
+              child: ProjectTabContent(projects[index].id, projects)),
           onPositionChange: (index) {
             print('current position: $index');
             initPosition = index;
