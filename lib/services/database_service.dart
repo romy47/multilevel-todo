@@ -35,12 +35,14 @@ class DatabaseServices {
     return ref.set(addProjectData);
   }
 
-  //retrieve todos
   Stream<List<Todo>> getUserTodoList() {
+    DateTime now = DateTime.now();
     return _fireStoreDataBase
         .collection('todos')
         .doc(this.uid)
         .collection('todo')
+        .where('finishedAt',
+            isGreaterThan: new DateTime(now.year, now.month, now.day))
         .snapshots()
         .map(((snapShot) =>
             snapShot.docs.map((doc) => Todo.fromJson(doc.data())).toList()));
@@ -73,19 +75,52 @@ class DatabaseServices {
         .doc(uid)
         .collection('todo')
         .doc(todo.id);
-    if (status == TodoStatus.finished) {
-      todo.finishedAt = DateTime.now();
-    }
-    todo.status = status.value;
-    ref.update(todo.toJson()).then((value) => {});
 
-    // int index = _todos.indexWhere((element) => element.title == todo.title);
-    // _todos[index].status = status.value;
-    // if (status == TodoStatus.finished) {
-    //   _todos[index].finishedAt = DateTime.now();
-    //   print('Finished');
-    //   print(_todos[index].finishedAt.toString());
-    // }
-    // notifyListeners();
+    // Finishing a Todo
+    if (status == TodoStatus.finished) {
+      print('Finishing a Todo');
+      todo.status = status.value;
+      todo.finishedAt = DateTime.now();
+      ref.update(todo.toJson()).then((value) => {});
+    } else {
+      if (todo.status == TodoStatus.finished.value) {
+        // Rebirth of a Todo
+        print('Rebirth of a Todo');
+        if (status == TodoStatus.todo) {
+          // Rebirth tommorrow
+          print('Rebirth tommorrow');
+          todo.createdAt = DateTime.now();
+          todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
+              DateTime.now().day + 1);
+          todo.status = TodoStatus.todo.value;
+          this.addTodo(todo);
+        } else {
+          // Rebirth today
+          print('Rebirth today');
+          todo.createdAt = DateTime.now();
+          todo.due = DateTime.now();
+          todo.status = TodoStatus.onGoing.value;
+          this.addTodo(todo);
+        }
+      } else {
+        // State changing of a Todo
+        print('State changing of a Todo');
+        if (status == TodoStatus.todo) {
+          // State change to tommorrow
+          print('State change to tommorrow');
+          todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
+              DateTime.now().day + 1);
+          todo.status = TodoStatus.todo.value;
+          ref.update(todo.toJson()).then((value) => {});
+        } else {
+          // State change to today
+          print('State change to today');
+          todo.due = new DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day);
+          todo.status = TodoStatus.onGoing.value;
+          ref.update(todo.toJson()).then((value) => {});
+        }
+      }
+    }
   }
 }

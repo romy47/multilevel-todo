@@ -47,22 +47,20 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         dueDateDropDown(context),
         RaisedButton(
           onPressed: () => {
-            Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
-                '',
-                this.selectedProjectId,
-                _todoTitleTextController.text,
-                // this.selectedProject.title,
-                // this.selectedProject.color,
-                TodoStatus.todo.value,
-                this.selectedDueDate,
-                0,
-                new DateTime(
-                  this.selectedDueDate.year,
-                  this.selectedDueDate.month,
-                  this.selectedDueDate.day,
-                )
-                // this.selectedDueDate
-                )),
+            // Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
+            //     '',
+            //     this.selectedProjectId,
+            //     _todoTitleTextController.text,
+            //     TodoStatus.todo.value,
+            //     this.selectedDueDate,
+            //     0,
+            //     new DateTime(
+            //       this.selectedDueDate.year,
+            //       this.selectedDueDate.month,
+            //       this.selectedDueDate.day,
+            //     )
+            //     // this.selectedDueDate
+            //     )),
             DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                 .addTodo(new Todo(
                     '',
@@ -77,6 +75,11 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                       this.selectedDueDate.year,
                       this.selectedDueDate.month,
                       this.selectedDueDate.day,
+                    ),
+                    new DateTime(
+                      DateTime.now().year + 100,
+                      DateTime.now().month,
+                      DateTime.now().day,
                     ))),
             Navigator.of(context).pop(),
             // Scaffold.of(context).showSnackBar(SnackBar(

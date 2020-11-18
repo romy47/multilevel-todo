@@ -19,6 +19,7 @@ class Todo {
     this.due,
     this.repeat,
     this.createdAt,
+    this.finishedAt,
   ) {
     this.createdAt = DateTime.now();
   }
@@ -46,6 +47,7 @@ class Todo {
         'due': due,
         'repeat': repeat,
         'createdAt': createdAt,
+        'finishedAt': finishedAt,
       };
 
   @override
