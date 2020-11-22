@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
@@ -48,6 +47,24 @@ class DatabaseServices {
             snapShot.docs.map((doc) => Todo.fromJson(doc.data())).toList()));
   }
 
+  Future<QuerySnapshot> getFinishedTodoList(
+    int limit, {
+    DocumentSnapshot startAfter,
+  }) {
+    final _finishedTodoRef = _fireStoreDataBase
+        .collection('todos')
+        .doc(this.uid)
+        .collection('todo')
+        .where('status', isEqualTo: TodoStatus.finished.value)
+        .orderBy('finishedAt', descending: true)
+        .limit(limit);
+    if (startAfter == null) {
+      return _finishedTodoRef.get();
+    } else {
+      return _finishedTodoRef.startAfterDocument(startAfter).get();
+    }
+  }
+
   //save new task
   addTodo(Todo todo) {
     DocumentReference ref = _fireStoreDataBase
@@ -78,17 +95,23 @@ class DatabaseServices {
 
     // Finishing a Todo
     if (status == TodoStatus.finished) {
-      print('Finishing a Todo');
       todo.status = status.value;
+
       todo.finishedAt = DateTime.now();
+
+      // //delete this
+      // todo.finishedAt = new DateTime(
+      //   DateTime.now().year,
+      //   DateTime.now().month,
+      //   DateTime.now().day - 1,
+      // );
+
       ref.update(todo.toJson()).then((value) => {});
     } else {
       if (todo.status == TodoStatus.finished.value) {
         // Rebirth of a Todo
-        print('Rebirth of a Todo');
         if (status == TodoStatus.todo) {
           // Rebirth tommorrow
-          print('Rebirth tommorrow');
           todo.createdAt = DateTime.now();
           todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
               DateTime.now().day + 1);
@@ -96,7 +119,6 @@ class DatabaseServices {
           this.addTodo(todo);
         } else {
           // Rebirth today
-          print('Rebirth today');
           todo.createdAt = DateTime.now();
           todo.due = DateTime.now();
           todo.status = TodoStatus.onGoing.value;
@@ -104,17 +126,14 @@ class DatabaseServices {
         }
       } else {
         // State changing of a Todo
-        print('State changing of a Todo');
         if (status == TodoStatus.todo) {
           // State change to tommorrow
-          print('State change to tommorrow');
           todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
               DateTime.now().day + 1);
           todo.status = TodoStatus.todo.value;
           ref.update(todo.toJson()).then((value) => {});
         } else {
           // State change to today
-          print('State change to today');
           todo.due = new DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day);
           todo.status = TodoStatus.onGoing.value;

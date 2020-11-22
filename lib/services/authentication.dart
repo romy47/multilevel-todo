@@ -13,7 +13,6 @@ googleSignIn() async {
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken);
     await fireBaseAuth.signInWithCredential(credential).then((user) => {
-          print(fireBaseAuth.currentUser.uid),
           // Navigator.pushReplacement(
           //     context,
           //     MaterialPageRoute(
@@ -28,7 +27,6 @@ emailSignup(String email, String password) async {
     await fireBaseAuth
         .createUserWithEmailAndPassword(email: email, password: password)
         .then((user) => {
-              print(fireBaseAuth.currentUser.uid),
               // Navigator.pushReplacement(
               //     context,
               //     MaterialPageRoute(
@@ -63,7 +61,6 @@ emailSignin(String email, String password) async {
 
 signoutUser() async {
   // try {} catch (e) {
-  //   print(e.toString());
   // }
   User user = fireBaseAuth.currentUser;
   if (user.providerData.length > 1 &&

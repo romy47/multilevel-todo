@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:second_attempt/providers/todo_provider.dart';
 import 'package:second_attempt/screens/projects_list_screen/projects_screen.dart';
 import 'package:second_attempt/screens/projects_tab_screen/projects_tab_screen.dart';
 import 'package:second_attempt/screens/timeline_screen/timeline_screen.dart';
@@ -21,7 +23,12 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
     ProjectsTab(),
     Projects(),
     Dashboard(),
-    ProjectTimeline()
+    // Consumer<TodoProvider>(
+    //   builder: (context, todoProvider, _) => ProjectTimeline(
+    //     todoProvider: todoProvider,
+    //   ),
+    // ),
+    TimelineScreen(),
   ];
   final List<String> titleList = [
     "Rapido",

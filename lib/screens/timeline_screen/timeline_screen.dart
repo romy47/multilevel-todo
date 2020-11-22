@@ -1,133 +1,425 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
+import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/screens/projects_list_screen/projects_screen.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
+class TimelineScreen extends StatefulWidget {
+  @override
+  _TimelineScreenState createState() => _TimelineScreenState();
+}
+
+class _TimelineScreenState extends State<TimelineScreen> {
+  @override
+  Widget build(BuildContext context) {
+    // finishedTodos = Provider.of<TodoProvider>(context, listen: false)
+    //     .getTasksByLevel(TodoStatus.finished, 'all');
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: Center(child: const Text('Timeline')),
+      // ),
+      body: Consumer<List<Project>>(builder: (context, projects, child) {
+        return Consumer<TodoProvider>(
+          builder: (context, todoProvider, _) => ProjectTimeline(
+            todoProvider: todoProvider,
+            projects: projects == null ? [] : projects,
+          ),
+        );
+      }),
+    );
+  }
+}
+
 class ProjectTimeline extends StatefulWidget {
-  ProjectTimeline() {}
+  // ProjectTimeline() {}
+  final TodoProvider todoProvider;
+  final List<Project> projects;
+  const ProjectTimeline({
+    @required this.todoProvider,
+    @required this.projects,
+    Key key,
+  }) : super(key: key);
+
   @override
   _ProjectTimelineState createState() => _ProjectTimelineState();
 }
 
 class _ProjectTimelineState extends State<ProjectTimeline> {
   ScrollController controller;
-  List<Todo> finishedTodos = [];
+  // List<Project> projects = [];
   @override
   Widget build(BuildContext context) {
-    finishedTodos = Provider.of<TodoProvider>(context, listen: false)
-        .getTasksByLevel(TodoStatus.finished, 'all');
-    return Scaffold(
-        // appBar: AppBar(
-        //   title: Center(child: const Text('Timeline')),
-        // ),
-        body: Consumer<TodoProvider>(builder: (context, todoProvider, child) {
-      finishedTodos = todoProvider.getTasksByLevel(TodoStatus.finished, 'all');
-      return Scrollbar(
-        child: new ListView.builder(
-          controller: controller,
-          itemBuilder: (context, index) {
-            return projectTimelineTile(index);
-          },
-          itemCount: finishedTodos.length,
-        ),
-      );
-    }));
+    if (widget.todoProvider.finishedTodos.length > 0) {
+      print('First Finished Data' +
+          widget.todoProvider.finishedTodos.length.toString());
+    }
+    // return Consumer<List<Project>>(builder: (context, projects, child) {
+    return ListView(
+      controller: controller,
+      children: [
+        ...widget.todoProvider.finishedTodos
+            .map((todo) => projectTimelineTile(
+                widget.todoProvider.finishedTodos.indexOf(todo), todo))
+            .toList(),
+        if (widget.todoProvider.hasNext)
+          Center(
+            child: GestureDetector(
+              onTap: widget.todoProvider.fetchNextUsers,
+              child: Container(
+                height: 25,
+                width: 25,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+      ],
+    );
+    // });
   }
 
   @override
   void initState() {
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
+    widget.todoProvider.fetchNextUsers();
   }
 
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
+    controller.dispose();
     super.dispose();
   }
 
   void _scrollListener() {
-    print(controller.position.extentAfter);
-    if (controller.position.extentAfter < 500) {
-      setState(() {
-        //finishedTodos.addAll());
-      });
+    if (controller.offset >= controller.position.maxScrollExtent / 2 &&
+        !controller.position.outOfRange) {
+      if (widget.todoProvider.hasNext) {
+        widget.todoProvider.fetchNextUsers();
+      }
     }
   }
 
-  Widget projectTimelineTile(int index) {
-    if (index == 0 ||
-        (this.finishedTodos[index].finishedAt.day !=
-            this.finishedTodos[index - 1].finishedAt.day)) {
-      return TimelineTile(
-        alignment: TimelineAlign.manual,
-        lineXY: 0.3,
-        isFirst: true,
-        endChild: Container(
-            constraints: const BoxConstraints(
-              minHeight: 100,
-            ),
-            // color: Colors.lightGreenAccent,
-            child: Column(children: [
-              Text(this.finishedTodos[index].title),
-              Text(Provider.of<HomeTabProvider>(context, listen: true)
-                  .getProject(this.finishedTodos[index].projectId)
-                  .title),
-            ])),
-        startChild: Container(
-          child: Text(DateFormat('MM:dd kk:mm')
-              .format(this.finishedTodos[index].finishedAt)),
-          // color: Colors.amberAccent,
-        ),
-      );
-    } else if (index == this.finishedTodos.length - 1 ||
-        (this.finishedTodos[index].finishedAt.day !=
-            this.finishedTodos[index + 1].finishedAt.day)) {
-      return TimelineTile(
-        alignment: TimelineAlign.manual,
-        lineXY: 0.3,
-        isLast: true,
-        endChild: Container(
-            constraints: const BoxConstraints(
-              minHeight: 100,
-            ),
-            // color: Colors.lightGreenAccent,
-            child: Column(children: [
-              Text(this.finishedTodos[index].title),
-              Text(Provider.of<HomeTabProvider>(context, listen: true)
-                  .getProject(this.finishedTodos[index].projectId)
-                  .title),
-            ])),
-        startChild: Container(
-          child: Text(
-              DateFormat('kk:mm').format(this.finishedTodos[index].finishedAt)),
-          // color: Colors.amberAccent,
-        ),
-      );
+  Widget projectTimelineTile(int index, Todo todo) {
+    if (widget.todoProvider.finishedTodos.length == 1) {
+      print('size one');
+      return midsinTimeline(todo);
     } else {
-      return TimelineTile(
+      print('size more than one');
+      if (index == 0) {
+        print('index 0');
+        if (todo.finishedAt.day ==
+            this.widget.todoProvider.finishedTodos[index + 1].finishedAt.day) {
+          print('index 0: same next');
+          return firstTimeline(todo);
+        } else {
+          print('index 0: different next');
+          return midsinTimeline(todo);
+        }
+      } else if (index == this.widget.todoProvider.finishedTodos.length - 1) {
+        print('index last');
+        if (todo.finishedAt.day ==
+            this.widget.todoProvider.finishedTodos[index - 1].finishedAt.day) {
+          print('index last: same prev');
+          return lastTimeline(todo);
+        } else {
+          print('index last: different prev');
+          return midsinTimeline(todo);
+        }
+      } else if (todo.finishedAt.day ==
+          this.widget.todoProvider.finishedTodos[index - 1].finishedAt.day) {
+        print('index mid: same first');
+        if (todo.finishedAt.day ==
+            this.widget.todoProvider.finishedTodos[index + 1].finishedAt.day) {
+          print('index mid: same first: same last');
+
+          return midConTimeline(todo);
+        } else {
+          print('index mid: same first: diff last');
+          return lastTimeline(todo);
+        }
+      } else {
+        print('index mid: diff first');
+        if (todo.finishedAt.day ==
+            this.widget.todoProvider.finishedTodos[index + 1].finishedAt.day) {
+          print('index mid: diff first: same last');
+          return firstTimeline(todo);
+        } else {
+          print('index mid: diff first: diff last');
+          return midsinTimeline(todo);
+        }
+      }
+    }
+  }
+
+  Widget lastTimeline(Todo todo) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
+      // padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(color: Colors.blueGrey[200]),
+          bottom: BorderSide(color: Colors.blueGrey[200]),
+          right: BorderSide(color: Colors.blueGrey[200]),
+        ),
+      ),
+      child: TimelineTile(
         alignment: TimelineAlign.manual,
-        lineXY: 0.3,
+        lineXY: 0.4,
+        indicatorStyle: IndicatorStyle(
+          width: 25,
+          color: Colors.green[300],
+          padding: const EdgeInsets.all(8),
+          iconStyle: IconStyle(
+            color: Colors.white,
+            iconData: Icons.check,
+          ),
+        ),
+        isLast: true,
+        beforeLineStyle: const LineStyle(
+          color: Colors.green,
+          thickness: 3,
+        ),
         endChild: Container(
+            padding: EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.blueGrey[200]),
+                // bottom: BorderSide(color: Colors.blueGrey[200]),
+              ),
+              // borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            ),
             constraints: const BoxConstraints(
-              minHeight: 100,
+              minHeight: 80,
             ),
             // color: Colors.lightGreenAccent,
-            child: Column(children: [
-              Text(this.finishedTodos[index].title),
-              Text(Provider.of<HomeTabProvider>(context, listen: true)
-                  .getProject(this.finishedTodos[index].projectId)
-                  .title),
-            ])),
+            child: finishedTodo(todo)),
         startChild: Container(
-          child: Text(
-              DateFormat('kk:mm').format(this.finishedTodos[index].finishedAt)),
+          padding: EdgeInsets.all(8.0),
+
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text(DateFormat.yMMMd('en_US').format(todo.finishedAt)),
+                Text(DateFormat.jm().format(todo.finishedAt),
+                    style: TextStyle(fontSize: 16)),
+              ]),
           // color: Colors.amberAccent,
         ),
-      );
-    }
+      ),
+    );
+  }
+
+  Widget midConTimeline(Todo todo) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+      // padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(color: Colors.blueGrey[200]),
+          right: BorderSide(color: Colors.blueGrey[200]),
+        ),
+      ),
+      child: TimelineTile(
+        alignment: TimelineAlign.manual,
+        lineXY: 0.4,
+        indicatorStyle: IndicatorStyle(
+          width: 25,
+          color: Colors.green[300],
+          padding: const EdgeInsets.all(8),
+          iconStyle: IconStyle(
+            color: Colors.white,
+            iconData: Icons.check,
+          ),
+        ),
+        afterLineStyle: const LineStyle(
+          color: Colors.green,
+          thickness: 3,
+        ),
+        beforeLineStyle: const LineStyle(
+          color: Colors.green,
+          thickness: 3,
+        ),
+        endChild: Container(
+            padding: EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.blueGrey[200]),
+                // bottom: BorderSide(color: Colors.blueGrey[200]),
+              ),
+              // borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            ),
+            constraints: const BoxConstraints(
+              minHeight: 80,
+            ),
+            // color: Colors.lightGreenAccent,
+            child: finishedTodo(todo)),
+        startChild: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text(DateFormat.yMMMd('en_US').format(todo.finishedAt)),
+                Text(DateFormat.jm().format(todo.finishedAt),
+                    style: TextStyle(fontSize: 16)),
+              ]),
+          // color: Colors.amberAccent,
+        ),
+      ),
+    );
+  }
+
+  Widget midsinTimeline(Todo todo) {
+    print('Chip Todo ' + todo.toString());
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      // padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blueGrey[200]),
+        // borderRadius: BorderRadius.all(Radius.circular(5.0)),
+      ),
+      child: TimelineTile(
+        alignment: TimelineAlign.manual,
+        lineXY: 0.4,
+        indicatorStyle: IndicatorStyle(
+          width: 25,
+          color: Colors.green[300],
+          padding: const EdgeInsets.all(8),
+          iconStyle: IconStyle(
+            color: Colors.white,
+            iconData: Icons.check,
+          ),
+        ),
+        beforeLineStyle: const LineStyle(
+          color: Colors.white,
+          thickness: 0,
+        ),
+        endChild: Container(
+            alignment: Alignment.topRight,
+            padding: EdgeInsets.all(8.0),
+            constraints: const BoxConstraints(
+              minHeight: 80,
+            ),
+            // color: Colors.lightGreenAccent,
+            child: finishedTodo(todo)),
+        startChild: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: Text(
+                    DateFormat.yMMMd('en_US').format(todo.finishedAt),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  margin: EdgeInsets.only(bottom: 6.0),
+                ),
+                Text(DateFormat.jm().format(todo.finishedAt),
+                    style: TextStyle(fontSize: 16)),
+              ]),
+          // color: Colors.amberAccent,
+        ),
+      ),
+    );
+  }
+
+  Widget firstTimeline(Todo todo) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+      // padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(color: Colors.blueGrey[200]),
+          top: BorderSide(color: Colors.blueGrey[200]),
+          right: BorderSide(color: Colors.blueGrey[200]),
+        ),
+      ),
+      child: TimelineTile(
+        alignment: TimelineAlign.manual,
+        lineXY: 0.4,
+        afterLineStyle: const LineStyle(
+          color: Colors.green,
+          thickness: 3,
+        ),
+        isFirst: true,
+        indicatorStyle: IndicatorStyle(
+          width: 25,
+          color: Colors.green[300],
+          padding: const EdgeInsets.all(8),
+          iconStyle: IconStyle(
+            color: Colors.white,
+            iconData: Icons.check,
+          ),
+        ),
+        endChild: Container(
+            padding: EdgeInsets.all(8.0),
+            constraints: const BoxConstraints(
+              minHeight: 80,
+            ),
+            // color: Colors.lightGreenAccent,
+            child: finishedTodo(todo)),
+        startChild: Container(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Text(
+                      DateFormat.yMMMd('en_US').format(todo.finishedAt),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    margin: EdgeInsets.only(bottom: 6.0),
+                  ),
+                  Text(DateFormat.jm().format(todo.finishedAt),
+                      style: TextStyle(fontSize: 16)),
+                ])),
+        // color: Colors.amberAccent,
+        // ),
+      ),
+    );
+  }
+
+  Widget finishedTodo(Todo todo) {
+    todo = TodoHelper.getTaskWithProjectByLevel(widget.projects, todo);
+    print('Chip Level' + todo.title);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          child: Text(
+            todo.title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+          ),
+          // margin: EdgeInsets.only(top: 1),
+        ),
+        Chip(
+            backgroundColor: new Color(todo.projectColor),
+            // label: Text(todo.title),
+            label: RichText(
+              text: TextSpan(
+                text: todo.projectTitle,
+                style: TextStyle(
+                  color: Colors.black,
+                  // decoration: TextDecoration.lineThrough,
+                ),
+                children: <TextSpan>[
+                  TextSpan(text: '', style: TextStyle(color: Colors.red)),
+                  // TextSpan(text: ' world!'),
+                ],
+              ),
+            ))
+      ],
+    );
   }
 }

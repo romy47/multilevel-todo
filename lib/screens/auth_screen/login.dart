@@ -75,8 +75,6 @@ class _State extends State<Login> {
                       color: Colors.blue,
                       child: Text('Login'),
                       onPressed: () {
-                        print(nameController.text);
-                        print(passwordController.text);
                         emailSignin(
                             nameController.text, passwordController.text);
                       },

@@ -32,7 +32,6 @@ class _ProjectsTabState extends State<ProjectsTab> {
               // child: Text(projects[index].title)
               child: ProjectTabContent(projects[index].id, projects)),
           onPositionChange: (index) {
-            print('current position: $index');
             initPosition = index;
           },
           onScroll: (position) => print('$position'),

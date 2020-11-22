@@ -176,7 +176,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
               } else if (newVal == 'Next Week') {
                 selectedDueDate = DateTime(now.year, now.month, now.day + 7);
               }
-              print('New State is  ' + this.selectedDueDateOption);
             });
           }),
     );
