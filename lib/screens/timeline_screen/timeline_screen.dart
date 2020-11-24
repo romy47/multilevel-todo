@@ -69,7 +69,7 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
         if (widget.todoProvider.hasNext)
           Center(
             child: GestureDetector(
-              onTap: widget.todoProvider.fetchNextUsers,
+              onTap: widget.todoProvider.fetchNextTodos,
               child: Container(
                 height: 25,
                 width: 25,
@@ -86,7 +86,7 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
   void initState() {
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
-    widget.todoProvider.fetchNextUsers();
+    widget.todoProvider.fetchNextTodos();
   }
 
   @override
@@ -100,7 +100,7 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
     if (controller.offset >= controller.position.maxScrollExtent / 2 &&
         !controller.position.outOfRange) {
       if (widget.todoProvider.hasNext) {
-        widget.todoProvider.fetchNextUsers();
+        widget.todoProvider.fetchNextTodos();
       }
     }
   }

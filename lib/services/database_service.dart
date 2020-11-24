@@ -65,6 +65,27 @@ class DatabaseServices {
     }
   }
 
+  Future<QuerySnapshot> getFinishedTodoListLast7(int limit) {
+    DateTime to = new DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
+    DateTime from = new DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day - 7);
+    final _finishedTodoRef = _fireStoreDataBase
+        .collection('todos')
+        .doc(this.uid)
+        .collection('todo')
+        .where('status', isEqualTo: TodoStatus.finished.value)
+        .where('finishedAt', isGreaterThanOrEqualTo: from)
+        .where('finishedAt', isLessThanOrEqualTo: to)
+        .orderBy('finishedAt', descending: false)
+        .limit(limit);
+    // if (startAfter == null) {
+    return _finishedTodoRef.get();
+    // } else {
+    // return _finishedTodoRef.startAfterDocument(startAfter).get();
+    // }
+  }
+
   //save new task
   addTodo(Todo todo) {
     DocumentReference ref = _fireStoreDataBase

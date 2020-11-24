@@ -19,7 +19,7 @@ class TodoProvider extends ChangeNotifier {
         return Todo.fromJson(doc.data());
       }).toList();
 
-  Future fetchNextUsers() async {
+  Future fetchNextTodos() async {
     if (_isFetchingUsers) return;
 
     _errorMessage = '';
@@ -47,6 +47,48 @@ class TodoProvider extends ChangeNotifier {
   }
 
   // Code for timeline ends ***********************
+
+  // Code for dashboard begins ***********************
+  final _finishedTodoSnapshotLast7 = <DocumentSnapshot>[];
+  String _errorMessageLast7 = '';
+  bool _hasNextLast7 = true;
+  bool _isFetchingLast7 = false;
+  // int documentLimit = 14;
+
+  String get errorMessageLast7 => _errorMessageLast7;
+  bool get hasNextLast7 => _hasNextLast7;
+
+  List<Todo> get finishedTodosLast7 => _finishedTodoSnapshotLast7.map((doc) {
+        return Todo.fromJson(doc.data());
+      }).toList();
+
+  Future fetchNextTodosLast7() async {
+    if (_isFetchingLast7) return;
+
+    _errorMessageLast7 = '';
+    _isFetchingLast7 = true;
+
+    try {
+      final snap =
+          await new DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+              .getFinishedTodoListLast7(100
+                  // ,
+                  // startAfter: _finishedTodoSnapshot.isNotEmpty
+                  //     ? _finishedTodoSnapshot.last
+                  //     : null,
+                  );
+      _finishedTodoSnapshotLast7.addAll(snap.docs);
+
+      if (snap.docs.length == 0) _hasNext = false;
+      notifyListeners();
+    } catch (error) {
+      _errorMessageLast7 = error.toString();
+      notifyListeners();
+    }
+
+    _isFetchingLast7 = false;
+  }
+  // Code for dashboard ends ***********************
 
   List<Todo> _todos = [];
   List<Todo> getTasksByLevel(TodoStatus status, String projectId) {
