@@ -158,12 +158,10 @@ class ProjectTabContent extends StatelessWidget {
   }
 
   Widget todoChip(Todo todo, Color color) {
+    DateTime today = DateTime.now();
     return Chip(
         backgroundColor: Colors.white,
-        avatar: CircleAvatar(
-          backgroundColor: color,
-          child: Icon(Icons.navigate_next),
-        ),
+        avatar: TodoHelper.getCircularAvatarFromTodo(todo),
         // label: Text(todo.title),
         label: RichText(
           text: TextSpan(
@@ -172,16 +170,13 @@ class ProjectTabContent extends StatelessWidget {
             children: <TextSpan>[
               TextSpan(
                   text: ' ' +
-                      todo.due
-                          .difference(DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            DateTime.now().day,
-                          ))
-                          .inDays
-                          .toString() +
-                      ' days',
-                  style: TextStyle(color: Colors.red)),
+                      (todo.due.day - today.day).toString() +
+                      ' day' +
+                      (((todo.due.day - today.day) == 1) ? '' : 's'),
+                  style: TextStyle(
+                      color: ((todo.due.day - today.day) > 0)
+                          ? Colors.green
+                          : Colors.red)),
               // TextSpan(text: ' world!'),
             ],
           ),
@@ -191,10 +186,7 @@ class ProjectTabContent extends StatelessWidget {
   Widget ongoingChip(Todo todo, Color color) {
     return Chip(
         backgroundColor: Colors.white,
-        avatar: CircleAvatar(
-          backgroundColor: color,
-          child: Icon(Icons.navigate_next),
-        ),
+        avatar: TodoHelper.getCircularAvatarFromTodo(todo),
         // label: Text(todo.title),
         label: RichText(
           text: TextSpan(
@@ -211,10 +203,7 @@ class ProjectTabContent extends StatelessWidget {
   Widget finishedChip(Todo todo, Color color) {
     return Chip(
         backgroundColor: Colors.white,
-        avatar: CircleAvatar(
-          backgroundColor: color,
-          child: Icon(Icons.navigate_next),
-        ),
+        avatar: TodoHelper.getCircularAvatarFromTodo(todo),
         // label: Text(todo.title),
         label: RichText(
           text: TextSpan(
