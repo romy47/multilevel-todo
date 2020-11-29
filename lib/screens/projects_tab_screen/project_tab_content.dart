@@ -20,8 +20,12 @@ class ProjectTabContent extends StatelessWidget {
           Flexible(
             fit: FlexFit.tight,
             child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey),
+                  ),
+                ),
                 width: double.maxFinite,
-                color: Colors.blue[100],
                 child: DragTarget(onWillAccept: (data) {
                   return true;
                 }, onAccept: (data) {
@@ -34,7 +38,6 @@ class ProjectTabContent extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        color: Colors.blue[100],
                         width: double.maxFinite,
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(vertical: 8),
@@ -51,8 +54,12 @@ class ProjectTabContent extends StatelessWidget {
           Flexible(
             fit: FlexFit.tight,
             child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey),
+                  ),
+                ),
                 width: double.maxFinite,
-                color: Colors.amber[100],
                 child: DragTarget(onWillAccept: (data) {
                   return true;
                 }, onAccept: (data) {
@@ -65,7 +72,6 @@ class ProjectTabContent extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        color: Colors.amber[100],
                         width: double.maxFinite,
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(vertical: 8),
@@ -81,7 +87,8 @@ class ProjectTabContent extends StatelessWidget {
           ),
           Container(
               width: double.maxFinite,
-              color: Colors.green[100],
+              // color: Colors.green[100],
+              color: Colors.white,
               child: DragTarget(onWillAccept: (data) {
                 return true;
               }, onAccept: (data) {
@@ -96,7 +103,6 @@ class ProjectTabContent extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      color: Colors.green[100],
                       width: double.maxFinite,
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(vertical: 8),
@@ -121,7 +127,6 @@ class ProjectTabContent extends StatelessWidget {
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Container(
-              color: Colors.blue[100],
               width: double.infinity,
               // child:
               // Consumer<List<Project>>(builder: (context, projects, child) {
@@ -159,10 +164,26 @@ class ProjectTabContent extends StatelessWidget {
 
   Widget todoChip(Todo todo, Color color) {
     DateTime today = DateTime.now();
+    if (todo.due.day < today.day) {
+      return todoChipOverdue(todo);
+    } else {
+      return todoChipFuture(todo);
+    }
+  }
+
+  Widget todoChipOverdue(Todo todo) {
+    DateTime today = DateTime.now();
     return Chip(
         backgroundColor: Colors.white,
-        avatar: TodoHelper.getCircularAvatarFromTodo(todo),
-        // label: Text(todo.title),
+        avatar: CircleAvatar(
+          backgroundColor: Colors.red[300],
+          child: new IconTheme(
+            data: new IconThemeData(color: Colors.white),
+            child: Icon(Icons.priority_high),
+          ),
+        ),
+        shape: StadiumBorder(
+            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
         label: RichText(
           text: TextSpan(
             text: todo.title,
@@ -177,7 +198,31 @@ class ProjectTabContent extends StatelessWidget {
                       color: ((todo.due.day - today.day) > 0)
                           ? Colors.green
                           : Colors.red)),
-              // TextSpan(text: ' world!'),
+            ],
+          ),
+        ));
+  }
+
+  Widget todoChipFuture(Todo todo) {
+    DateTime today = DateTime.now();
+    return Chip(
+        backgroundColor: Colors.white,
+        shape: StadiumBorder(
+            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
+        label: RichText(
+          text: TextSpan(
+            text: todo.title,
+            style: TextStyle(color: Colors.black),
+            children: <TextSpan>[
+              TextSpan(
+                  text: ' ' +
+                      (todo.due.day - today.day).toString() +
+                      ' day' +
+                      (((todo.due.day - today.day) == 1) ? '' : 's'),
+                  style: TextStyle(
+                      color: ((todo.due.day - today.day) > 0)
+                          ? Colors.green
+                          : Colors.red)),
             ],
           ),
         ));
@@ -185,16 +230,16 @@ class ProjectTabContent extends StatelessWidget {
 
   Widget ongoingChip(Todo todo, Color color) {
     return Chip(
+        shape: StadiumBorder(
+            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
         backgroundColor: Colors.white,
-        avatar: TodoHelper.getCircularAvatarFromTodo(todo),
-        // label: Text(todo.title),
+        // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
         label: RichText(
           text: TextSpan(
             text: todo.title,
             style: TextStyle(color: Colors.black),
             children: <TextSpan>[
               TextSpan(text: '', style: TextStyle(color: Colors.red)),
-              // TextSpan(text: ' world!'),
             ],
           ),
         ));
@@ -202,8 +247,10 @@ class ProjectTabContent extends StatelessWidget {
 
   Widget finishedChip(Todo todo, Color color) {
     return Chip(
+        shape: StadiumBorder(
+            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
         backgroundColor: Colors.white,
-        avatar: TodoHelper.getCircularAvatarFromTodo(todo),
+        // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
         // label: Text(todo.title),
         label: RichText(
           text: TextSpan(
@@ -225,7 +272,6 @@ class ProjectTabContent extends StatelessWidget {
         scrollDirection: Axis.vertical,
         child: Container(
             width: double.infinity,
-            color: Colors.amber[100],
             // child: Consumer<List<Project>>(builder: (context, projects, child) {
             child: Consumer<List<Todo>>(
               builder: (context, todos, child) {
@@ -261,7 +307,6 @@ class ProjectTabContent extends StatelessWidget {
       scrollDirection: Axis.vertical,
       child: Container(
           width: double.infinity,
-          color: Colors.green[100],
           // constraints: BoxConstraints.expand(height: 200.0),
           // child: Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(

@@ -69,14 +69,18 @@ class TodoHelper {
     if (todo.status == TodoStatus.finished.value) {
       // if (todo.due.day == today.day) {
       ic = Icon(Icons.done);
+      cl = Colors.grey[600];
       // }
     } else {
       if (todo.due.day < today.day) {
         ic = Icon(Icons.priority_high);
+        cl = Colors.red[300];
       } else if (todo.due.day == today.day) {
         ic = Icon(Icons.play_arrow);
+        cl = Colors.amber[300];
       } else {
         ic = Icon(Icons.radio_button_unchecked);
+        cl = Colors.green[300];
       }
     }
 
