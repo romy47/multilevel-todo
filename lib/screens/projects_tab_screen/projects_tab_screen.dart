@@ -39,7 +39,7 @@ class _ProjectsTabState extends State<ProjectsTab> {
         floatingActionButton: FloatingActionButton(
           onPressed: () => {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateTodoScreen()))
+                MaterialPageRoute(builder: (context) => CreateTodoWrapper()))
           },
           tooltip: 'Add Todo',
           child: const Icon(Icons.add),

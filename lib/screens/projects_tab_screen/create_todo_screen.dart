@@ -4,155 +4,180 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
-import 'package:second_attempt/providers/home_tab_provider.dart';
-import 'package:second_attempt/providers/todo_provider.dart';
 import 'package:second_attempt/services/database_service.dart';
 
+class CreateTodoWrapper extends StatefulWidget {
+  @override
+  _CreateTodoWrapperState createState() => _CreateTodoWrapperState();
+}
+
+class _CreateTodoWrapperState extends State<CreateTodoWrapper> {
+  @override
+  Widget build(BuildContext context) {
+    // finishedTodos = Provider.of<TodoProvider>(context, listen: false)
+    //     .getTasksByLevel(TodoStatus.finished, 'all');
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: Center(child: const Text('Timeline')),
+      // ),
+      body: Consumer<List<Project>>(
+        builder: (context, projects, child) => CreateTodoScreen(
+          projects: projects == null ? [] : projects,
+        ),
+      ),
+    );
+  }
+}
+
 class CreateTodoScreen extends StatefulWidget {
+  final List<Project> projects;
+  const CreateTodoScreen({
+    @required this.projects,
+    Key key,
+  }) : super(key: key);
   @override
   _CreateTodoScreenState createState() => _CreateTodoScreenState();
 }
 
 class _CreateTodoScreenState extends State<CreateTodoScreen> {
   String selectedProjectId;
-  Project selectedProject;
+  // Project selectedProject;
   String selectedDueDateOption;
   String selectedRepeat;
+
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
   List<String> repeatOptions = ['Daily', 'Weekly'];
   List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Pick Date'];
+
+  _CreateTodoScreenState() {}
+  @override
+  void initState() {
+    super.initState();
+    this.selectedDueDateOption = dueDateOptions[1];
+    DateTime now = DateTime.now();
+    this.selectedDueDate = DateTime(now.year, now.month, now.day + 1);
+    this.selectedProjectId =
+        widget.projects != null ? widget.projects[0].id : null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Create Todo'),
       ),
-      body: Column(children: [
-        TextFormField(
-          decoration: InputDecoration(
-            // icon: Icon(Icons.),
-            labelText: 'Task Name',
+      body: Container(
+        margin: EdgeInsets.all(10.0),
+        child: Column(children: [
+          TextFormField(
+            decoration: InputDecoration(
+              // icon: Icon(Icons.),
+              labelText: 'Task Name',
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please name your todo';
+              } else {
+                return null;
+              }
+            },
+            controller: _todoTitleTextController,
           ),
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'Please name your todo';
-            } else {
-              return null;
-            }
-          },
-          controller: _todoTitleTextController,
-        ),
-        projectDropDown(context),
-        dueDateDropDown(context),
-        RaisedButton(
-          onPressed: () => {
-            // Provider.of<TodoProvider>(context, listen: false).addNewTodo(Todo(
-            //     '',
-            //     this.selectedProjectId,
-            //     _todoTitleTextController.text,
-            //     TodoStatus.todo.value,
-            //     this.selectedDueDate,
-            //     0,
-            //     new DateTime(
-            //       this.selectedDueDate.year,
-            //       this.selectedDueDate.month,
-            //       this.selectedDueDate.day,
-            //     )
-            //     // this.selectedDueDate
-            //     )),
-            DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                .addTodo(new Todo(
-                    '',
-                    this.selectedProjectId,
-                    _todoTitleTextController.text,
-                    // this.selectedProject.title,
-                    // this.selectedProject.color,
-                    TodoStatus.todo.value,
-                    this.selectedDueDate,
-                    0,
-                    new DateTime(
-                      this.selectedDueDate.year,
-                      this.selectedDueDate.month,
-                      this.selectedDueDate.day,
-                    ),
-                    new DateTime(
-                      DateTime.now().year + 100,
-                      DateTime.now().month,
-                      DateTime.now().day,
-                    ))),
-            Navigator.of(context).pop(),
-            // Scaffold.of(context).showSnackBar(SnackBar(
-            //     content: Text('"' +
-            //         _todoTitleTextController.text +
-            //         '" is added as a Todo'))
-            //         )
-          },
-          child: Text('Create Todo'),
-        )
-      ]),
+          projectDropDown(context),
+          dueDateDropDown(context),
+          Container(
+              height: 50,
+              width: double.maxFinite,
+              margin: EdgeInsets.only(top: 20),
+              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+              child: RaisedButton(
+                textColor: Colors.white,
+                color: Colors.blue,
+                child: Text('Save Todo'),
+                onPressed: () {
+                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                      .addTodo(new Todo(
+                          '',
+                          this.selectedProjectId,
+                          _todoTitleTextController.text,
+                          TodoStatus.todo.value,
+                          this.selectedDueDate,
+                          0,
+                          new DateTime(
+                            this.selectedDueDate.year,
+                            this.selectedDueDate.month,
+                            this.selectedDueDate.day,
+                          ),
+                          new DateTime(
+                            DateTime.now().year + 100,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                          )));
+                  Navigator.of(context).pop();
+                },
+              )),
+        ]),
+      ),
     );
   }
 
   Widget projectDropDown(context) {
-    return Consumer<List<Project>>(builder: (context, projects, child) {
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5),
-        child: DropdownButton<String>(
-            value: selectedProjectId,
-            isExpanded: true,
-            items: projects.map((Project project) {
-              return new DropdownMenuItem<String>(
-                value: project.id,
-                child: (project.id == selectedProjectId)
-                    ? new Text(
-                        project.title,
-                        style: TextStyle(color: Colors.blue[300]),
-                      )
-                    : new Text(
-                        project.title,
-                        style: TextStyle(color: Colors.black),
-                      ),
-              );
-            }).toList(),
-            hint: selectedProjectId == null
-                ? Text('Select Project')
-                : Text(
-                    projects
-                        .firstWhere(
-                            (project) => project.id == selectedProjectId)
-                        .title,
-                    style: TextStyle(color: Colors.blue),
-                  ),
-            onChanged: (newVal) {
-              setState(() {
-                selectedProjectId = newVal;
-                selectedProject = projects
-                    .firstWhere((element) => element.id == selectedProjectId);
-              });
-            }),
-      );
-    });
-  }
-
-  Widget dueDateDropDown(context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5),
-      child: DropdownButton<String>(
-          value: selectedDueDateOption,
+    return Container(
+      margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
+      child: DropdownButtonFormField<String>(
+          value: selectedProjectId,
           isExpanded: true,
-          items: this.dueDateOptions.map((String option) {
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              labelStyle: TextStyle(),
+              labelText: 'Project'),
+          items: widget.projects.map((Project project) {
             return new DropdownMenuItem<String>(
-              value: option,
-              child: (option == selectedDueDateOption)
+              value: project.id,
+              child: (project.id == selectedProjectId)
                   ? new Text(
-                      option,
+                      project.title,
                       style: TextStyle(color: Colors.blue[300]),
                     )
                   : new Text(
-                      option,
+                      project.title,
                       style: TextStyle(color: Colors.black),
                     ),
+            );
+          }).toList(),
+          onChanged: (newVal) {
+            setState(() {
+              this.selectedProjectId = newVal;
+              print(selectedProjectId);
+            });
+          }),
+    );
+  }
+
+  Widget dueDateDropDown(context) {
+    // setState(() {
+
+    // });
+    return Container(
+      margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
+      child: DropdownButtonFormField<String>(
+          value: selectedDueDateOption,
+          isExpanded: true,
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              labelStyle: TextStyle(),
+              labelText: 'Due Date'),
+          items: this.dueDateOptions.map((String option) {
+            return new DropdownMenuItem<String>(
+              value: option,
+              child: new Text(
+                option,
+                style: TextStyle(
+                    color: (option == selectedDueDateOption)
+                        ? Colors.blue[300]
+                        : Colors.black),
+              ),
             );
           }).toList(),
           hint: selectedDueDateOption == null
@@ -164,17 +189,19 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                   style: TextStyle(color: Colors.blue),
                 ),
           onChanged: (newVal) {
-            this.setState(() {
+            setState(() {
               final now = DateTime.now();
               this.selectedDueDateOption = newVal;
               if (newVal == 'Pick Date') {
                 _selectDate(context);
               } else if (newVal == 'Today') {
-                selectedDueDate = now;
+                this.selectedDueDate = now;
               } else if (newVal == 'Tomorrow') {
-                selectedDueDate = DateTime(now.year, now.month, now.day + 1);
+                this.selectedDueDate =
+                    DateTime(now.year, now.month, now.day + 1);
               } else if (newVal == 'Next Week') {
-                selectedDueDate = DateTime(now.year, now.month, now.day + 7);
+                this.selectedDueDate =
+                    DateTime(now.year, now.month, now.day + 7);
               }
             });
           }),
@@ -190,7 +217,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     );
     if (picked != null && picked != selectedDueDate)
       setState(() {
-        selectedDueDate = picked;
+        this.selectedDueDate = picked;
       });
   }
 }
