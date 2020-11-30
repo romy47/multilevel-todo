@@ -403,22 +403,26 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
           ),
           // margin: EdgeInsets.only(top: 1),
         ),
-        Chip(
-            backgroundColor: new Color(todo.projectColor),
-            // label: Text(todo.title),
-            label: RichText(
-              text: TextSpan(
-                text: todo.projectTitle,
-                style: TextStyle(
-                  color: Colors.black,
-                  // decoration: TextDecoration.lineThrough,
+        Transform(
+          transform: new Matrix4.identity()..scale(0.8),
+          alignment: FractionalOffset.centerRight,
+          child: Chip(
+              backgroundColor: new Color(todo.projectColor),
+              // label: Text(todo.title),
+              label: RichText(
+                text: TextSpan(
+                  text: todo.projectTitle,
+                  style: TextStyle(
+                    color: Colors.white,
+                    // decoration: TextDecoration.lineThrough,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(text: '', style: TextStyle(color: Colors.red)),
+                    // TextSpan(text: ' world!'),
+                  ],
                 ),
-                children: <TextSpan>[
-                  TextSpan(text: '', style: TextStyle(color: Colors.red)),
-                  // TextSpan(text: ' world!'),
-                ],
-              ),
-            ))
+              )),
+        )
       ],
     );
   }

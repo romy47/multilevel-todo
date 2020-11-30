@@ -22,48 +22,89 @@ class _ProjectsState extends State<Projects> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Center(child: const Text('Projects')),
-        // ),
-        body: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InkWell(
-            child: Card(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Create New Project',
-                ),
-              ),
-            ),
-            onTap: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => CreateProject()))
-                }),
-        Container(
-          child: Consumer<List<Project>>(builder: (context, projects, child) {
-            return ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: (projects == null) ? 0 : projects.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                    child: Card(
-                      color: new Color(projects[index].color),
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          projects[index].title,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // InkWell(
+          //     child: Card(
+          //       child: Padding(
+          //         padding: EdgeInsets.all(16.0),
+          //         child: Text(
+          //           'Create New Project',
+          //         ),
+          //       ),
+          //     ),
+          //     onTap: () => {
+          //           Navigator.push(
+          //               context,
+          //               MaterialPageRoute(
+          //                   builder: (context) => CreateProject()))
+          //         }),
+          Container(
+            child: Consumer<List<Project>>(builder: (context, projects, child) {
+              return ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: (projects == null) ? 0 : projects.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                      child: Card(
+                        color: new Color(projects[index].color),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Row(children: [
+                            Flexible(
+                              flex: 1,
+                              fit: FlexFit.tight,
+                              child: Text(projects[index].title,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.00,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right: 5.0),
+                              child: Ink(
+                                decoration: const ShapeDecoration(
+                                  color: Colors.white,
+                                  shape: CircleBorder(),
+                                ),
+                                child: IconButton(
+                                  onPressed: () => {},
+                                  icon: Icon(Icons.edit_outlined),
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                            Ink(
+                              decoration: const ShapeDecoration(
+                                color: Colors.white,
+                                shape: CircleBorder(),
+                              ),
+                              child: IconButton(
+                                onPressed: () => {},
+                                icon: Icon(Icons.delete_outline),
+                                color: Colors.red,
+                              ),
+                            )
+                          ]),
                         ),
                       ),
-                    ),
-                    onTap: () => {});
-              },
-            );
-          }),
-        )
-      ],
-    ));
+                      onTap: () => {});
+                },
+              );
+            }),
+          )
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateProject()))
+        },
+        tooltip: 'Add Project',
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
