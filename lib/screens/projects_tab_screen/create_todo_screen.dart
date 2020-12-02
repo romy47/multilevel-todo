@@ -101,6 +101,8 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           '',
                           this.selectedProjectId,
                           _todoTitleTextController.text,
+                          null,
+                          null,
                           TodoStatus.todo.value,
                           this.selectedDueDate,
                           0,
@@ -183,8 +185,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           hint: selectedDueDateOption == null
               ? Text('Select Due Date')
               : Text(
-                  // dueDateOptions
-                  //     .firstWhere((option) => option == selectedDueDateOption),
                   DateFormat('yyyy-MM-dd – kk:mm').format(selectedDueDate),
                   style: TextStyle(color: Colors.blue),
                 ),

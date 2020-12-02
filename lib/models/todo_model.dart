@@ -13,8 +13,8 @@ class Todo {
     this.id,
     this.projectId,
     this.title,
-    // this.projectTitle,
-    // this.projectColor,
+    this.projectTitle,
+    this.projectColor,
     this.status,
     this.due,
     this.repeat,
@@ -27,8 +27,12 @@ class Todo {
       : id = parsedJSON['id'],
         projectId = parsedJSON['projectId'],
         title = parsedJSON['title'],
-        // projectTitle = parsedJSON['projectTitle'],
-        // projectColor = parsedJSON['projectColor'],
+        projectTitle = parsedJSON['projectTitle'] != null
+            ? parsedJSON['projectTitle']
+            : null,
+        projectColor = parsedJSON['projectColor'] != null
+            ? parsedJSON['projectColor']
+            : null,
         status = parsedJSON['status'],
         due = parsedJSON['due'].toDate(),
         repeat = parsedJSON['repeat'],
@@ -41,8 +45,8 @@ class Todo {
         'id': id,
         'projectId': projectId,
         'title': title,
-        // 'projectTitle': projectTitle,
-        // 'projectColor': projectColor,
+        'projectTitle': projectTitle != null ? projectTitle : null,
+        'projectColor': projectColor != null ? projectColor : null,
         'status': status,
         'due': due,
         'repeat': repeat,

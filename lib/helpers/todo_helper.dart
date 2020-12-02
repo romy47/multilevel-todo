@@ -16,6 +16,7 @@ class TodoHelper {
 
   static List<Todo> getTasksWithProjectByLevel(List<Project> projects,
       List<Todo> tasks, TodoStatus status, String projectId) {
+    print(status);
     List<Todo> res = [];
     if (status == TodoStatus.todo) {
       res = tasks
@@ -36,19 +37,18 @@ class TodoHelper {
     if (projectId != 'all') {
       res = res.where((element) => element.projectId == projectId).toList();
     }
-    res.forEach((task) {
-      Project proj = TodoHelper.getProjectfromTodo(projects, task);
-      task.projectTitle = proj.title;
-      task.projectColor = proj.color;
-    });
-    return res;
-  }
+    if (status != TodoStatus.finished) {
+      print('Not finished');
+      res.forEach((task) {
+        Project proj = TodoHelper.getProjectfromTodo(projects, task);
+        task.projectTitle = proj.title;
+        task.projectColor = proj.color;
+      });
+    } else {
+      print('finished');
+    }
 
-  static Todo getTaskWithProjectByLevel(List<Project> projects, Todo task) {
-    Project proj = TodoHelper.getProjectfromTodo(projects, task);
-    task.projectTitle = proj.title;
-    task.projectColor = proj.color;
-    return task;
+    return res;
   }
 
   static Project getProjectfromTodo(List<Project> projects, Todo todo) {

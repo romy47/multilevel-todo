@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
@@ -107,6 +106,40 @@ class DatabaseServices {
     return ref.set(addTodoData);
   }
 
+  deleteProject(String projectId) {
+    CollectionReference ref = _fireStoreDataBase
+        .collection('projects')
+        .doc(uid)
+        .collection('project');
+    ref.doc(projectId).delete();
+
+    final _batch = _fireStoreDataBase.batch();
+
+    _fireStoreDataBase
+        .collection('todos')
+        .doc(this.uid)
+        .collection('todo')
+        .where('status', isNotEqualTo: TodoStatus.finished.value)
+        .where('projectId', isEqualTo: projectId)
+        .get()
+        .then((qs) => {
+              qs.docs.forEach((doc) {
+                _batch.delete(doc.reference);
+              }),
+              _batch.commit()
+            });
+
+    // QuerySnapshot _query =
+    //     await dbUsers.where('postId', isEqualTo: thatDocumentID).getDocuments();
+
+    // _finishedTodoRef.forEach((doc) {
+    //   _batch.delete(dbUsers.document(doc.documentID));
+    // });
+
+    // await _batch.commit();
+    // return _db.collection('jobs').document(jobId).delete();
+  }
+
   changeTodoSTatus(Todo todo, TodoStatus status) {
     DocumentReference ref = _fireStoreDataBase
         .collection('todos')
@@ -119,14 +152,6 @@ class DatabaseServices {
       todo.status = status.value;
 
       todo.finishedAt = DateTime.now();
-
-      // //delete this
-      // todo.finishedAt = new DateTime(
-      //   DateTime.now().year,
-      //   DateTime.now().month,
-      //   DateTime.now().day - 1,
-      // );
-
       ref.update(todo.toJson()).then((value) => {});
     } else {
       if (todo.status == TodoStatus.finished.value) {

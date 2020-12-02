@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:second_attempt/helpers/todo_helper.dart';
-import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
-import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
-import 'package:second_attempt/screens/projects_list_screen/projects_screen.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class TimelineScreen extends StatefulWidget {
@@ -17,31 +13,20 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   @override
   Widget build(BuildContext context) {
-    // finishedTodos = Provider.of<TodoProvider>(context, listen: false)
-    //     .getTasksByLevel(TodoStatus.finished, 'all');
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Center(child: const Text('Timeline')),
-      // ),
-      body: Consumer<List<Project>>(builder: (context, projects, child) {
-        return Consumer<TodoProvider>(
-          builder: (context, todoProvider, _) => ProjectTimeline(
-            todoProvider: todoProvider,
-            projects: projects == null ? [] : projects,
-          ),
-        );
-      }),
+      body: Consumer<TodoProvider>(
+        builder: (context, todoProvider, _) => ProjectTimeline(
+          todoProvider: todoProvider,
+        ),
+      ),
     );
   }
 }
 
 class ProjectTimeline extends StatefulWidget {
-  // ProjectTimeline() {}
   final TodoProvider todoProvider;
-  final List<Project> projects;
   const ProjectTimeline({
     @required this.todoProvider,
-    @required this.projects,
     Key key,
   }) : super(key: key);
 
@@ -390,7 +375,6 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
   }
 
   Widget finishedTodo(Todo todo) {
-    todo = TodoHelper.getTaskWithProjectByLevel(widget.projects, todo);
     print('Chip Level' + todo.title);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
