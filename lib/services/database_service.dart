@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
+import 'package:second_attempt/screens/projects_list_screen/edit_project_screen.dart';
 
 class DatabaseServices {
   final String uid;
@@ -128,16 +129,30 @@ class DatabaseServices {
               }),
               _batch.commit()
             });
+  }
 
-    // QuerySnapshot _query =
-    //     await dbUsers.where('postId', isEqualTo: thatDocumentID).getDocuments();
+  editProject(Project project) {
+    DocumentReference ref = _fireStoreDataBase
+        .collection('projects')
+        .doc(uid)
+        .collection('project')
+        .doc(project.id);
+    ref.update(project.toJson()).then((value) => {});
+  }
 
-    // _finishedTodoRef.forEach((doc) {
-    //   _batch.delete(dbUsers.document(doc.documentID));
-    // });
+  editTodo(Todo todo) {
+    DocumentReference ref = _fireStoreDataBase
+        .collection('todos')
+        .doc(uid)
+        .collection('todo')
+        .doc(todo.id);
+    ref.update(todo.toJson()).then((value) => {});
+  }
 
-    // await _batch.commit();
-    // return _db.collection('jobs').document(jobId).delete();
+  deleteTodo(String todoId) {
+    CollectionReference ref =
+        _fireStoreDataBase.collection('todos').doc(uid).collection('todo');
+    ref.doc(todoId).delete();
   }
 
   changeTodoSTatus(Todo todo, TodoStatus status) {

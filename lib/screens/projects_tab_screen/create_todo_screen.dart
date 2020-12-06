@@ -48,7 +48,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
   List<String> repeatOptions = ['Daily', 'Weekly'];
-  List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Pick Date'];
+  List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Custom'];
 
   _CreateTodoScreenState() {}
   @override
@@ -86,6 +86,19 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           ),
           projectDropDown(context),
           dueDateDropDown(context),
+          Container(
+              margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
+              child: CheckboxListTile(
+                title: Text("Finished"),
+                value: false,
+                onChanged: (newValue) {
+                  setState(() {
+                    //  checkedValue = newValue;
+                  });
+                },
+                controlAffinity:
+                    ListTileControlAffinity.leading, //  <-- leading Che ckbox
+              )),
           Container(
               height: 50,
               width: double.maxFinite,
@@ -163,48 +176,63 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     // });
     return Container(
       margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
-      child: DropdownButtonFormField<String>(
-          value: selectedDueDateOption,
-          isExpanded: true,
-          decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              labelStyle: TextStyle(),
-              labelText: 'Due Date'),
-          items: this.dueDateOptions.map((String option) {
-            return new DropdownMenuItem<String>(
-              value: option,
-              child: new Text(
-                option,
-                style: TextStyle(
-                    color: (option == selectedDueDateOption)
-                        ? Colors.blue[300]
-                        : Colors.black),
-              ),
-            );
-          }).toList(),
-          hint: selectedDueDateOption == null
-              ? Text('Select Due Date')
-              : Text(
-                  DateFormat('yyyy-MM-dd – kk:mm').format(selectedDueDate),
-                  style: TextStyle(color: Colors.blue),
-                ),
-          onChanged: (newVal) {
-            setState(() {
-              final now = DateTime.now();
-              this.selectedDueDateOption = newVal;
-              if (newVal == 'Pick Date') {
-                _selectDate(context);
-              } else if (newVal == 'Today') {
-                this.selectedDueDate = now;
-              } else if (newVal == 'Tomorrow') {
-                this.selectedDueDate =
-                    DateTime(now.year, now.month, now.day + 1);
-              } else if (newVal == 'Next Week') {
-                this.selectedDueDate =
-                    DateTime(now.year, now.month, now.day + 7);
-              }
-            });
-          }),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            flex: 1,
+            child: DropdownButtonFormField<String>(
+                value: selectedDueDateOption,
+                isExpanded: true,
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    labelStyle: TextStyle(),
+                    labelText: 'Due Date'),
+                items: this.dueDateOptions.map((String option) {
+                  return new DropdownMenuItem<String>(
+                    value: option,
+                    child: new Text(
+                      option,
+                      style: TextStyle(
+                          color: (option == selectedDueDateOption)
+                              ? Colors.blue[300]
+                              : Colors.black),
+                    ),
+                  );
+                }).toList(),
+                hint: selectedDueDateOption == null
+                    ? Text('Select Due Date')
+                    : Text(
+                        DateFormat('yyyy-MM-dd – kk:mm')
+                            .format(selectedDueDate),
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                onChanged: (newVal) {
+                  setState(() {
+                    final now = DateTime.now();
+                    this.selectedDueDateOption = newVal;
+                    if (newVal == 'Custom') {
+                      _selectDate(context);
+                    } else if (newVal == 'Today') {
+                      this.selectedDueDate = now;
+                    } else if (newVal == 'Tomorrow') {
+                      this.selectedDueDate =
+                          DateTime(now.year, now.month, now.day + 1);
+                    } else if (newVal == 'Next Week') {
+                      this.selectedDueDate =
+                          DateTime(now.year, now.month, now.day + 7);
+                    }
+                  });
+                }),
+          ),
+          Flexible(
+              flex: 1,
+              child: Text(
+                DateFormat.yMMMd('en_US').format(selectedDueDate),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ))
+        ],
+      ),
     );
   }
 

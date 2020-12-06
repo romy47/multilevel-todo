@@ -9,6 +9,8 @@ class Project {
         id = parsedJSON['id'],
         color = parsedJSON['color'],
         uid = parsedJSON['uid'];
+  Map<String, dynamic> toJson() =>
+      {'title': title, 'id': id, 'uid': uid, 'color': color};
 
   @override
   bool operator ==(project) => project.id == id;

@@ -4,14 +4,15 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/services/database_service.dart';
 
-class CreateProject extends StatefulWidget {
+class EditProject extends StatefulWidget {
   @override
-  _CreateProjectState createState() => _CreateProjectState();
+  _EditProjectState createState() => _EditProjectState();
+  final Project project;
+  const EditProject(this.project);
 }
 
-class _CreateProjectState extends State<CreateProject> {
-  Color pickerColor = Colors.purple;
-  // Color currentColor = Colors.green;
+class _EditProjectState extends State<EditProject> {
+  Color pickerColor;
   final projectTitleTextController = TextEditingController();
 
   void changeColor(Color color) {
@@ -22,14 +23,15 @@ class _CreateProjectState extends State<CreateProject> {
   @override
   void initState() {
     super.initState();
-    pickerColor = Colors.green;
+    pickerColor = new Color(widget.project.color);
+    projectTitleTextController.text = widget.project.title;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Create Project'),
+          title: Text('Edit Project'),
         ),
         body: createProjectDialog(context));
   }
@@ -99,12 +101,10 @@ class _CreateProjectState extends State<CreateProject> {
                 color: Colors.blue,
                 child: Text('Save Project'),
                 onPressed: () {
+                  widget.project.title = projectTitleTextController.text;
+                  widget.project.color = pickerColor.value;
                   DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                      .addProject(new Project(
-                          projectTitleTextController.text,
-                          '',
-                          pickerColor.value,
-                          FirebaseAuth.instance.currentUser.uid));
+                      .editProject(widget.project);
                   Navigator.pop(context);
                 },
               )),

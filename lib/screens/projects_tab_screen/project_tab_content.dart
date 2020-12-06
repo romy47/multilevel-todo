@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
+import 'package:second_attempt/screens/edit_todo_screen/edit_todo_screen.dart';
+import 'package:second_attempt/screens/projects_list_screen/create_project_screen.dart';
 import 'package:second_attempt/services/database_service.dart';
 
 class ProjectTabContent extends StatelessWidget {
@@ -46,7 +48,7 @@ class ProjectTabContent extends StatelessWidget {
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ),
-                      todos(),
+                      todos(context),
                     ],
                   );
                 })),
@@ -80,7 +82,7 @@ class ProjectTabContent extends StatelessWidget {
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ),
-                      onGoing(),
+                      onGoing(context),
                     ],
                   );
                 })),
@@ -111,7 +113,7 @@ class ProjectTabContent extends StatelessWidget {
                         style: TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     ),
-                    finished(),
+                    finished(context),
                   ],
                 );
               })),
@@ -121,7 +123,7 @@ class ProjectTabContent extends StatelessWidget {
     // bottomSheet: Container(height: 100.0, child: ProjectSlider()),
   }
 
-  Widget todos() {
+  Widget todos(BuildContext context) {
     return Flexible(
         fit: FlexFit.tight,
         child: SingleChildScrollView(
@@ -145,13 +147,12 @@ class ProjectTabContent extends StatelessWidget {
                               feedback: Material(
                                 color: Colors.transparent,
                                 child: todoChip(
-                                  e,
-                                  new Color(e.projectColor),
-                                ),
+                                    e, new Color(e.projectColor), context),
                               ),
-                              child: todoChip(e, new Color(e.projectColor)),
-                              childWhenDragging:
-                                  todoChip(e, new Color(e.projectColor)),
+                              child: todoChip(
+                                  e, new Color(e.projectColor), context),
+                              childWhenDragging: todoChip(
+                                  e, new Color(e.projectColor), context),
                             ),
                           ))
                       .toList()
@@ -162,112 +163,137 @@ class ProjectTabContent extends StatelessWidget {
         ));
   }
 
-  Widget todoChip(Todo todo, Color color) {
+  Widget todoChip(Todo todo, Color color, BuildContext context) {
     DateTime today = DateTime.now();
     if (todo.due.day < today.day) {
-      return todoChipOverdue(todo);
+      return todoChipOverdue(todo, context);
     } else {
-      return todoChipFuture(todo);
+      return todoChipFuture(todo, context);
     }
   }
 
-  Widget todoChipOverdue(Todo todo) {
+  Widget todoChipOverdue(Todo todo, BuildContext context) {
     DateTime today = DateTime.now();
-    return Chip(
-        backgroundColor: Colors.white,
-        avatar: CircleAvatar(
-          backgroundColor: Colors.red[300],
-          child: new IconTheme(
-            data: new IconThemeData(color: Colors.white),
-            child: Icon(Icons.priority_high),
+    return InkWell(
+        child: Chip(
+          backgroundColor: Colors.white,
+          avatar: CircleAvatar(
+            backgroundColor: Colors.red[300],
+            child: new IconTheme(
+              data: new IconThemeData(color: Colors.white),
+              child: Icon(Icons.priority_high),
+            ),
+          ),
+          shape: StadiumBorder(
+              side:
+                  BorderSide(color: new Color(todo.projectColor), width: 2.0)),
+          label: RichText(
+            text: TextSpan(
+              text: todo.title,
+              style: TextStyle(color: Colors.black),
+              children: <TextSpan>[
+                TextSpan(
+                    text: ' ' +
+                        (todo.due.day - today.day).toString() +
+                        ' day' +
+                        (((todo.due.day - today.day) == 1) ? '' : 's'),
+                    style: TextStyle(
+                        color: ((todo.due.day - today.day) > 0)
+                            ? Colors.green
+                            : Colors.red)),
+              ],
+            ),
           ),
         ),
-        shape: StadiumBorder(
-            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
-        label: RichText(
-          text: TextSpan(
-            text: todo.title,
-            style: TextStyle(color: Colors.black),
-            children: <TextSpan>[
-              TextSpan(
-                  text: ' ' +
-                      (todo.due.day - today.day).toString() +
-                      ' day' +
-                      (((todo.due.day - today.day) == 1) ? '' : 's'),
-                  style: TextStyle(
-                      color: ((todo.due.day - today.day) > 0)
-                          ? Colors.green
-                          : Colors.red)),
-            ],
-          ),
-        ));
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+        });
   }
 
-  Widget todoChipFuture(Todo todo) {
+  Widget todoChipFuture(Todo todo, BuildContext context) {
     DateTime today = DateTime.now();
-    return Chip(
-        backgroundColor: Colors.white,
-        shape: StadiumBorder(
-            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
-        label: RichText(
-          text: TextSpan(
-            text: todo.title,
-            style: TextStyle(color: Colors.black),
-            children: <TextSpan>[
-              TextSpan(
-                  text: ' ' +
-                      (todo.due.day - today.day).toString() +
-                      ' day' +
-                      (((todo.due.day - today.day) == 1) ? '' : 's'),
-                  style: TextStyle(
-                      color: ((todo.due.day - today.day) > 0)
-                          ? Colors.green
-                          : Colors.red)),
-            ],
-          ),
-        ));
+    return InkWell(
+        child: Chip(
+            backgroundColor: Colors.white,
+            shape: StadiumBorder(
+                side: BorderSide(
+                    color: new Color(todo.projectColor), width: 2.0)),
+            label: RichText(
+              text: TextSpan(
+                text: todo.title,
+                style: TextStyle(color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: ' ' +
+                          (todo.due.day - today.day).toString() +
+                          ' day' +
+                          (((todo.due.day - today.day) == 1) ? '' : 's'),
+                      style: TextStyle(
+                          color: ((todo.due.day - today.day) > 0)
+                              ? Colors.green
+                              : Colors.red)),
+                ],
+              ),
+            )),
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+        });
   }
 
-  Widget ongoingChip(Todo todo, Color color) {
-    return Chip(
-        shape: StadiumBorder(
-            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
-        backgroundColor: Colors.white,
-        // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
-        label: RichText(
-          text: TextSpan(
-            text: todo.title,
-            style: TextStyle(color: Colors.black),
-            children: <TextSpan>[
-              TextSpan(text: '', style: TextStyle(color: Colors.red)),
-            ],
-          ),
-        ));
+  Widget ongoingChip(Todo todo, BuildContext context) {
+    return InkWell(
+        child: Chip(
+            shape: StadiumBorder(
+                side: BorderSide(
+                    color: new Color(todo.projectColor), width: 2.0)),
+            backgroundColor: Colors.white,
+            // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
+            label: RichText(
+              text: TextSpan(
+                text: todo.title,
+                style: TextStyle(color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(text: '', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            )),
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+        });
   }
 
-  Widget finishedChip(Todo todo, Color color) {
-    return Chip(
-        shape: StadiumBorder(
-            side: BorderSide(color: new Color(todo.projectColor), width: 2.0)),
-        backgroundColor: Colors.white,
-        // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
-        // label: Text(todo.title),
-        label: RichText(
-          text: TextSpan(
-            text: todo.title,
-            style: TextStyle(
-              color: Colors.black,
-              decoration: TextDecoration.lineThrough,
-            ),
-            children: <TextSpan>[
-              TextSpan(text: '', style: TextStyle(color: Colors.red)),
-              // TextSpan(text: ' world!'),
-            ],
-          ),
-        ));
+  Widget finishedChip(Todo todo, BuildContext context) {
+    return InkWell(
+        child: Chip(
+            shape: StadiumBorder(
+                side: BorderSide(
+                    color: new Color(todo.projectColor), width: 2.0)),
+            backgroundColor: Colors.white,
+            // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
+            // label: Text(todo.title),
+            label: RichText(
+              text: TextSpan(
+                text: todo.title,
+                style: TextStyle(
+                  color: Colors.black,
+                  decoration: TextDecoration.lineThrough,
+                ),
+                children: <TextSpan>[
+                  TextSpan(text: '', style: TextStyle(color: Colors.red)),
+                  // TextSpan(text: ' world!'),
+                ],
+              ),
+            )),
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+        });
   }
 
-  Widget onGoing() {
+  Widget onGoing(BuildContext context) {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(
@@ -285,12 +311,10 @@ class ProjectTabContent extends StatelessWidget {
                               data: e,
                               feedback: Material(
                                 color: Colors.transparent,
-                                child:
-                                    ongoingChip(e, new Color(e.projectColor)),
+                                child: ongoingChip(e, context),
                               ),
-                              child: ongoingChip(e, new Color(e.projectColor)),
-                              childWhenDragging:
-                                  ongoingChip(e, new Color(e.projectColor)),
+                              child: ongoingChip(e, context),
+                              childWhenDragging: ongoingChip(e, context),
                             ),
                           ))
                       .toList()
@@ -302,7 +326,7 @@ class ProjectTabContent extends StatelessWidget {
             ));
   }
 
-  Widget finished() {
+  Widget finished(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
@@ -321,11 +345,10 @@ class ProjectTabContent extends StatelessWidget {
                             data: e,
                             feedback: Material(
                               color: Colors.transparent,
-                              child: finishedChip(e, new Color(e.projectColor)),
+                              child: finishedChip(e, context),
                             ),
-                            child: finishedChip(e, new Color(e.projectColor)),
-                            childWhenDragging:
-                                finishedChip(e, new Color(e.projectColor)),
+                            child: finishedChip(e, context),
+                            childWhenDragging: finishedChip(e, context),
                           ),
                         ))
                     .toList()
