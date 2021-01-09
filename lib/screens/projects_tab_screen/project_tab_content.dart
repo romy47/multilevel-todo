@@ -5,7 +5,6 @@ import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/screens/edit_todo_screen/edit_todo_screen.dart';
-import 'package:second_attempt/screens/projects_list_screen/create_project_screen.dart';
 import 'package:second_attempt/services/database_service.dart';
 
 class ProjectTabContent extends StatelessWidget {
@@ -194,7 +193,7 @@ class ProjectTabContent extends StatelessWidget {
               children: <TextSpan>[
                 TextSpan(
                     text: ' ' +
-                        (todo.due.day - today.day).toString() +
+                        (todo.due.difference(today).inDays).toString() +
                         ' day' +
                         (((todo.due.day - today.day) == 1) ? '' : 's'),
                     style: TextStyle(
@@ -226,7 +225,7 @@ class ProjectTabContent extends StatelessWidget {
                 children: <TextSpan>[
                   TextSpan(
                       text: ' ' +
-                          (todo.due.day - today.day).toString() +
+                          (todo.due.difference(today).inDays).toString() +
                           ' day' +
                           (((todo.due.day - today.day) == 1) ? '' : 's'),
                       style: TextStyle(

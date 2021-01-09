@@ -149,18 +149,22 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
                       textColor: Colors.white,
                       color: Colors.blue,
                       child: Text('Save'),
-                      onPressed: () {
-                        widget.todo.title = _todoTitleTextController.text;
-                        widget.todo.projectId = this.selectedProjectId;
-                        widget.todo.due = this.selectedDueDate;
-                        if (this.isFinished) {
-                          widget.todo.finishedAt = DateTime.now();
-                          widget.todo.status = TodoStatus.finished.value;
-                        }
-                        DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                            .editTodo(widget.todo);
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: (widget.todo.status !=
+                              TodoStatus.finished.value)
+                          ? () {
+                              widget.todo.title = _todoTitleTextController.text;
+                              widget.todo.projectId = this.selectedProjectId;
+                              widget.todo.due = this.selectedDueDate;
+                              if (this.isFinished) {
+                                widget.todo.finishedAt = DateTime.now();
+                                widget.todo.status = TodoStatus.finished.value;
+                              }
+                              DatabaseServices(
+                                      FirebaseAuth.instance.currentUser.uid)
+                                  .editTodo(widget.todo);
+                              Navigator.of(context).pop();
+                            }
+                          : null,
                     )),
               ),
             ],
