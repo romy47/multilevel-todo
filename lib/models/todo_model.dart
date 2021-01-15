@@ -48,10 +48,10 @@ class Todo {
         'projectTitle': projectTitle != null ? projectTitle : null,
         'projectColor': projectColor != null ? projectColor : null,
         'status': status,
-        'due': due,
+        'due': due.toUtc(),
         'repeat': repeat,
-        'createdAt': createdAt,
-        'finishedAt': finishedAt,
+        'createdAt': createdAt.toUtc(),
+        'finishedAt': finishedAt.toUtc(),
       };
 
   @override

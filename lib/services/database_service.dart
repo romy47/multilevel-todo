@@ -141,9 +141,9 @@ class DatabaseServices {
   }
 
   editTodo(Todo todo) {
-    todo.createdAt.toUtc();
-    todo.finishedAt.toUtc();
-    todo.due.toUtc();
+    // todo.createdAt.toUtc();
+    // todo.finishedAt.toUtc();
+    // todo.due.toUtc();
     DocumentReference ref = _fireStoreDataBase
         .collection('todos')
         .doc(uid)
