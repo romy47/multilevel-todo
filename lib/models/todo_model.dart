@@ -34,12 +34,12 @@ class Todo {
             ? parsedJSON['projectColor']
             : null,
         status = parsedJSON['status'],
-        due = parsedJSON['due'].toDate(),
+        due = parsedJSON['due'].toDate().toLocal(),
         repeat = parsedJSON['repeat'],
-        createdAt = parsedJSON['createdAt'].toDate(),
+        createdAt = parsedJSON['createdAt'].toDate().toLocal(),
         finishedAt = parsedJSON['finishedAt'] == null
             ? null
-            : parsedJSON['finishedAt'].toDate();
+            : parsedJSON['finishedAt'].toDate().toLocal();
 
   Map<String, dynamic> toJson() => {
         'id': id,

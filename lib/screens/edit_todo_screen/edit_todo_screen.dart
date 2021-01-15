@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/services/database_service.dart';
@@ -61,11 +62,13 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
   void initState() {
     super.initState();
     DateTime now = DateTime.now();
-    if (now.day == widget.todo.due.day) {
+    if (TodoHelper.isItToday(widget.todo.due)) {
       this.selectedDueDateOption = dueDateOptions[0];
-    } else if (now.day + 1 == widget.todo.due.day) {
+    } else if (TodoHelper.isSameDay(
+        new DateTime(now.year, now.month, now.day + 1), widget.todo.due)) {
       this.selectedDueDateOption = dueDateOptions[1];
-    } else if (now.day + 7 == widget.todo.due.day) {
+    } else if (TodoHelper.isSameDay(
+        new DateTime(now.year, now.month, now.day + 7), widget.todo.due)) {
       this.selectedDueDateOption = dueDateOptions[2];
     } else {
       this.selectedDueDateOption = dueDateOptions[3];

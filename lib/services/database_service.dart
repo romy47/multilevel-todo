@@ -100,10 +100,10 @@ class DatabaseServices {
     addTodoData['projectTitle'] = todo.projectTitle;
     addTodoData['projectColor'] = todo.projectColor;
     addTodoData['status'] = todo.status;
-    addTodoData['due'] = todo.due;
+    addTodoData['due'] = todo.due.toUtc();
     addTodoData['repeat'] = todo.repeat;
-    addTodoData['createdAt'] = todo.createdAt;
-    addTodoData['finishedAt'] = todo.finishedAt;
+    addTodoData['createdAt'] = todo.createdAt.toUtc();
+    addTodoData['finishedAt'] = todo.finishedAt.toUtc();
     return ref.set(addTodoData);
   }
 
@@ -141,6 +141,9 @@ class DatabaseServices {
   }
 
   editTodo(Todo todo) {
+    todo.createdAt.toUtc();
+    todo.finishedAt.toUtc();
+    todo.due.toUtc();
     DocumentReference ref = _fireStoreDataBase
         .collection('todos')
         .doc(uid)
@@ -188,11 +191,16 @@ class DatabaseServices {
       } else {
         // State changing of a Todo
         if (status == TodoStatus.todo) {
-          // State change to tommorrow
-          todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 1);
-          todo.status = TodoStatus.todo.value;
-          ref.update(todo.toJson()).then((value) => {});
+          if (todo.status == TodoStatus.todo.value) {
+            //accidental todo  to todo
+
+          } else {
+            // State change to tommorrow
+            todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
+                DateTime.now().day + 1);
+            todo.status = TodoStatus.todo.value;
+            ref.update(todo.toJson()).then((value) => {});
+          }
         } else {
           // State change to today
           todo.due = new DateTime(

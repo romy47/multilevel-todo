@@ -164,7 +164,7 @@ class ProjectTabContent extends StatelessWidget {
 
   Widget todoChip(Todo todo, Color color, BuildContext context) {
     DateTime today = DateTime.now();
-    if (todo.due.day < today.day) {
+    if (TodoHelper.isOverDue(todo.due)) {
       return todoChipOverdue(todo, context);
     } else {
       return todoChipFuture(todo, context);
@@ -193,9 +193,14 @@ class ProjectTabContent extends StatelessWidget {
               children: <TextSpan>[
                 TextSpan(
                     text: ' ' +
-                        (todo.due.difference(today).inDays).toString() +
-                        ' day' +
-                        (((todo.due.day - today.day) == 1) ? '' : 's'),
+                        ((todo.due.day - today.day) == 1
+                            ? 'Tomorrow'
+                            : (todo.due.day - today.day).toString() +
+                                ' day' +
+                                (((todo.due.day - today.day) == 1 ||
+                                        (todo.due.day - today.day) == -1)
+                                    ? ''
+                                    : 's')),
                     style: TextStyle(
                         color: ((todo.due.day - today.day) > 0)
                             ? Colors.green
@@ -225,9 +230,13 @@ class ProjectTabContent extends StatelessWidget {
                 children: <TextSpan>[
                   TextSpan(
                       text: ' ' +
-                          (todo.due.difference(today).inDays).toString() +
-                          ' day' +
-                          (((todo.due.day - today.day) == 1) ? '' : 's'),
+                          ((todo.due.day - today.day) == 1
+                              ? 'Tomorrow'
+                              : (todo.due.day - today.day).toString() +
+                                  ' day' +
+                                  (((todo.due.day - today.day) == 1)
+                                      ? ''
+                                      : 's')),
                       style: TextStyle(
                           color: ((todo.due.day - today.day) > 0)
                               ? Colors.green

@@ -542,7 +542,7 @@ class FinishedTaskBarChart extends StatelessWidget {
       data.add(new TodoCompletionPerDay(
           (index == days.length - 1) ? 'Today' : DateFormat('EEE').format(day),
           todos
-              .where((todo) => todo.finishedAt.day == day.day)
+              .where((todo) => TodoHelper.isSameDay(todo.finishedAt, day))
               .toList()
               .length));
     });

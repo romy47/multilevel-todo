@@ -22,13 +22,13 @@ class TodoHelper {
       res = tasks
           .where((element) =>
               element.status != TodoStatus.finished.value &&
-              element.due.day != DateTime.now().day)
+              TodoHelper.isItToday(element.due) == false)
           .toList();
     } else if (status == TodoStatus.onGoing) {
       res = tasks
           .where((element) =>
               element.status != TodoStatus.finished.value &&
-              element.due.day == DateTime.now().day)
+              TodoHelper.isItToday(element.due))
           .toList();
     } else if (status == TodoStatus.finished) {
       res = tasks.where((element) => element.status == status.value).toList();
@@ -72,10 +72,10 @@ class TodoHelper {
       cl = Colors.grey[600];
       // }
     } else {
-      if (todo.due.day < today.day) {
+      if (TodoHelper.isOverDue(todo.due)) {
         ic = Icon(Icons.priority_high);
         cl = Colors.red[300];
-      } else if (todo.due.day == today.day) {
+      } else if (TodoHelper.isItToday(todo.due)) {
         ic = Icon(Icons.play_arrow);
         cl = Colors.amber[300];
       } else {
@@ -91,5 +91,42 @@ class TodoHelper {
         child: ic,
       ),
     );
+  }
+
+  static bool isSameDay(DateTime past, DateTime future) {
+    return past.year == future.year &&
+        past.month == future.month &&
+        past.day == future.day;
+  }
+
+  static bool isItToday(DateTime day) {
+    DateTime now = DateTime.now();
+    return day.year == now.year && day.month == now.month && day.day == now.day;
+  }
+
+  static bool isOverDue(DateTime due) {
+    bool res = true;
+    DateTime now = DateTime.now();
+    if (now.year > due.year) {
+      res = true;
+    } else if (now.year < due.year) {
+      res = false;
+    } else {
+      if (now.month > due.month) {
+        res = true;
+      } else if (now.month < due.month) {
+        res = false;
+      } else {
+        if (now.day > due.day) {
+          res = true;
+        } else if (now.day < due.day) {
+          res = false;
+        } else {
+          res = false;
+        }
+      }
+    }
+    return res;
+    // return due.year >= now.year && due.month >= now.month && due.day > now.day;
   }
 }
