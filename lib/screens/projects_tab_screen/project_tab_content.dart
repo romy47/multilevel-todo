@@ -18,8 +18,9 @@ class ProjectTabContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            fit: FlexFit.tight,
+          Expanded(
+            // fit: FlexFit.tight,
+            flex: 4,
             child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -52,8 +53,9 @@ class ProjectTabContent extends StatelessWidget {
                   );
                 })),
           ),
-          Flexible(
-            fit: FlexFit.tight,
+          Expanded(
+            // fit: FlexFit.tight,
+            flex: 2,
             child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -86,36 +88,39 @@ class ProjectTabContent extends StatelessWidget {
                   );
                 })),
           ),
-          Container(
-              width: double.maxFinite,
-              // color: Colors.green[100],
-              color: Colors.white,
-              child: DragTarget(onWillAccept: (data) {
-                return true;
-              }, onAccept: (data) {
-                // Provider.of<TodoProvider>(context, listen: false)
-                //     .changeTodoSTatus(data, TodoStatus.finished);
-                DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                    .changeTodoSTatus(data, TodoStatus.finished);
-              }, builder:
-                  (BuildContext context, List<Todo> incoming, rejected) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: double.maxFinite,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "Finished Today",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                      ),
-                    ),
-                    finished(context),
-                  ],
-                );
-              })),
+          Expanded(
+              // fit: FlexFit.tight,
+              flex: 2,
+              child: Container(
+                  width: double.maxFinite,
+                  // color: Colors.green[100],
+                  color: Colors.white,
+                  child: DragTarget(onWillAccept: (data) {
+                    return true;
+                  }, onAccept: (data) {
+                    // Provider.of<TodoProvider>(context, listen: false)
+                    //     .changeTodoSTatus(data, TodoStatus.finished);
+                    DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                        .changeTodoSTatus(data, TodoStatus.finished);
+                  }, builder:
+                      (BuildContext context, List<Todo> incoming, rejected) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: double.maxFinite,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            "Finished Today",
+                            style: TextStyle(fontSize: 18, color: Colors.black),
+                          ),
+                        ),
+                        finished(context),
+                      ],
+                    );
+                  }))),
         ],
       ),
     );
@@ -123,43 +128,40 @@ class ProjectTabContent extends StatelessWidget {
   }
 
   Widget todos(BuildContext context) {
-    return Flexible(
-        fit: FlexFit.tight,
+    return Expanded(
+        // fit: FlexFit.tight,
         child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Container(
-              width: double.infinity,
-              // child:
-              // Consumer<List<Project>>(builder: (context, projects, child) {
-              child: Consumer<List<Todo>>(builder: (context, todos, child) {
-                return Wrap(
-                  children: TodoHelper.getTasksWithProjectByLevel(
-                          projects,
-                          (todos == null) ? [] : todos,
-                          TodoStatus.todo,
-                          projectId)
-                      .map((e) => Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 0.0, horizontal: 5.0),
-                            child: Draggable(
-                              data: e,
-                              feedback: Material(
-                                color: Colors.transparent,
-                                child: todoChip(
-                                    e, new Color(e.projectColor), context),
-                              ),
-                              child: todoChip(
-                                  e, new Color(e.projectColor), context),
-                              childWhenDragging: todoChip(
-                                  e, new Color(e.projectColor), context),
-                            ),
-                          ))
-                      .toList()
-                      .cast<Widget>(),
-                );
-                // });
-              })),
-        ));
+      scrollDirection: Axis.vertical,
+      child: Container(
+          width: double.infinity,
+          // child:
+          // Consumer<List<Project>>(builder: (context, projects, child) {
+          child: Consumer<List<Todo>>(builder: (context, todos, child) {
+            return Wrap(
+              children: TodoHelper.getTasksWithProjectByLevel(projects,
+                      (todos == null) ? [] : todos, TodoStatus.todo, projectId)
+                  .map((e) => Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 5.0),
+                        child: Draggable(
+                          data: e,
+                          feedback: Material(
+                            color: Colors.transparent,
+                            child:
+                                todoChip(e, new Color(e.projectColor), context),
+                          ),
+                          child:
+                              todoChip(e, new Color(e.projectColor), context),
+                          childWhenDragging:
+                              todoChip(e, new Color(e.projectColor), context),
+                        ),
+                      ))
+                  .toList()
+                  .cast<Widget>(),
+            );
+            // });
+          })),
+    ));
   }
 
   Widget todoChip(Todo todo, Color color, BuildContext context) {
@@ -302,40 +304,44 @@ class ProjectTabContent extends StatelessWidget {
   }
 
   Widget onGoing(BuildContext context) {
-    return SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-            width: double.infinity,
-            // child: Consumer<List<Project>>(builder: (context, projects, child) {
-            child: Consumer<List<Todo>>(
-              builder: (context, todos, child) {
-                return Wrap(
-                  children: TodoHelper.getTasksWithProjectByLevel(
-                          projects, todos, TodoStatus.onGoing, projectId)
-                      .map((e) => Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 0.0, horizontal: 5.0),
-                            child: Draggable(
-                              data: e,
-                              feedback: Material(
-                                color: Colors.transparent,
-                                child: ongoingChip(e, context),
-                              ),
-                              child: ongoingChip(e, context),
-                              childWhenDragging: ongoingChip(e, context),
-                            ),
-                          ))
-                      .toList()
-                      .cast<Widget>(),
-                );
-              },
-            )
-            // }),
-            ));
+    return Expanded(
+        // fit: FlexFit.tight,
+        child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Container(
+                width: double.infinity,
+                // child: Consumer<List<Project>>(builder: (context, projects, child) {
+                child: Consumer<List<Todo>>(
+                  builder: (context, todos, child) {
+                    return Wrap(
+                      children: TodoHelper.getTasksWithProjectByLevel(
+                              projects, todos, TodoStatus.onGoing, projectId)
+                          .map((e) => Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.0, horizontal: 5.0),
+                                child: Draggable(
+                                  data: e,
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: ongoingChip(e, context),
+                                  ),
+                                  child: ongoingChip(e, context),
+                                  childWhenDragging: ongoingChip(e, context),
+                                ),
+                              ))
+                          .toList()
+                          .cast<Widget>(),
+                    );
+                  },
+                )
+                // }),
+                )));
   }
 
   Widget finished(BuildContext context) {
-    return SingleChildScrollView(
+    return Expanded(
+        // fit: FlexFit.tight,
+        child: SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
           width: double.infinity,
@@ -366,6 +372,6 @@ class ProjectTabContent extends StatelessWidget {
           )
           // })
           ),
-    );
+    ));
   }
 }
