@@ -14,7 +14,7 @@ class EditProject extends StatefulWidget {
 class _EditProjectState extends State<EditProject> {
   Color pickerColor;
   final projectTitleTextController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
   void changeColor(Color color) {
     print(color.toString());
     setState(() => pickerColor = color);
@@ -29,11 +29,13 @@ class _EditProjectState extends State<EditProject> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Edit Project'),
-        ),
-        body: createProjectDialog(context));
+    return Form(
+        key: _formKey,
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text('Edit Project'),
+            ),
+            body: createProjectDialog(context)));
   }
 
   Widget createProjectDialog(context) {
@@ -46,8 +48,8 @@ class _EditProjectState extends State<EditProject> {
               labelText: 'Project Name',
             ),
             validator: (value) {
-              if (value.isEmpty) {
-                return 'Please name your project';
+              if (value.trim().isEmpty) {
+                return 'Please provide a name';
               } else {
                 return null;
               }
@@ -70,19 +72,22 @@ class _EditProjectState extends State<EditProject> {
                   ),
                   child: IconButton(
                     onPressed: () => {
-                      showDialog(
-                          context: context,
-                          child: AlertDialog(
-                              title: const Text('Pick a Color'),
-                              content: SingleChildScrollView(
-                                child: SizedBox(
-                                  height: 400.0,
-                                  child: BlockPicker(
-                                    pickerColor: pickerColor,
-                                    onColorChanged: changeColor,
-                                  ),
-                                ),
-                              )))
+                      if (_formKey.currentState.validate())
+                        {
+                          showDialog(
+                              context: context,
+                              child: AlertDialog(
+                                  title: const Text('Pick a Color'),
+                                  content: SingleChildScrollView(
+                                    child: SizedBox(
+                                      height: 400.0,
+                                      child: BlockPicker(
+                                        pickerColor: pickerColor,
+                                        onColorChanged: changeColor,
+                                      ),
+                                    ),
+                                  )))
+                        }
                     },
                     icon: Icon(Icons.colorize_outlined),
                     color: Colors.white,

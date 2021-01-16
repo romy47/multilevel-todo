@@ -54,6 +54,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
 
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   List<String> repeatOptions = ['Daily', 'Weekly'];
   List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Custom'];
 
@@ -82,99 +83,107 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.todo.title),
-      ),
-      body: Container(
-        margin: EdgeInsets.all(10.0),
-        child: Column(children: [
-          TextFormField(
-            decoration: InputDecoration(
-              // icon: Icon(Icons.),
-              labelText: 'Task Name',
-            ),
-            readOnly: (widget.todo.status == TodoStatus.finished.value),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please name your todo';
-              } else {
-                return null;
-              }
-            },
-            controller: _todoTitleTextController,
+    return Form(
+        key: _formKey,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.todo.title),
           ),
-          projectDropDown(context),
-          dueDateDropDown(context),
-          Container(
-              margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
-              child: CheckboxListTile(
-                title: Text("Finished"),
-                value: this.isFinished,
-                onChanged: (widget.todo.status != TodoStatus.finished.value)
-                    ? (newValue) {
-                        setState(() {
-                          this.isFinished = newValue;
-                        });
-                      }
-                    : null,
-                controlAffinity:
-                    ListTileControlAffinity.leading, //  <-- leading Che ckbox
-              )),
-          Row(
-            children: [
-              Flexible(
-                flex: 1,
-                child: Container(
-                    height: 50,
-                    width: double.maxFinite,
-                    margin: EdgeInsets.only(top: 20),
-                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    child: RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.red,
-                      child: Text('Delete'),
-                      onPressed: () {
-                        DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                            .deleteTodo(widget.todo.id);
-                        Navigator.of(context).pop();
-                      },
-                    )),
+          body: Container(
+            margin: EdgeInsets.all(10.0),
+            child: Column(children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  // icon: Icon(Icons.),
+                  labelText: 'Task Name',
+                ),
+                readOnly: (widget.todo.status == TodoStatus.finished.value),
+                validator: (value) {
+                  if (value.trim().isEmpty) {
+                    return 'Please provide a name';
+                  } else {
+                    return null;
+                  }
+                },
+                controller: _todoTitleTextController,
               ),
-              Flexible(
-                flex: 1,
-                child: Container(
-                    height: 50,
-                    width: double.maxFinite,
-                    margin: EdgeInsets.only(top: 20),
-                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    child: RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.blue,
-                      child: Text('Save'),
-                      onPressed: (widget.todo.status !=
-                              TodoStatus.finished.value)
-                          ? () {
-                              widget.todo.title = _todoTitleTextController.text;
-                              widget.todo.projectId = this.selectedProjectId;
-                              widget.todo.due = this.selectedDueDate;
-                              if (this.isFinished) {
-                                widget.todo.finishedAt = DateTime.now();
-                                widget.todo.status = TodoStatus.finished.value;
-                              }
-                              DatabaseServices(
-                                      FirebaseAuth.instance.currentUser.uid)
-                                  .editTodo(widget.todo);
-                              Navigator.of(context).pop();
-                            }
-                          : null,
-                    )),
+              projectDropDown(context),
+              dueDateDropDown(context),
+              Container(
+                  margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
+                  child: CheckboxListTile(
+                    title: Text("Finished"),
+                    value: this.isFinished,
+                    onChanged: (widget.todo.status != TodoStatus.finished.value)
+                        ? (newValue) {
+                            setState(() {
+                              this.isFinished = newValue;
+                            });
+                          }
+                        : null,
+                    controlAffinity: ListTileControlAffinity
+                        .leading, //  <-- leading Che ckbox
+                  )),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                        height: 50,
+                        width: double.maxFinite,
+                        margin: EdgeInsets.only(top: 20),
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: RaisedButton(
+                          textColor: Colors.white,
+                          color: Colors.red,
+                          child: Text('Delete'),
+                          onPressed: () {
+                            DatabaseServices(
+                                    FirebaseAuth.instance.currentUser.uid)
+                                .deleteTodo(widget.todo.id);
+                            Navigator.of(context).pop();
+                          },
+                        )),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                        height: 50,
+                        width: double.maxFinite,
+                        margin: EdgeInsets.only(top: 20),
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: RaisedButton(
+                          textColor: Colors.white,
+                          color: Colors.blue,
+                          child: Text('Save'),
+                          onPressed: (widget.todo.status !=
+                                  TodoStatus.finished.value)
+                              ? () {
+                                  if (_formKey.currentState.validate()) {
+                                    widget.todo.title =
+                                        _todoTitleTextController.text;
+                                    widget.todo.projectId =
+                                        this.selectedProjectId;
+                                    widget.todo.due = this.selectedDueDate;
+                                    if (this.isFinished) {
+                                      widget.todo.finishedAt = DateTime.now();
+                                      widget.todo.status =
+                                          TodoStatus.finished.value;
+                                    }
+                                    DatabaseServices(FirebaseAuth
+                                            .instance.currentUser.uid)
+                                        .editTodo(widget.todo);
+                                    Navigator.of(context).pop();
+                                  }
+                                }
+                              : null,
+                        )),
+                  ),
+                ],
               ),
-            ],
+            ]),
           ),
-        ]),
-      ),
-    );
+        ));
   }
 
   Widget projectDropDown(context) {

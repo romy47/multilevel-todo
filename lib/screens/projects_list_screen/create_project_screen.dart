@@ -13,7 +13,7 @@ class _CreateProjectState extends State<CreateProject> {
   Color pickerColor = Colors.purple;
   // Color currentColor = Colors.green;
   final projectTitleTextController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
   void changeColor(Color color) {
     print(color.toString());
     setState(() => pickerColor = color);
@@ -27,11 +27,13 @@ class _CreateProjectState extends State<CreateProject> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Create Project'),
-        ),
-        body: createProjectDialog(context));
+    return Form(
+        key: _formKey,
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text('Create Project'),
+            ),
+            body: createProjectDialog(context)));
   }
 
   Widget createProjectDialog(context) {
@@ -44,8 +46,8 @@ class _CreateProjectState extends State<CreateProject> {
               labelText: 'Project Name',
             ),
             validator: (value) {
-              if (value.isEmpty) {
-                return 'Please name your project';
+              if (value.trim().isEmpty) {
+                return 'Please provide a name';
               } else {
                 return null;
               }
@@ -99,13 +101,15 @@ class _CreateProjectState extends State<CreateProject> {
                 color: Colors.blue,
                 child: Text('Save Project'),
                 onPressed: () {
-                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                      .addProject(new Project(
-                          projectTitleTextController.text,
-                          '',
-                          pickerColor.value,
-                          FirebaseAuth.instance.currentUser.uid));
-                  Navigator.pop(context);
+                  if (_formKey.currentState.validate()) {
+                    DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                        .addProject(new Project(
+                            projectTitleTextController.text,
+                            '',
+                            pickerColor.value,
+                            FirebaseAuth.instance.currentUser.uid));
+                    Navigator.pop(context);
+                  }
                 },
               )),
         ]),

@@ -47,6 +47,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   List<String> repeatOptions = ['Daily', 'Weekly'];
   List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Custom'];
 
@@ -63,78 +64,82 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Create Todo'),
-      ),
-      body: Container(
-        margin: EdgeInsets.all(10.0),
-        child: Column(children: [
-          TextFormField(
-            decoration: InputDecoration(
-              // icon: Icon(Icons.),
-              labelText: 'Task Name',
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please name your todo';
-              } else {
-                return null;
-              }
-            },
-            controller: _todoTitleTextController,
+    return Form(
+        key: _formKey,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Create Todo'),
           ),
-          projectDropDown(context),
-          dueDateDropDown(context),
-          Container(
-              margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
-              child: CheckboxListTile(
-                title: Text("Finished"),
-                value: false,
-                onChanged: (newValue) {
-                  setState(() {
-                    //  checkedValue = newValue;
-                  });
+          body: Container(
+            margin: EdgeInsets.all(10.0),
+            child: Column(children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  // icon: Icon(Icons.),
+                  labelText: 'Task Name',
+                ),
+                validator: (value) {
+                  if (value.trim().isEmpty) {
+                    return 'Please provide a name';
+                  } else {
+                    return null;
+                  }
                 },
-                controlAffinity:
-                    ListTileControlAffinity.leading, //  <-- leading Che ckbox
-              )),
-          Container(
-              height: 50,
-              width: double.maxFinite,
-              margin: EdgeInsets.only(top: 20),
-              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-              child: RaisedButton(
-                textColor: Colors.white,
-                color: Colors.blue,
-                child: Text('Save Todo'),
-                onPressed: () {
-                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                      .addTodo(new Todo(
-                          '',
-                          this.selectedProjectId,
-                          _todoTitleTextController.text,
-                          null,
-                          null,
-                          TodoStatus.todo.value,
-                          this.selectedDueDate,
-                          0,
-                          new DateTime(
-                            this.selectedDueDate.year,
-                            this.selectedDueDate.month,
-                            this.selectedDueDate.day,
-                          ),
-                          new DateTime(
-                            DateTime.now().year + 100,
-                            DateTime.now().month,
-                            DateTime.now().day,
-                          )));
-                  Navigator.of(context).pop();
-                },
-              )),
-        ]),
-      ),
-    );
+                controller: _todoTitleTextController,
+              ),
+              projectDropDown(context),
+              dueDateDropDown(context),
+              Container(
+                  margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
+                  child: CheckboxListTile(
+                    title: Text("Finished"),
+                    value: false,
+                    onChanged: (newValue) {
+                      setState(() {
+                        //  checkedValue = newValue;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity
+                        .leading, //  <-- leading Che ckbox
+                  )),
+              Container(
+                  height: 50,
+                  width: double.maxFinite,
+                  margin: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  child: RaisedButton(
+                    textColor: Colors.white,
+                    color: Colors.blue,
+                    child: Text('Save Todo'),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                            .addTodo(new Todo(
+                                '',
+                                this.selectedProjectId,
+                                _todoTitleTextController.text,
+                                null,
+                                null,
+                                TodoStatus.todo.value,
+                                this.selectedDueDate,
+                                0,
+                                new DateTime(
+                                  this.selectedDueDate.year,
+                                  this.selectedDueDate.month,
+                                  this.selectedDueDate.day,
+                                ),
+                                new DateTime(
+                                  DateTime.now().year + 100,
+                                  DateTime.now().month,
+                                  DateTime.now().day,
+                                )));
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  )),
+            ]),
+          ),
+        ));
   }
 
   Widget projectDropDown(context) {
