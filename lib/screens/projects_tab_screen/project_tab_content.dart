@@ -7,10 +7,20 @@ import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/screens/edit_todo_screen/edit_todo_screen.dart';
 import 'package:second_attempt/services/database_service.dart';
 
-class ProjectTabContent extends StatelessWidget {
+class ProjectTabContent extends StatefulWidget {
   final String projectId;
   final List<Project> projects;
   ProjectTabContent(this.projectId, this.projects) {}
+
+  @override
+  _ProjectTabContentState createState() => _ProjectTabContentState();
+}
+
+class _ProjectTabContentState extends State<ProjectTabContent> {
+  bool onGoingHighlighted = false;
+  bool todoHighlighted = false;
+  bool finishedHighlighted = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,11 +36,37 @@ class ProjectTabContent extends StatelessWidget {
                   border: Border(
                     bottom: BorderSide(color: Colors.grey),
                   ),
+                  boxShadow: [
+                    todoHighlighted
+                        ? BoxShadow(
+                            color: Colors.green.withOpacity(0.2),
+                            spreadRadius: 10,
+                            blurRadius: 7,
+                            offset: Offset(6, 1), // changes position of shadow
+                          )
+                        : BoxShadow(
+                            color: Colors.green.withOpacity(0),
+                            spreadRadius: 0,
+                            blurRadius: 0,
+                            offset: Offset(0, 0), // changes position of shadow
+                          ),
+                  ],
                 ),
                 width: double.maxFinite,
                 child: DragTarget(onWillAccept: (data) {
+                  setState(() {
+                    todoHighlighted = true;
+                  });
+                  return true;
+                }, onLeave: (data) {
+                  setState(() {
+                    todoHighlighted = false;
+                  });
                   return true;
                 }, onAccept: (data) {
+                  setState(() {
+                    todoHighlighted = false;
+                  });
                   DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                       .changeTodoSTatus(data, TodoStatus.todo);
                 }, builder:
@@ -60,12 +96,47 @@ class ProjectTabContent extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.grey),
+
+                    // bottom: BorderSide(
+                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
+                    // top: BorderSide(
+                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
+                    // left: BorderSide(
+                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
+                    // right: BorderSide(
+                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
                   ),
+                  boxShadow: [
+                    onGoingHighlighted
+                        ? BoxShadow(
+                            color: Colors.green.withOpacity(0.2),
+                            spreadRadius: 10,
+                            blurRadius: 7,
+                            offset: Offset(6, 1), // changes position of shadow
+                          )
+                        : BoxShadow(
+                            color: Colors.green.withOpacity(0),
+                            spreadRadius: 0,
+                            blurRadius: 0,
+                            offset: Offset(0, 0), // changes position of shadow
+                          ),
+                  ],
                 ),
                 width: double.maxFinite,
                 child: DragTarget(onWillAccept: (data) {
+                  setState(() {
+                    onGoingHighlighted = true;
+                  });
+                  return true;
+                }, onLeave: (data) {
+                  setState(() {
+                    onGoingHighlighted = false;
+                  });
                   return true;
                 }, onAccept: (data) {
+                  setState(() {
+                    onGoingHighlighted = false;
+                  });
                   DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                       .changeTodoSTatus(data, TodoStatus.onGoing);
                 }, builder:
@@ -92,16 +163,49 @@ class ProjectTabContent extends StatelessWidget {
               // fit: FlexFit.tight,
               flex: 2,
               child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey),
+                    ),
+                    boxShadow: [
+                      finishedHighlighted
+                          ? BoxShadow(
+                              color: Colors.green.withOpacity(0.2),
+                              spreadRadius: 10,
+                              blurRadius: 7,
+                              offset:
+                                  Offset(6, 1), // changes position of shadow
+                            )
+                          : BoxShadow(
+                              color: Colors.green.withOpacity(0),
+                              spreadRadius: 0,
+                              blurRadius: 0,
+                              offset:
+                                  Offset(0, 0), // changes position of shadow
+                            ),
+                    ],
+                  ),
                   width: double.maxFinite,
                   // color: Colors.green[100],
-                  color: Colors.white,
+                  // color: Colors.white,
                   child: DragTarget(onWillAccept: (data) {
+                    setState(() {
+                      finishedHighlighted = true;
+                    });
                     return true;
                   }, onAccept: (data) {
+                    setState(() {
+                      finishedHighlighted = false;
+                    });
                     // Provider.of<TodoProvider>(context, listen: false)
                     //     .changeTodoSTatus(data, TodoStatus.finished);
                     DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                         .changeTodoSTatus(data, TodoStatus.finished);
+                  }, onLeave: (data) {
+                    setState(() {
+                      finishedHighlighted = false;
+                    });
+                    return true;
                   }, builder:
                       (BuildContext context, List<Todo> incoming, rejected) {
                     return Column(
@@ -138,8 +242,11 @@ class ProjectTabContent extends StatelessWidget {
           // Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(builder: (context, todos, child) {
             return Wrap(
-              children: TodoHelper.getTasksWithProjectByLevel(projects,
-                      (todos == null) ? [] : todos, TodoStatus.todo, projectId)
+              children: TodoHelper.getTasksWithProjectByLevel(
+                      widget.projects,
+                      (todos == null) ? [] : todos,
+                      TodoStatus.todo,
+                      widget.projectId)
                   .map((e) => Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 5.0),
@@ -147,13 +254,13 @@ class ProjectTabContent extends StatelessWidget {
                           data: e,
                           feedback: Material(
                             color: Colors.transparent,
-                            child:
-                                todoChip(e, new Color(e.projectColor), context),
+                            child: todoChip(
+                                e, new Color(e.projectColor), context, false),
                           ),
-                          child:
-                              todoChip(e, new Color(e.projectColor), context),
-                          childWhenDragging:
-                              todoChip(e, new Color(e.projectColor), context),
+                          child: todoChip(
+                              e, new Color(e.projectColor), context, false),
+                          childWhenDragging: todoChip(
+                              e, new Color(e.projectColor), context, true),
                         ),
                       ))
                   .toList()
@@ -164,22 +271,23 @@ class ProjectTabContent extends StatelessWidget {
     ));
   }
 
-  Widget todoChip(Todo todo, Color color, BuildContext context) {
+  Widget todoChip(
+      Todo todo, Color color, BuildContext context, bool isDragging) {
     DateTime today = DateTime.now();
     if (TodoHelper.isOverDue(todo.due)) {
-      return todoChipOverdue(todo, context);
+      return todoChipOverdue(todo, context, isDragging);
     } else {
-      return todoChipFuture(todo, context);
+      return todoChipFuture(todo, context, isDragging);
     }
   }
 
-  Widget todoChipOverdue(Todo todo, BuildContext context) {
+  Widget todoChipOverdue(Todo todo, BuildContext context, bool isDragging) {
     DateTime today = DateTime.now();
     return InkWell(
         child: Chip(
           backgroundColor: Colors.white,
           avatar: CircleAvatar(
-            backgroundColor: Colors.red[300],
+            backgroundColor: isDragging ? Colors.grey[400] : Colors.red[300],
             child: new IconTheme(
               data: new IconThemeData(color: Colors.white),
               child: Icon(Icons.priority_high),
@@ -187,7 +295,12 @@ class ProjectTabContent extends StatelessWidget {
           ),
           shape: StadiumBorder(
               side:
-                  BorderSide(color: new Color(todo.projectColor), width: 2.0)),
+                  // BorderSide(color: new Color(todo.projectColor), width: 2.0)),
+                  BorderSide(
+                      color: isDragging
+                          ? Colors.grey[300]
+                          : new Color(todo.projectColor),
+                      width: 2.0)),
           label: RichText(
             text: TextSpan(
               text: todo.title,
@@ -204,9 +317,11 @@ class ProjectTabContent extends StatelessWidget {
                                     ? ''
                                     : 's')),
                     style: TextStyle(
-                        color: ((todo.due.day - today.day) > 0)
-                            ? Colors.green
-                            : Colors.red)),
+                        color: isDragging
+                            ? Colors.grey[400]
+                            : (((todo.due.day - today.day) > 0)
+                                ? Colors.green
+                                : Colors.red))),
               ],
             ),
           ),
@@ -217,14 +332,17 @@ class ProjectTabContent extends StatelessWidget {
         });
   }
 
-  Widget todoChipFuture(Todo todo, BuildContext context) {
+  Widget todoChipFuture(Todo todo, BuildContext context, bool isDragging) {
     DateTime today = DateTime.now();
     return InkWell(
         child: Chip(
             backgroundColor: Colors.white,
             shape: StadiumBorder(
                 side: BorderSide(
-                    color: new Color(todo.projectColor), width: 2.0)),
+                    color: isDragging
+                        ? Colors.grey[300]
+                        : new Color(todo.projectColor),
+                    width: 2.0)),
             label: RichText(
               text: TextSpan(
                 text: todo.title,
@@ -240,9 +358,11 @@ class ProjectTabContent extends StatelessWidget {
                                       ? ''
                                       : 's')),
                       style: TextStyle(
-                          color: ((todo.due.day - today.day) > 0)
-                              ? Colors.green
-                              : Colors.red)),
+                          color: isDragging
+                              ? Colors.grey[400]
+                              : ((todo.due.day - today.day) > 0)
+                                  ? Colors.green
+                                  : Colors.red)),
                 ],
               ),
             )),
@@ -252,12 +372,15 @@ class ProjectTabContent extends StatelessWidget {
         });
   }
 
-  Widget ongoingChip(Todo todo, BuildContext context) {
+  Widget ongoingChip(Todo todo, BuildContext context, bool isDragging) {
     return InkWell(
         child: Chip(
             shape: StadiumBorder(
                 side: BorderSide(
-                    color: new Color(todo.projectColor), width: 2.0)),
+                    color: isDragging
+                        ? Colors.grey[300]
+                        : new Color(todo.projectColor),
+                    width: 2.0)),
             backgroundColor: Colors.white,
             // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
             label: RichText(
@@ -275,12 +398,15 @@ class ProjectTabContent extends StatelessWidget {
         });
   }
 
-  Widget finishedChip(Todo todo, BuildContext context) {
+  Widget finishedChip(Todo todo, BuildContext context, bool isDragging) {
     return InkWell(
         child: Chip(
             shape: StadiumBorder(
                 side: BorderSide(
-                    color: new Color(todo.projectColor), width: 2.0)),
+                    color: isDragging
+                        ? Colors.grey[300]
+                        : new Color(todo.projectColor),
+                    width: 2.0)),
             backgroundColor: Colors.white,
             // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
             // label: Text(todo.title),
@@ -315,7 +441,10 @@ class ProjectTabContent extends StatelessWidget {
                   builder: (context, todos, child) {
                     return Wrap(
                       children: TodoHelper.getTasksWithProjectByLevel(
-                              projects, todos, TodoStatus.onGoing, projectId)
+                              widget.projects,
+                              todos,
+                              TodoStatus.onGoing,
+                              widget.projectId)
                           .map((e) => Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0.0, horizontal: 5.0),
@@ -323,10 +452,11 @@ class ProjectTabContent extends StatelessWidget {
                                   data: e,
                                   feedback: Material(
                                     color: Colors.transparent,
-                                    child: ongoingChip(e, context),
+                                    child: ongoingChip(e, context, false),
                                   ),
-                                  child: ongoingChip(e, context),
-                                  childWhenDragging: ongoingChip(e, context),
+                                  child: ongoingChip(e, context, false),
+                                  childWhenDragging:
+                                      ongoingChip(e, context, true),
                                 ),
                               ))
                           .toList()
@@ -350,8 +480,8 @@ class ProjectTabContent extends StatelessWidget {
           child: Consumer<List<Todo>>(
             builder: (context, todos, child) {
               return Wrap(
-                children: TodoHelper.getTasksWithProjectByLevel(
-                        projects, todos, TodoStatus.finished, projectId)
+                children: TodoHelper.getTasksWithProjectByLevel(widget.projects,
+                        todos, TodoStatus.finished, widget.projectId)
                     .map((e) => Padding(
                           padding: EdgeInsets.symmetric(
                               vertical: 0.0, horizontal: 5.0),
@@ -359,12 +489,12 @@ class ProjectTabContent extends StatelessWidget {
                           //   data: e,
                           //   feedback: Material(
                           //     color: Colors.transparent,
-                          //     child: finishedChip(e, context),
+                          //     child: finishedChip(e, context, false),
                           //   ),
-                          //   child: finishedChip(e, context),
-                          //   childWhenDragging: finishedChip(e, context),
+                          //   child: finishedChip(e, context, false),
+                          //   childWhenDragging: finishedChip(e, context, true),
                           // ),
-                          child: finishedChip(e, context),
+                          child: finishedChip(e, context, false),
                         ))
                     .toList()
                     .cast<Widget>(),
