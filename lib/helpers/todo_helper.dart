@@ -129,4 +129,16 @@ class TodoHelper {
     return res;
     // return due.year >= now.year && due.month >= now.month && due.day > now.day;
   }
+
+  static int getBonusTaskCount(List<Todo> todos) {
+    int count = 0;
+    print('Test getBonusTaskCount-1: ' + todos.length.toString());
+    todos.forEach((todo) {
+      if (todo.status == TodoStatus.finished.value &&
+          !TodoHelper.isSameDay(todo.due, todo.finishedAt)) {
+        count++;
+      }
+    });
+    return count;
+  }
 }

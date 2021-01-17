@@ -355,15 +355,16 @@ class ProjectTabContent extends StatelessWidget {
                     .map((e) => Padding(
                           padding: EdgeInsets.symmetric(
                               vertical: 0.0, horizontal: 5.0),
-                          child: Draggable(
-                            data: e,
-                            feedback: Material(
-                              color: Colors.transparent,
-                              child: finishedChip(e, context),
-                            ),
-                            child: finishedChip(e, context),
-                            childWhenDragging: finishedChip(e, context),
-                          ),
+                          // child: Draggable(
+                          //   data: e,
+                          //   feedback: Material(
+                          //     color: Colors.transparent,
+                          //     child: finishedChip(e, context),
+                          //   ),
+                          //   child: finishedChip(e, context),
+                          //   childWhenDragging: finishedChip(e, context),
+                          // ),
+                          child: finishedChip(e, context),
                         ))
                     .toList()
                     .cast<Widget>(),

@@ -19,6 +19,7 @@ class _DashboardState extends State<Dashboard> {
   int finishedTodoCount = 0;
   int onGoingTodoCount = 0;
   int percentage = 0;
+  int todayBonus = 0;
   @override
   Widget build(BuildContext context) {
     onGoingTodoCount = TodoHelper.getTasksByLevel(
@@ -31,6 +32,10 @@ class _DashboardState extends State<Dashboard> {
             TodoStatus.finished,
             'all')
         .length;
+    todayBonus = TodoHelper.getBonusTaskCount(TodoHelper.getTasksByLevel(
+        Provider.of<List<Todo>>(context, listen: false),
+        TodoStatus.finished,
+        'all'));
     if (onGoingTodoCount + finishedTodoCount != 0) {
       percentage =
           ((finishedTodoCount / (onGoingTodoCount + finishedTodoCount)) * 100)
@@ -51,16 +56,16 @@ class _DashboardState extends State<Dashboard> {
             // Container
             children: [
               Card(
-                elevation: 7,
+                // elevation: 7,
                 child: Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                                child: Text('Today',
-                                    style: TextStyle(fontSize: 17.0)))),
+                        // Align(
+                        //     alignment: Alignment.centerLeft,
+                        //     child: Container(
+                        //         child: Text('Today',
+                        //             style: TextStyle(fontSize: 17.0)))),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -107,20 +112,20 @@ class _DashboardState extends State<Dashboard> {
                                             Text(
                                               'Future Tasks ',
                                               style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 18,
                                               ),
                                             ),
                                             Text(
                                               finishedTodoCount.toString(),
                                               style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 18,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.only(bottom: 5.0),
+                                        margin: EdgeInsets.only(bottom: 7.0),
                                         decoration: BoxDecoration(
                                           border: Border(
                                             bottom: BorderSide(
@@ -137,20 +142,20 @@ class _DashboardState extends State<Dashboard> {
                                             Text(
                                               'Overdue Tasks ',
                                               style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 18,
                                               ),
                                             ),
                                             Text(
                                               finishedTodoCount.toString(),
                                               style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 18,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.only(bottom: 7.0),
+                                        // margin: EdgeInsets.only(bottom: 7.0),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -158,19 +163,39 @@ class _DashboardState extends State<Dashboard> {
                                             Text(
                                               "Today's Bonus",
                                               style: TextStyle(
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            Text(
-                                              '0/' +
-                                                  finishedTodoCount.toString(),
-                                              style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 18,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
+                                      Container(
+                                        height: 100.0,
+                                        decoration: new BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Center(
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.star,
+                                                color: todayBonus > 0
+                                                    ? Colors.amber
+                                                    : Colors.grey,
+                                                size: 100.0,
+                                              ),
+                                              Text(
+                                                todayBonus.toString(),
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
                                     ]),
                               ),
                             )
@@ -200,13 +225,16 @@ class _DashboardState extends State<Dashboard> {
               //       ),
               // ),
               Card(
-                  elevation: 7,
+                  // elevation: 7,
                   child: Padding(
                       padding: EdgeInsets.all(16.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                      child:
+                          // Expanded(
+                          //     child:
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                             Container(
                                 margin: EdgeInsets.only(bottom: 8),
                                 child: Text('Last Week',
@@ -217,15 +245,20 @@ class _DashboardState extends State<Dashboard> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Icon(Icons.cancel),
-                                    Icon(Icons.check),
-                                    Opacity(
-                                        opacity: 0.0, child: Icon(Icons.check)),
-                                    Icon(Icons.check),
-                                    Icon(Icons.check),
-                                    Icon(Icons.star),
-                                    Opacity(
-                                        opacity: 0.0, child: Icon(Icons.check)),
+                                    // Icon(Icons.cancel),
+                                    // Icon(Icons.check),
+                                    // Opacity(
+                                    //     opacity: 0.0, child: Icon(Icons.check)),
+                                    // Icon(Icons.check),
+                                    // Icon(Icons.check),
+                                    // Icon(Icons.star),
+                                    // Opacity(
+                                    //     opacity: 0.0, child: Icon(Icons.check)),
+                                    Consumer<TodoProvider>(
+                                      builder: (context, todoProvider, _) =>
+                                          BarChartWidget(
+                                              todoProvider: todoProvider),
+                                    )
                                   ],
                                 )),
                             // BarChartWidget()
@@ -233,8 +266,14 @@ class _DashboardState extends State<Dashboard> {
                             Consumer<TodoProvider>(
                               builder: (context, todoProvider, _) =>
                                   BarChartWidget(todoProvider: todoProvider),
-                            )
-                          ]))),
+                            ),
+                            Container(
+                                margin: EdgeInsets.only(top: 20),
+                                child: Text(
+                                    'Bonus tasks can be earned by completeing overdue and future tasks'))
+                          ])
+                      // )
+                      )),
             ],
           ),
         ),
@@ -315,19 +354,65 @@ class _BarChartWidgetState extends State<BarChartWidget> {
               return Todo.fromJson(doc.data());
             }).toList();
             print('& day todos recieved ' + todos.toString());
-            return Container(
-                width: double.maxFinite,
-                height: 200,
-                child: FinishedTaskBarChart.withSampleData(todos));
+
+            final List<TodoCompletionPerDay> data = [];
+
+            List<DateTime> days = [];
+            DateTime to = new DateTime(DateTime.now().year,
+                DateTime.now().month, DateTime.now().day + 1);
+            DateTime from = new DateTime(DateTime.now().year,
+                DateTime.now().month, DateTime.now().day - 6);
+            final daysToGenerate = to.difference(from).inDays;
+            days = List.generate(daysToGenerate,
+                (i) => DateTime(from.year, from.month, from.day + (i)));
+            days.asMap().forEach((index, day) {
+              print('--> ' + day.day.toString());
+              data.add(new TodoCompletionPerDay(
+                  (index == days.length - 1)
+                      ? 'Today'
+                      : DateFormat('EEE').format(day),
+                  todos
+                      .where(
+                          (todo) => TodoHelper.isSameDay(todo.finishedAt, day))
+                      .toList()
+                      .length,
+                  TodoHelper.getBonusTaskCount(todos
+                      .where(
+                          (todo) => TodoHelper.isSameDay(todo.finishedAt, day))
+                      .toList())));
+            });
+
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(bottom: 8),
+                      child: Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 8.0, 0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: data.map((entry) {
+                                Widget w;
+                                if (entry.bonusCount > 0) {
+                                  w = Icon(Icons.star, color: Colors.amber);
+                                } else {
+                                  // w = Icon(Icons.star);
+
+                                  w = Opacity(
+                                      opacity: 0.0, child: Icon(Icons.star));
+                                }
+                                return w;
+                              }).toList()))),
+                  Container(
+                      width: double.maxFinite,
+                      height: 200,
+                      child: FinishedTaskBarChart.withSampleData(todos))
+                ]);
           } // snapshot.data  :- get your object which is pass from your downloadData() function
         }
       },
     );
-    // return Container()
-    // return Container(
-    //     width: double.maxFinite,
-    //     height: 200,
-    //     child: FinishedTaskBarChart.withSampleData());
   }
 }
 
@@ -379,7 +464,7 @@ class DonutPieChart extends StatelessWidget {
       context) {
     List<TodoCompletion> data = [];
     data.add(new TodoCompletion(
-        'Remaining',
+        'Due Today',
         TodoHelper.getTasksByLevel(
                 Provider.of<List<Todo>>(context, listen: false),
                 TodoStatus.onGoing,
@@ -387,7 +472,7 @@ class DonutPieChart extends StatelessWidget {
             .length,
         Colors.grey[200]));
     data.add(new TodoCompletion(
-        'Completed',
+        'Done Today',
         TodoHelper.getTasksByLevel(
                 Provider.of<List<Todo>>(context, listen: false),
                 TodoStatus.finished,
@@ -408,82 +493,82 @@ class DonutPieChart extends StatelessWidget {
   }
 }
 
-// class DonutPieChartComppleted extends StatelessWidget {
-//   final List<charts.Series> seriesList;
-//   final bool animate;
+class DonutPieChartComppleted extends StatelessWidget {
+  final List<charts.Series> seriesList;
+  final bool animate;
 
-//   DonutPieChartComppleted(this.seriesList, {this.animate});
+  DonutPieChartComppleted(this.seriesList, {this.animate});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return new charts.PieChart(
-//       _createTodoCompletionData(context),
-//       animate: animate,
-//       defaultRenderer: new charts.ArcRendererConfig(
-//         arcWidth: 15,
-//         strokeWidthPx: 0,
-//       ),
-//       behaviors: [
-//         new charts.DatumLegend(
-//           position: charts.BehaviorPosition.bottom,
-//           outsideJustification: charts.OutsideJustification.middleDrawArea,
-//           horizontalFirst: false,
-//           cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-//           showMeasures: true,
-//           desiredMaxColumns: 2,
-//           desiredMaxRows: 2,
-//           legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-//           measureFormatter: (num value) {
-//             return value == null ? '-' : "$value";
-//           },
-//           entryTextStyle: charts.TextStyleSpec(
-//               color: charts.MaterialPalette.black,
-//               fontFamily: 'Roboto',
-//               fontSize: 16),
-//         ),
-//       ],
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return new charts.PieChart(
+      _createTodoCompletionData(context),
+      animate: animate,
+      defaultRenderer: new charts.ArcRendererConfig(
+        arcWidth: 15,
+        strokeWidthPx: 0,
+      ),
+      behaviors: [
+        new charts.DatumLegend(
+          position: charts.BehaviorPosition.bottom,
+          outsideJustification: charts.OutsideJustification.middleDrawArea,
+          horizontalFirst: false,
+          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+          showMeasures: true,
+          desiredMaxColumns: 2,
+          desiredMaxRows: 2,
+          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+          measureFormatter: (num value) {
+            return value == null ? '-' : "$value";
+          },
+          entryTextStyle: charts.TextStyleSpec(
+              color: charts.MaterialPalette.black,
+              fontFamily: 'Roboto',
+              fontSize: 16),
+        ),
+      ],
+    );
+  }
 
-//   factory DonutPieChartComppleted.withSampleData(context) {
-//     return new DonutPieChartComppleted(
-//       _createTodoCompletionData(context),
-//       animate: true,
-//     );
-//   }
+  factory DonutPieChartComppleted.withSampleData(context) {
+    return new DonutPieChartComppleted(
+      _createTodoCompletionData(context),
+      animate: true,
+    );
+  }
 
-//   static List<charts.Series<TodoCompletion, String>> _createTodoCompletionData(
-//       context) {
-//     List<TodoCompletion> data = [];
+  static List<charts.Series<TodoCompletion, String>> _createTodoCompletionData(
+      context) {
+    List<TodoCompletion> data = [];
 
-//     Provider.of<HomeTabProvider>(context, listen: false)
-//         .projects
-//         .forEach((pro) {
-//       if (Provider.of<TodoProvider>(context, listen: false)
-//               .getTasksByLevel(TodoStatus.finished, pro.id)
-//               .length >
-//           0) {
-//         data.add(new TodoCompletion(
-//             pro.title,
-//             Provider.of<TodoProvider>(context, listen: false)
-//                 .getTasksByLevel(TodoStatus.finished, pro.id)
-//                 .length,
-//             new Color(pro.color)));
-//       }
-//     });
-//     return [
-//       new charts.Series<TodoCompletion, String>(
-//         id: 'completion2',
-//         domainFn: (TodoCompletion todo, _) => todo.category,
-//         measureFn: (TodoCompletion todo, _) => todo.amount,
-//         data: data,
-//         colorFn: (TodoCompletion todo, _) =>
-//             charts.ColorUtil.fromDartColor(todo.color),
-//         labelAccessorFn: (TodoCompletion todo, _) => '${todo.amount}',
-//       )
-//     ];
-//   }
-// }
+    Provider.of<HomeTabProvider>(context, listen: false)
+        .projects
+        .forEach((pro) {
+      if (Provider.of<TodoProvider>(context, listen: false)
+              .getTasksByLevel(TodoStatus.finished, pro.id)
+              .length >
+          0) {
+        data.add(new TodoCompletion(
+            pro.title,
+            Provider.of<TodoProvider>(context, listen: false)
+                .getTasksByLevel(TodoStatus.finished, pro.id)
+                .length,
+            new Color(pro.color)));
+      }
+    });
+    return [
+      new charts.Series<TodoCompletion, String>(
+        id: 'completion2',
+        domainFn: (TodoCompletion todo, _) => todo.category,
+        measureFn: (TodoCompletion todo, _) => todo.amount,
+        data: data,
+        colorFn: (TodoCompletion todo, _) =>
+            charts.ColorUtil.fromDartColor(todo.color),
+        labelAccessorFn: (TodoCompletion todo, _) => '${todo.amount}',
+      )
+    ];
+  }
+}
 
 class TodoCompletion {
   final String category;
@@ -544,7 +629,10 @@ class FinishedTaskBarChart extends StatelessWidget {
           todos
               .where((todo) => TodoHelper.isSameDay(todo.finishedAt, day))
               .toList()
-              .length));
+              .length,
+          TodoHelper.getBonusTaskCount(todos
+              .where((todo) => TodoHelper.isSameDay(todo.finishedAt, day))
+              .toList())));
     });
 
     return [
@@ -564,6 +652,7 @@ class FinishedTaskBarChart extends StatelessWidget {
 class TodoCompletionPerDay {
   final String day;
   final int finishedTasks;
+  final int bonusCount;
 
-  TodoCompletionPerDay(this.day, this.finishedTasks);
+  TodoCompletionPerDay(this.day, this.finishedTasks, this.bonusCount);
 }

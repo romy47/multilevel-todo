@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/models/project_model.dart';
@@ -26,21 +27,6 @@ class _ProjectsState extends State<Projects> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // InkWell(
-          //     child: Card(
-          //       child: Padding(
-          //         padding: EdgeInsets.all(16.0),
-          //         child: Text(
-          //           'Create New Project',
-          //         ),
-          //       ),
-          //     ),
-          //     onTap: () => {
-          //           Navigator.push(
-          //               context,
-          //               MaterialPageRoute(
-          //                   builder: (context) => CreateProject()))
-          //         }),
           Container(
             child: Consumer<List<Project>>(builder: (context, projects, child) {
               return ListView.builder(
@@ -89,9 +75,29 @@ class _ProjectsState extends State<Projects> {
                               ),
                               child: IconButton(
                                 onPressed: () => {
-                                  new DatabaseServices(
-                                          FirebaseAuth.instance.currentUser.uid)
-                                      .deleteProject(projects[index].id)
+                                  if (projects.length > 1)
+                                    {
+                                      new DatabaseServices(FirebaseAuth
+                                              .instance.currentUser.uid)
+                                          .deleteProject(projects[index].id)
+                                    }
+                                  else
+                                    {
+                                      showDialog(
+                                          context: context,
+                                          child: CupertinoAlertDialog(
+                                              // title: const Text('Sorry'),
+                                              content: Text(
+                                                  'At least one project is required'),
+                                              actions: [
+                                                CupertinoDialogAction(
+                                                  child: Text('Ok'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                )
+                                              ])),
+                                    }
                                 },
                                 icon: Icon(Icons.delete_outline),
                                 color: Colors.red,
