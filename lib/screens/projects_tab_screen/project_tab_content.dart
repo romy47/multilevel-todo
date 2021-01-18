@@ -64,6 +64,37 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                   });
                   return true;
                 }, onAccept: (data) {
+                  if (data.status != TodoStatus.todo.value) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                          children: <TextSpan>[
+                            // TextSpan(
+                            //   text: 'Due date of ',
+                            // ),
+                            TextSpan(
+                              text: data.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                // color: Colors.green[100]
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' is due ',
+                            ),
+                            TextSpan(
+                                text: "Tomorrow",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  // color: Colors.green[300]
+                                )),
+                          ],
+                        ),
+                      ),
+                      backgroundColor: Colors.blue[200],
+                    ));
+                  }
                   setState(() {
                     todoHighlighted = false;
                   });
@@ -134,6 +165,35 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                   });
                   return true;
                 }, onAccept: (data) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: RichText(
+                      text: TextSpan(
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        children: <TextSpan>[
+                          // TextSpan(
+                          //   text: 'Due date of ',
+                          // ),
+                          TextSpan(
+                            text: data.title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              // color: Colors.green[100]
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' is due ',
+                          ),
+                          TextSpan(
+                              text: "Today",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                // color: Colors.green[300]
+                              )),
+                        ],
+                      ),
+                    ),
+                    backgroundColor: Colors.blue[200],
+                  ));
                   setState(() {
                     onGoingHighlighted = false;
                   });
