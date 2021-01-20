@@ -1,3 +1,5 @@
+import 'package:second_attempt/helpers/todo_helper.dart';
+
 class Todo {
   String id;
   String projectId;
@@ -7,6 +9,7 @@ class Todo {
   int status;
   DateTime due;
   int repeat;
+  List<bool> weekDays;
   DateTime createdAt;
   DateTime finishedAt;
   Todo(
@@ -22,6 +25,7 @@ class Todo {
     this.finishedAt,
   ) {
     this.createdAt = DateTime.now();
+    // this.repeat = TodoHelper.getEmptRepeat();
   }
   Todo.fromJson(Map<String, dynamic> parsedJSON)
       : id = parsedJSON['id'],

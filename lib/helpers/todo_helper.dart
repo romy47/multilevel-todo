@@ -51,6 +51,10 @@ class TodoHelper {
     return res;
   }
 
+  static List<bool> getEmptRepeat() {
+    return [false, false, false, false, false, false, false];
+  }
+
   static Project getProjectfromTodo(List<Project> projects, Todo todo) {
     Project res =
         projects.firstWhere((element) => element.id == todo.projectId);
