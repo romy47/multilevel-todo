@@ -49,8 +49,11 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  List<String> repeatOptions = ['Daily', 'Weekly'];
+  // List<String> repeatOptions = ['Daily', 'Weekly'];
   List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Custom'];
+  List<bool> weekDaysValue = [false, false, false, false, false, false, false];
+  List<String> _weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  bool isRepeat = false;
 
   _CreateTodoScreenState() {}
   @override
@@ -90,7 +93,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
               ),
               projectDropDown(context),
               dueDateDropDown(context),
-              WeeklyRepeatCheckboxes(),
+              buildWeeklyRepeatCheckBoxes(),
               // Container(
               //     margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
               //     child: CheckboxListTile(
@@ -115,6 +118,9 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                     child: Text('Save Todo'),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
+                        print(weekDaysValue.toString());
+                        print(isRepeat);
+
                         DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                             .addTodo(new Todo(
                                 '',
@@ -125,6 +131,8 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                                 TodoStatus.todo.value,
                                 this.selectedDueDate,
                                 0,
+                                isRepeat,
+                                weekDaysValue,
                                 new DateTime(
                                   this.selectedDueDate.year,
                                   this.selectedDueDate.month,
@@ -243,6 +251,93 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     );
   }
 
+  Widget buildWeeklyRepeatCheckBoxes() {
+    List<Widget> list = new List();
+    Widget cb;
+
+    for (int i = 0; i < weekDaysValue.length; i++) {
+      cb = Checkbox(
+        value: weekDaysValue[i],
+        onChanged: (bool value) {
+          setState(() {
+            // need to update weekDaysValue[?]
+            weekDaysValue[i] = value;
+          });
+        },
+      );
+      Widget cbR = SizedBox(
+          width: 80,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [Text(_weekDays[i]), cb]));
+      list.add(cbR);
+    }
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.grey, spreadRadius: 1),
+          ],
+        ),
+        padding: EdgeInsets.only(left: 15.0),
+        margin: EdgeInsets.only(top: 30.0),
+        width: double.infinity,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+              decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                  color: Colors.grey,
+                  width: 1.0,
+                )),
+              ),
+              width: 120,
+              child: ListTileTheme(
+                  contentPadding: EdgeInsets.all(0),
+                  child: CheckboxListTile(
+                    title: Text("Repeat"),
+                    value: isRepeat,
+                    onChanged: (newValue) {
+                      toggleRepeat(newValue);
+                    },
+                    controlAffinity: ListTileControlAffinity
+                        .trailing, //  <-- leading Che ckbox
+                  ))),
+          Wrap(
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            spacing: 5,
+            runSpacing: 5,
+            children: list,
+          )
+        ]));
+  }
+
+  toggleRepeat(bool val) {
+    DateTime due = new DateTime(
+      this.selectedDueDate.year,
+      this.selectedDueDate.month,
+      this.selectedDueDate.day,
+    );
+    String dueWeekDay = DateFormat('EEE').format(due);
+    setState(() {
+      isRepeat = val;
+      if (val) {
+        _weekDays.asMap().forEach((index, day) {
+          if (day == dueWeekDay) {
+            weekDaysValue[index] = true;
+          }
+        });
+      } else {
+        for (var i = 0; i < weekDaysValue.length; i++) {
+          weekDaysValue[i] = false;
+        }
+      }
+    });
+  }
+
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -257,61 +352,94 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   }
 }
 
-class WeeklyRepeatCheckboxes extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return WeeklyRepeatCheckboxesState();
-  }
-}
+// class WeeklyRepeatCheckboxes extends StatefulWidget {
+//   @override
+//   State<StatefulWidget> createState() {
+//     // TODO: implement createState
+//     return WeeklyRepeatCheckboxesState();
+//   }
+// }
 
-class WeeklyRepeatCheckboxesState extends State<WeeklyRepeatCheckboxes> {
-  List<bool> _data = [false, false, false, false, false, false, false];
-  List<String> _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  @override
-  Widget build(BuildContext context) {
-    return _buildCheckBoxes();
-  }
+// class WeeklyRepeatCheckboxesState extends State<WeeklyRepeatCheckboxes> {
+//   List<bool> _data = [false, false, false, false, false, false, false];
+//   List<String> _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+//   @override
+//   Widget build(BuildContext context) {
+//     return _buildCheckBoxes();
+//   }
 
-  Widget _buildCheckBoxes() {
-    List<Widget> list = new List();
-    Widget cb;
+//   Widget _buildCheckBoxes() {
+//     List<Widget> list = new List();
+//     Widget cb;
 
-    for (int i = 0; i < _data.length; i++) {
-      cb = Checkbox(
-        value: _data[i],
-        onChanged: (bool value) {
-          setState(() {
-            // need to update _data[?]
-            _data[i] = value;
-          });
-        },
-      );
-      Widget cbR = SizedBox(
-          width: 80,
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text(_days[i]), cb]));
-      list.add(cbR);
-    }
-    return Column(children: [
-      Container(
-        margin: EdgeInsets.only(top: 20),
-      ),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('Repeat', style: TextStyle(fontSize: 19, color: Colors.grey[600]))
-      ]),
-      Wrap(
-        direction: Axis.horizontal,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        spacing: 5,
-        runSpacing: 5,
-        children: list,
-      )
-    ]);
+//     for (int i = 0; i < _data.length; i++) {
+//       cb = Checkbox(
+//         value: _data[i],
+//         onChanged: (bool value) {
+//           setState(() {
+//             // need to update _data[?]
+//             _data[i] = value;
+//           });
+//         },
+//       );
+//       Widget cbR = SizedBox(
+//           width: 80,
+//           child: Row(
+//               mainAxisAlignment: MainAxisAlignment.start,
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [Text(_days[i]), cb]));
+//       list.add(cbR);
+//     }
+//     return Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(10),
+//           color: Colors.white,
+//           boxShadow: [
+//             BoxShadow(color: Colors.grey, spreadRadius: 1),
+//           ],
+//         ),
+//         padding: EdgeInsets.only(left: 15.0),
+//         margin: EdgeInsets.only(top: 30.0),
+//         width: double.infinity,
+//         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//           // Container(
+//           //   margin: EdgeInsets.only(top: 20),
+//           // ),
+//           // Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+//           //   Text('Repeat', style: TextStyle(fontSize: 19, color: Colors.grey[600]))
+//           // ]),
+//           Container(
+//               decoration: BoxDecoration(
+//                 border: Border(
+//                     bottom: BorderSide(
+//                   color: Colors.grey,
+//                   width: 1.0,
+//                 )),
+//               ),
+//               width: 120,
+//               child: ListTileTheme(
+//                   contentPadding: EdgeInsets.all(0),
+//                   child: CheckboxListTile(
+//                     title: Text("Repeat"),
+//                     value: true,
+//                     onChanged: (newValue) {
+//                       setState(() {
+//                         //  checkedValue = newValue;
+//                       });
+//                     },
+//                     controlAffinity: ListTileControlAffinity
+//                         .trailing, //  <-- leading Che ckbox
+//                   ))),
+//           Wrap(
+//             direction: Axis.horizontal,
+//             crossAxisAlignment: WrapCrossAlignment.start,
+//             spacing: 5,
+//             runSpacing: 5,
+//             children: list,
+//           )
+//         ]));
 
-    // return Row(
-    //     mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: list);
-  }
-}
+//     // return Row(
+//     //     mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: list);
+//   }
+// }

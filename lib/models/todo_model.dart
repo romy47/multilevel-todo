@@ -9,6 +9,7 @@ class Todo {
   int status;
   DateTime due;
   int repeat;
+  bool isRepeat;
   List<bool> weekDays;
   DateTime createdAt;
   DateTime finishedAt;
@@ -21,6 +22,8 @@ class Todo {
     this.status,
     this.due,
     this.repeat,
+    this.isRepeat,
+    this.weekDays,
     this.createdAt,
     this.finishedAt,
   ) {
@@ -40,6 +43,11 @@ class Todo {
         status = parsedJSON['status'],
         due = parsedJSON['due'].toDate().toLocal(),
         repeat = parsedJSON['repeat'],
+        isRepeat =
+            parsedJSON['isRepeat'] == null ? false : parsedJSON['isRepeat'],
+        weekDays = parsedJSON['weekDays'] == null
+            ? TodoHelper.getEmptRepeat()
+            : List.from(parsedJSON['weekDays']),
         createdAt = parsedJSON['createdAt'].toDate().toLocal(),
         finishedAt = parsedJSON['finishedAt'] == null
             ? null
@@ -54,6 +62,8 @@ class Todo {
         'status': status,
         'due': due.toUtc(),
         'repeat': repeat,
+        'isRepeat': isRepeat,
+        'weekDays': weekDays,
         'createdAt': createdAt.toUtc(),
         'finishedAt': finishedAt.toUtc(),
       };

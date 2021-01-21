@@ -102,6 +102,8 @@ class DatabaseServices {
     addTodoData['status'] = todo.status;
     addTodoData['due'] = todo.due.toUtc();
     addTodoData['repeat'] = todo.repeat;
+    addTodoData['isRepeat'] = todo.isRepeat;
+    addTodoData['weekDays'] = todo.weekDays;
     addTodoData['createdAt'] = todo.createdAt.toUtc();
     addTodoData['finishedAt'] = todo.finishedAt.toUtc();
     return ref.set(addTodoData);

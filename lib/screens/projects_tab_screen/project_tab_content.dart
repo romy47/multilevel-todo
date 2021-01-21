@@ -301,6 +301,22 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
           // child:
           // Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(builder: (context, todos, child) {
+            List<Todo> todoDueRepeat = todos
+                .where(
+                    (td) => td.isRepeat == true && TodoHelper.isOverDue(td.due))
+                .toList();
+            // print('Due Repeat Todos-----------------------------' +
+            //     todoDueRepeat.length.toString());
+            refreshDueRepeatTodos(todoDueRepeat);
+
+            // todos = todos
+            //     .where((td) =>
+            //         (td.isRepeat == true && TodoHelper.isOverDue(td.due)) ==
+            //         false)
+            //     .toList();
+            // print('Other Todos-----------------------------' +
+            //     todos.length.toString());
+
             return Wrap(
               children: TodoHelper.getTasksWithProjectByLevel(
                       widget.projects,
@@ -329,6 +345,11 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
             // });
           })),
     ));
+  }
+
+  refreshDueRepeatTodos(List<Todo> todos) {
+    print('Due Repeat Todos-----------------------------' +
+        todos.length.toString());
   }
 
   Widget todoChip(
@@ -394,6 +415,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
 
   Widget todoChipFuture(Todo todo, BuildContext context, bool isDragging) {
     DateTime today = DateTime.now();
+    print('Dump: ' + todo.weekDays.toString());
     return InkWell(
         child: Chip(
             backgroundColor: Colors.white,
