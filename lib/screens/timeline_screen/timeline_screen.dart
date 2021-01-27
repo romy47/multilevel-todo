@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -98,8 +99,8 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
       print('size more than one');
       if (index == 0) {
         print('index 0');
-        if (todo.finishedAt.day ==
-            this.widget.todoProvider.finishedTodos[index + 1].finishedAt.day) {
+        if (TodoHelper.isSameDay(todo.finishedAt,
+            this.widget.todoProvider.finishedTodos[index + 1].finishedAt)) {
           print('index 0: same next');
           return firstTimeline(todo);
         } else {
@@ -108,19 +109,19 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
         }
       } else if (index == this.widget.todoProvider.finishedTodos.length - 1) {
         print('index last');
-        if (todo.finishedAt.day ==
-            this.widget.todoProvider.finishedTodos[index - 1].finishedAt.day) {
+        if (TodoHelper.isSameDay(todo.finishedAt,
+            this.widget.todoProvider.finishedTodos[index - 1].finishedAt)) {
           print('index last: same prev');
           return lastTimeline(todo);
         } else {
           print('index last: different prev');
           return midsinTimeline(todo);
         }
-      } else if (todo.finishedAt.day ==
-          this.widget.todoProvider.finishedTodos[index - 1].finishedAt.day) {
+      } else if (TodoHelper.isSameDay(todo.finishedAt,
+          this.widget.todoProvider.finishedTodos[index - 1].finishedAt)) {
         print('index mid: same first');
-        if (todo.finishedAt.day ==
-            this.widget.todoProvider.finishedTodos[index + 1].finishedAt.day) {
+        if (TodoHelper.isSameDay(todo.finishedAt,
+            this.widget.todoProvider.finishedTodos[index + 1].finishedAt)) {
           print('index mid: same first: same last');
 
           return midConTimeline(todo);
@@ -130,8 +131,8 @@ class _ProjectTimelineState extends State<ProjectTimeline> {
         }
       } else {
         print('index mid: diff first');
-        if (todo.finishedAt.day ==
-            this.widget.todoProvider.finishedTodos[index + 1].finishedAt.day) {
+        if (TodoHelper.isSameDay(todo.finishedAt,
+            this.widget.todoProvider.finishedTodos[index + 1].finishedAt)) {
           print('index mid: diff first: same last');
           return firstTimeline(todo);
         } else {

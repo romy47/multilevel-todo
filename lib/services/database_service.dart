@@ -66,10 +66,15 @@ class DatabaseServices {
   }
 
   Future<QuerySnapshot> getFinishedTodoListLast7(int limit) {
-    DateTime to = new DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-    DateTime from = new DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day - 7);
+    final now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime to = today.add(Duration(days: 1));
+    DateTime from = today.subtract(Duration(days: 7));
+
+    // DateTime to = new DateTime(
+    //     DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
+    // DateTime from = new DateTime(
+    //     DateTime.now().year, DateTime.now().month, DateTime.now().day - 7);
     final _finishedTodoRef = _fireStoreDataBase
         .collection('todos')
         .doc(this.uid)
@@ -160,7 +165,10 @@ class DatabaseServices {
     ref.doc(todoId).delete();
   }
 
-  changeTodoSTatus(Todo todo, TodoStatus status) {
+  Todo changeTodoSTatus(Todo todo, TodoStatus status) {
+    final now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime tomorrow = today.add(Duration(days: 1));
     DocumentReference ref = _fireStoreDataBase
         .collection('todos')
         .doc(uid)
@@ -179,8 +187,8 @@ class DatabaseServices {
         if (status == TodoStatus.todo) {
           // Rebirth tommorrow
           todo.createdAt = DateTime.now();
-          todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 1);
+
+          todo.due = tomorrow;
           todo.status = TodoStatus.todo.value;
           this.addTodo(todo);
         } else {
@@ -198,19 +206,19 @@ class DatabaseServices {
 
           } else {
             // State change to tommorrow
-            todo.due = new DateTime(DateTime.now().year, DateTime.now().month,
-                DateTime.now().day + 1);
+
+            todo.due = tomorrow;
             todo.status = TodoStatus.todo.value;
             ref.update(todo.toJson()).then((value) => {});
           }
         } else {
           // State change to today
-          todo.due = new DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day);
+          todo.due = today;
           todo.status = TodoStatus.onGoing.value;
           ref.update(todo.toJson()).then((value) => {});
         }
       }
     }
+    return todo;
   }
 }

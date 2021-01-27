@@ -64,13 +64,14 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
   void initState() {
     super.initState();
     DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime tomorrow = today.add(Duration(days: 1));
+    DateTime nextWeek = today.add(Duration(days: 7));
     if (TodoHelper.isItToday(widget.todo.due)) {
       this.selectedDueDateOption = dueDateOptions[0];
-    } else if (TodoHelper.isSameDay(
-        new DateTime(now.year, now.month, now.day + 1), widget.todo.due)) {
+    } else if (TodoHelper.isSameDay(tomorrow, widget.todo.due)) {
       this.selectedDueDateOption = dueDateOptions[1];
-    } else if (TodoHelper.isSameDay(
-        new DateTime(now.year, now.month, now.day + 7), widget.todo.due)) {
+    } else if (TodoHelper.isSameDay(nextWeek, widget.todo.due)) {
       this.selectedDueDateOption = dueDateOptions[2];
     } else {
       this.selectedDueDateOption = dueDateOptions[3];
@@ -266,17 +267,18 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
                   onChanged: (newVal) {
                     setState(() {
                       final now = DateTime.now();
+                      DateTime today = DateTime(now.year, now.month, now.day);
+                      DateTime tomorrow = today.add(Duration(days: 1));
+                      DateTime nextWeek = today.add(Duration(days: 7));
                       this.selectedDueDateOption = newVal;
                       if (newVal == 'Custom') {
                         _selectDate(context);
                       } else if (newVal == 'Today') {
                         this.selectedDueDate = now;
                       } else if (newVal == 'Tomorrow') {
-                        this.selectedDueDate =
-                            DateTime(now.year, now.month, now.day + 1);
+                        this.selectedDueDate = tomorrow;
                       } else if (newVal == 'Next Week') {
-                        this.selectedDueDate =
-                            DateTime(now.year, now.month, now.day + 7);
+                        this.selectedDueDate = nextWeek;
                       }
                     });
                   }),

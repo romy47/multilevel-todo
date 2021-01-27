@@ -356,17 +356,9 @@ class _BarChartWidgetState extends State<BarChartWidget> {
             print('& day todos recieved ' + todos.toString());
 
             final List<TodoCompletionPerDay> data = [];
-
             List<DateTime> days = [];
-            DateTime to = new DateTime(DateTime.now().year,
-                DateTime.now().month, DateTime.now().day + 1);
-            DateTime from = new DateTime(DateTime.now().year,
-                DateTime.now().month, DateTime.now().day - 6);
-            final daysToGenerate = to.difference(from).inDays;
-            days = List.generate(daysToGenerate,
-                (i) => DateTime(from.year, from.month, from.day + (i)));
+            days = TodoHelper.getLastSevenDays();
             days.asMap().forEach((index, day) {
-              print('--> ' + day.day.toString());
               data.add(new TodoCompletionPerDay(
                   (index == days.length - 1)
                       ? 'Today'
@@ -613,17 +605,9 @@ class FinishedTaskBarChart extends StatelessWidget {
       // new TodoCompletionPerDay('Thu', 6),
       // new TodoCompletionPerDay('Wed', 1),
     ];
-
     List<DateTime> days = [];
-    DateTime to = new DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-    DateTime from = new DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day - 6);
-    final daysToGenerate = to.difference(from).inDays;
-    days = List.generate(
-        daysToGenerate, (i) => DateTime(from.year, from.month, from.day + (i)));
+    days = TodoHelper.getLastSevenDays();
     days.asMap().forEach((index, day) {
-      print('--> ' + day.day.toString());
       data.add(new TodoCompletionPerDay(
           (index == days.length - 1) ? 'Today' : DateFormat('EEE').format(day),
           todos

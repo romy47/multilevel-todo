@@ -71,10 +71,8 @@ class TodoHelper {
     Icon ic = Icon(Icons.navigate_next);
     DateTime today = DateTime.now();
     if (todo.status == TodoStatus.finished.value) {
-      // if (todo.due.day == today.day) {
       ic = Icon(Icons.done);
       cl = Colors.grey[600];
-      // }
     } else {
       if (TodoHelper.isOverDue(todo.due)) {
         ic = Icon(Icons.priority_high);
@@ -131,7 +129,12 @@ class TodoHelper {
       }
     }
     return res;
-    // return due.year >= now.year && due.month >= now.month && due.day > now.day;
+  }
+
+  static int getDifferenceInDaysFromToday(DateTime date) {
+    DateTime today = new DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    return date.difference(today).inDays;
   }
 
   static int getBonusTaskCount(List<Todo> todos) {
@@ -144,5 +147,19 @@ class TodoHelper {
       }
     });
     return count;
+  }
+
+  static List<DateTime> getLastSevenDays() {
+    DateTime to = new DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    to = to.add(Duration(days: 1));
+    DateTime from = new DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    from = from.subtract(Duration(days: 6));
+    final daysToGenerate = to.difference(from).inDays;
+    from = from.subtract(Duration(days: 1));
+
+    return List.generate(
+        daysToGenerate, (i) => from = from.add(Duration(days: 1)));
   }
 }

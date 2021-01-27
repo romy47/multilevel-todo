@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/project_model.dart';
@@ -259,8 +261,12 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     });
                     // Provider.of<TodoProvider>(context, listen: false)
                     //     .changeTodoSTatus(data, TodoStatus.finished);
-                    DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                        .changeTodoSTatus(data, TodoStatus.finished);
+                    Todo finishedTodo =
+                        DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                            .changeTodoSTatus(data, TodoStatus.finished);
+                    if (finishedTodo.isRepeat) {
+                      repeatTodo(finishedTodo);
+                    }
                   }, onLeave: (data) {
                     setState(() {
                       finishedHighlighted = false;
@@ -305,18 +311,12 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                 .where(
                     (td) => td.isRepeat == true && TodoHelper.isOverDue(td.due))
                 .toList();
-            // print('Due Repeat Todos-----------------------------' +
-            //     todoDueRepeat.length.toString());
             refreshDueRepeatTodos(todoDueRepeat);
-
-            // todos = todos
-            //     .where((td) =>
-            //         (td.isRepeat == true && TodoHelper.isOverDue(td.due)) ==
-            //         false)
-            //     .toList();
-            // print('Other Todos-----------------------------' +
-            //     todos.length.toString());
-
+            todos = todos
+                .where((td) =>
+                    (td.isRepeat == true && TodoHelper.isOverDue(td.due)) ==
+                    false)
+                .toList();
             return Wrap(
               children: TodoHelper.getTasksWithProjectByLevel(
                       widget.projects,
@@ -348,8 +348,25 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
   }
 
   refreshDueRepeatTodos(List<Todo> todos) {
-    print('Due Repeat Todos-----------------------------' +
-        todos.length.toString());
+    List<String> _weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    todos.forEach((td) {
+      List<DateTime> days = [];
+      DateTime from = new DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      from = from.subtract(Duration(days: 1));
+      days = List.generate(7, (i) => from = from.add(Duration(days: 1)));
+      for (DateTime day in days) {
+        int indx =
+            _weekDays.indexWhere((wd) => wd == DateFormat('EEE').format(day));
+        if (td.weekDays[indx] == true) {
+          td.due = day;
+          break;
+        }
+      }
+    });
+    todos.forEach((td) {
+      DatabaseServices(FirebaseAuth.instance.currentUser.uid).editTodo(td);
+    });
   }
 
   Widget todoChip(
@@ -363,7 +380,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
   }
 
   Widget todoChipOverdue(Todo todo, BuildContext context, bool isDragging) {
-    DateTime today = DateTime.now();
+    int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
     return InkWell(
         child: Chip(
           backgroundColor: Colors.white,
@@ -389,20 +406,15 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
               children: <TextSpan>[
                 TextSpan(
                     text: ' ' +
-                        ((todo.due.day - today.day) == 1
+                        (days == 1
                             ? 'Tomorrow'
-                            : (todo.due.day - today.day).toString() +
+                            : days.toString() +
                                 ' day' +
-                                (((todo.due.day - today.day) == 1 ||
-                                        (todo.due.day - today.day) == -1)
-                                    ? ''
-                                    : 's')),
+                                ((days == 1 || days == -1) ? '' : 's')),
                     style: TextStyle(
                         color: isDragging
                             ? Colors.grey[400]
-                            : (((todo.due.day - today.day) > 0)
-                                ? Colors.green
-                                : Colors.red))),
+                            : ((days > 0) ? Colors.green : Colors.red))),
               ],
             ),
           ),
@@ -414,8 +426,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
   }
 
   Widget todoChipFuture(Todo todo, BuildContext context, bool isDragging) {
-    DateTime today = DateTime.now();
-    print('Dump: ' + todo.weekDays.toString());
+    int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
     return InkWell(
         child: Chip(
             backgroundColor: Colors.white,
@@ -432,17 +443,15 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                 children: <TextSpan>[
                   TextSpan(
                       text: ' ' +
-                          ((todo.due.day - today.day) == 1
+                          ((days) == 1
                               ? 'Tomorrow'
-                              : (todo.due.day - today.day).toString() +
+                              : (days).toString() +
                                   ' day' +
-                                  (((todo.due.day - today.day) == 1)
-                                      ? ''
-                                      : 's')),
+                                  (((days) == 1) ? '' : 's')),
                       style: TextStyle(
                           color: isDragging
                               ? Colors.grey[400]
-                              : ((todo.due.day - today.day) > 0)
+                              : ((days) > 0)
                                   ? Colors.green
                                   : Colors.red)),
                 ],
@@ -586,5 +595,43 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
           // })
           ),
     ));
+  }
+
+  repeatTodo(Todo todo) {
+    List<String> _weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    List<DateTime> days = [];
+    DateTime from = todo.due;
+    // from = from.add(Duration(days: 1));
+    days = List.generate(7, (i) => from = from.add(Duration(days: 1)));
+    for (DateTime day in days) {
+      int indx =
+          _weekDays.indexWhere((wd) => wd == DateFormat('EEE').format(day));
+      if (todo.weekDays[indx] == true) {
+        todo.due = day;
+        break;
+      }
+    }
+
+    DatabaseServices(FirebaseAuth.instance.currentUser.uid).addTodo(new Todo(
+        '',
+        todo.projectId,
+        todo.title,
+        null,
+        null,
+        TodoStatus.todo.value,
+        todo.due,
+        0,
+        todo.isRepeat,
+        todo.weekDays,
+        todo.createdAt,
+        new DateTime(
+          DateTime.now().year + 100,
+          DateTime.now().month,
+          DateTime.now().day,
+        )));
+
+    // todos.forEach((todo) {
+    // DatabaseServices(FirebaseAuth.instance.currentUser.uid).editTodo(todo);
+    // });
   }
 }

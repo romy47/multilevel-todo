@@ -61,7 +61,9 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     super.initState();
     this.selectedDueDateOption = dueDateOptions[1];
     DateTime now = DateTime.now();
-    this.selectedDueDate = DateTime(now.year, now.month, now.day + 1);
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime tomorrow = today.add(Duration(days: 1));
+    this.selectedDueDate = tomorrow;
     this.selectedProjectId =
         widget.projects != null ? widget.projects[0].id : null;
   }
@@ -225,17 +227,18 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                 onChanged: (newVal) {
                   setState(() {
                     final now = DateTime.now();
+                    DateTime today = DateTime(now.year, now.month, now.day);
+                    DateTime tomorrow = today.add(Duration(days: 1));
+                    DateTime nextWeek = today.add(Duration(days: 7));
                     this.selectedDueDateOption = newVal;
                     if (newVal == 'Custom') {
                       _selectDate(context);
                     } else if (newVal == 'Today') {
                       this.selectedDueDate = now;
                     } else if (newVal == 'Tomorrow') {
-                      this.selectedDueDate =
-                          DateTime(now.year, now.month, now.day + 1);
+                      this.selectedDueDate = tomorrow;
                     } else if (newVal == 'Next Week') {
-                      this.selectedDueDate =
-                          DateTime(now.year, now.month, now.day + 7);
+                      this.selectedDueDate = nextWeek;
                     }
                   });
                 }),
