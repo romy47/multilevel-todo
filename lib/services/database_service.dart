@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/screens/projects_list_screen/edit_project_screen.dart';
@@ -201,11 +202,12 @@ class DatabaseServices {
       } else {
         // State changing of a Todo
         if (status == TodoStatus.todo) {
-          if (todo.status == TodoStatus.todo.value) {
+          if (TodoHelper.isItToday(todo.due) == false) {
             //accidental todo  to todo
-
+            print('Accidental today todayy Baby!!!!');
           } else {
             // State change to tommorrow
+            print('Tomorrow Baby!!!!');
 
             todo.due = tomorrow;
             todo.status = TodoStatus.todo.value;
@@ -213,6 +215,7 @@ class DatabaseServices {
           }
         } else {
           // State change to today
+          print('Today Baby!!!!');
           todo.due = today;
           todo.status = TodoStatus.onGoing.value;
           ref.update(todo.toJson()).then((value) => {});
