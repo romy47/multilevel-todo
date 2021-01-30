@@ -48,6 +48,17 @@ class DatabaseServices {
             snapShot.docs.map((doc) => Todo.fromJson(doc.data())).toList()));
   }
 
+  Future<QuerySnapshot> getUserTodoListSnapshot() {
+    DateTime now = DateTime.now();
+    return _fireStoreDataBase
+        .collection('todos')
+        .doc(this.uid)
+        .collection('todo')
+        .where('finishedAt',
+            isGreaterThan: new DateTime(now.year, now.month, now.day))
+        .get();
+  }
+
   Future<QuerySnapshot> getFinishedTodoList(
     int limit, {
     DocumentSnapshot startAfter,

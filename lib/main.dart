@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/providers/home_tab_provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
 import 'package:second_attempt/screens/auth_screen/auth_tab_screen.dart';
@@ -14,19 +15,21 @@ import 'models/todo_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AndroidAlarmManager.initialize();
   await Firebase.initializeApp();
+  await AndroidAlarmManager.initialize();
   runApp(MyApp());
+  await AndroidAlarmManager.periodic(const Duration(hours: 2), 112, showPrint);
 }
 
-void showPrint() {
-  print('ALARM!!!  ALARM!!!');
+void showPrint() async {
+  // print('ALARM!!!  ALARM!!!');
+  TodoHelper.getNotific();
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AndroidAlarmManager.periodic(const Duration(seconds: 10), 2, showPrint);
+    // AndroidAlarmManager.;
 
     return
         // MultiProvider(

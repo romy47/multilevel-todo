@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:second_attempt/helpers/notification-helper.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
+import 'package:second_attempt/services/database_service.dart';
 
 class TodoHelper {
   static List<Todo> getTasksByLevel(
@@ -161,5 +167,112 @@ class TodoHelper {
 
     return List.generate(
         daysToGenerate, (i) => from = from.add(Duration(days: 1)));
+  }
+
+  static getNotific() async {
+    print('ALARM');
+    await Firebase.initializeApp();
+
+    FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
+
+    // final now = DateTime.now();
+    // DateTime today = DateTime(now.year, now.month, now.day);
+    // DateTime to = today.add(Duration(days: 1));
+    // DateTime from = today.subtract(Duration(days: 7));
+    // print('ALARM   2');
+    // final _finishedTodoRef = _fireStoreDataBase
+    //     .collection('todos')
+    //     .doc(FirebaseAuth.instance.currentUser.uid)
+    //     .collection('todo')
+    //     .where('status', isEqualTo: TodoStatus.finished.value)
+    //     .where('finishedAt', isGreaterThanOrEqualTo: from)
+    //     .where('finishedAt', isLessThanOrEqualTo: to)
+    //     .orderBy('finishedAt', descending: false)
+    //     .limit(50);
+    // _finishedTodoRef.get().then((re) {
+    //   print('LALA LALA ------>');
+
+    //   List<Todo> todos = re.docs.map((doc) {
+    //     return Todo.fromJson(doc.data());
+    //   }).toList();
+
+    //   print('LALA LALA ------>' + todos.length.toString());
+    // });
+
+    // DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+    //     .getFinishedTodoListLast7(50)
+    //     .then((re) {
+    //   print('LALA LALA ------>');
+
+    //   List<Todo> todos = re.docs.map((doc) {
+    //     return Todo.fromJson(doc.data());
+    //   }).toList();
+
+    //   print('LALA LALA ------>' + todos.length.toString());
+    // });
+    DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+        .getUserTodoListSnapshot()
+        .then((re) {
+      // print('LALA LALA ------>');
+
+      List<Todo> todos = re.docs.map((doc) {
+        return Todo.fromJson(doc.data());
+      }).toList();
+
+      List<Todo> nonRepeatTodos = todos
+          .where((td) =>
+              (td.isRepeat == true && TodoHelper.isOverDue(td.due)) == false)
+          .toList();
+      List<Todo> repeatTodos = todos
+          .where((td) => td.isRepeat == true && TodoHelper.isOverDue(td.due))
+          .toList();
+
+      List<String> _weekDays = [
+        'Mon',
+        'Tue',
+        'Wed',
+        'Thu',
+        'Fri',
+        'Sat',
+        'Sun'
+      ];
+      repeatTodos.forEach((td) {
+        List<DateTime> days = [];
+        DateTime from = new DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day);
+        from = from.subtract(Duration(days: 1));
+        days = List.generate(7, (i) => from = from.add(Duration(days: 1)));
+        for (DateTime day in days) {
+          int indx =
+              _weekDays.indexWhere((wd) => wd == DateFormat('EEE').format(day));
+          if (td.weekDays[indx] == true) {
+            td.due = day;
+            break;
+          }
+        }
+      });
+      List<Todo> dueToday = [];
+      nonRepeatTodos.forEach((td) {
+        if (TodoHelper.isItToday(td.due)) {
+          print('non rep ------>' + td.title);
+          dueToday.add(td);
+        }
+      });
+      repeatTodos.forEach((td) {
+        if (TodoHelper.isItToday(td.due)) {
+          print('rep ------>' + td.title);
+          dueToday.add(td);
+        }
+      });
+      print('Due Today ------>' + dueToday.length.toString());
+      NotificationHelper().showNotificationBtweenInterval(
+          'Tasks are waiting to be done!!',
+          'Hey, you have ' +
+              dueToday.length.toString() +
+              ' tasks due today including ' +
+              '"' +
+              dueToday[0].title +
+              '"');
+    });
   }
 }
