@@ -92,7 +92,9 @@ class _State extends State<Signup> {
                         'Login',
                         style: TextStyle(fontSize: 20),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushReplacementNamed('/login');
+                      },
                     )
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,

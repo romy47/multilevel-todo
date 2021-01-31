@@ -3,35 +3,20 @@ import 'package:second_attempt/screens/auth_screen/signup.dart';
 
 import 'login.dart';
 
-class AuthTab extends StatefulWidget {
+class Authenticate extends StatefulWidget {
   @override
-  _AuthTabState createState() => _AuthTabState();
+  _AuthenticateState createState() => _AuthenticateState();
 }
 
-class _AuthTabState extends State<AuthTab> {
+class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: [
-                Tab(text: 'Login'),
-                Tab(text: 'Sign up'),
-              ],
-            ),
-            title: Text('Tabs Demo'),
-          ),
-          body: TabBarView(
-            children: [
-              Login(),
-              Signup(),
-            ],
-          ),
-        ),
-      ),
+      home: Login(),
+      routes: <String, WidgetBuilder>{
+        '/signUp': (BuildContext context) => Signup(),
+        '/login': (BuildContext context) => Login(),
+      },
     );
   }
 }

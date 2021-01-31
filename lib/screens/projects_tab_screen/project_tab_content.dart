@@ -307,6 +307,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
           // child:
           // Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(builder: (context, todos, child) {
+            todos = (todos == null) ? [] : todos;
             List<Todo> todoDueRepeat = todos
                 .where(
                     (td) => td.isRepeat == true && TodoHelper.isOverDue(td.due))
@@ -530,6 +531,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                 // child: Consumer<List<Project>>(builder: (context, projects, child) {
                 child: Consumer<List<Todo>>(
                   builder: (context, todos, child) {
+                    todos = (todos == null) ? [] : todos;
                     return Wrap(
                       children: TodoHelper.getTasksWithProjectByLevel(
                               widget.projects,
@@ -570,6 +572,8 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
           // child: Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(
             builder: (context, todos, child) {
+              todos = (todos == null) ? [] : todos;
+
               return Wrap(
                 children: TodoHelper.getTasksWithProjectByLevel(widget.projects,
                         todos, TodoStatus.finished, widget.projectId)
