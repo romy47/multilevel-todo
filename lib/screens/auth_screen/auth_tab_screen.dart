@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:second_attempt/screens/auth_screen/forget_password.dart';
 import 'package:second_attempt/screens/auth_screen/signup.dart';
 
 import 'login.dart';
@@ -16,6 +17,7 @@ class _AuthenticateState extends State<Authenticate> {
       routes: <String, WidgetBuilder>{
         '/signUp': (BuildContext context) => Signup(),
         '/login': (BuildContext context) => Login(),
+        '/reset': (BuildContext context) => ForgotPasssword(),
       },
     );
   }

@@ -9,15 +9,17 @@ class Signup extends StatefulWidget {
 }
 
 class _State extends State<Signup> {
+  TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         // appBar: AppBar(
         //   title: Text('Sample App'),
         // ),
+        key: _scaffoldKey,
         body: Padding(
             padding: EdgeInsets.all(10),
             child: ListView(
@@ -45,6 +47,16 @@ class _State extends State<Signup> {
                     controller: nameController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
+                      labelText: 'Name',
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
                       labelText: 'Email',
                     ),
                   ),
@@ -65,14 +77,12 @@ class _State extends State<Signup> {
                     margin: EdgeInsets.only(top: 20),
                     padding: EdgeInsets.fromLTRB(45, 5, 45, 5),
                     child: RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.blue,
-                      child: Text('Sign up'),
-                      onPressed: () {
-                        emailSignup(
-                            nameController.text, passwordController.text);
-                      },
-                    )),
+                        textColor: Colors.white,
+                        color: Colors.blue,
+                        child: Text('Sign up'),
+                        onPressed: () {
+                          submitSignUp();
+                        })),
                 Container(
                   padding: EdgeInsets.fromLTRB(46, 0, 46, 0),
                   child: SignInButton(
@@ -101,5 +111,30 @@ class _State extends State<Signup> {
                 ))
               ],
             )));
+  }
+
+  void submitSignUp() async {
+    print('Hu');
+    String uid = await emailSignup(
+        emailController.text, passwordController.text, nameController.text);
+    print('Signed User Id' + uid);
+    if (uid == 'email-already-in-use') {
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: RichText(
+          text: TextSpan(
+            style: TextStyle(fontSize: 18, color: Colors.red),
+            children: <TextSpan>[
+              // TextSpan(
+              //   text: 'Due date of ',
+              // ),
+              TextSpan(
+                text: 'An account with this email already exists. Try Sign-in.',
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.blue[200],
+      ));
+    }
   }
 }

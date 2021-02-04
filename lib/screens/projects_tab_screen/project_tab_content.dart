@@ -32,98 +32,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
         children: [
           Expanded(
             // fit: FlexFit.tight,
-            flex: 4,
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey),
-                  ),
-                  boxShadow: [
-                    todoHighlighted
-                        ? BoxShadow(
-                            color: Colors.green.withOpacity(0.2),
-                            spreadRadius: 10,
-                            blurRadius: 7,
-                            offset: Offset(6, 1), // changes position of shadow
-                          )
-                        : BoxShadow(
-                            color: Colors.green.withOpacity(0),
-                            spreadRadius: 0,
-                            blurRadius: 0,
-                            offset: Offset(0, 0), // changes position of shadow
-                          ),
-                  ],
-                ),
-                width: double.maxFinite,
-                child: DragTarget(onWillAccept: (data) {
-                  setState(() {
-                    todoHighlighted = true;
-                  });
-                  return true;
-                }, onLeave: (data) {
-                  setState(() {
-                    todoHighlighted = false;
-                  });
-                  return true;
-                }, onAccept: (data) {
-                  if (data.status != TodoStatus.todo.value) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: RichText(
-                        text: TextSpan(
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                          children: <TextSpan>[
-                            // TextSpan(
-                            //   text: 'Due date of ',
-                            // ),
-                            TextSpan(
-                              text: data.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                // color: Colors.green[100]
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' is due ',
-                            ),
-                            TextSpan(
-                                text: "Tomorrow",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  // color: Colors.green[300]
-                                )),
-                          ],
-                        ),
-                      ),
-                      backgroundColor: Colors.blue[200],
-                    ));
-                  }
-                  setState(() {
-                    todoHighlighted = false;
-                  });
-                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                      .changeTodoSTatus(data, TodoStatus.todo);
-                }, builder:
-                    (BuildContext context, List<Todo> incoming, rejected) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: double.maxFinite,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Todos",
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                        ),
-                      ),
-                      todos(context),
-                    ],
-                  );
-                })),
-          ),
-          Expanded(
-            // fit: FlexFit.tight,
             flex: 2,
             child: Container(
                 decoration: BoxDecoration(
@@ -217,6 +125,98 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                         ),
                       ),
                       onGoing(context),
+                    ],
+                  );
+                })),
+          ),
+          Expanded(
+            // fit: FlexFit.tight,
+            flex: 4,
+            child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey),
+                  ),
+                  boxShadow: [
+                    todoHighlighted
+                        ? BoxShadow(
+                            color: Colors.green.withOpacity(0.2),
+                            spreadRadius: 10,
+                            blurRadius: 7,
+                            offset: Offset(6, 1), // changes position of shadow
+                          )
+                        : BoxShadow(
+                            color: Colors.green.withOpacity(0),
+                            spreadRadius: 0,
+                            blurRadius: 0,
+                            offset: Offset(0, 0), // changes position of shadow
+                          ),
+                  ],
+                ),
+                width: double.maxFinite,
+                child: DragTarget(onWillAccept: (data) {
+                  setState(() {
+                    todoHighlighted = true;
+                  });
+                  return true;
+                }, onLeave: (data) {
+                  setState(() {
+                    todoHighlighted = false;
+                  });
+                  return true;
+                }, onAccept: (data) {
+                  if (data.status != TodoStatus.todo.value) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                          children: <TextSpan>[
+                            // TextSpan(
+                            //   text: 'Due date of ',
+                            // ),
+                            TextSpan(
+                              text: data.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                // color: Colors.green[100]
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' is due ',
+                            ),
+                            TextSpan(
+                                text: "Tomorrow",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  // color: Colors.green[300]
+                                )),
+                          ],
+                        ),
+                      ),
+                      backgroundColor: Colors.blue[200],
+                    ));
+                  }
+                  setState(() {
+                    todoHighlighted = false;
+                  });
+                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                      .changeTodoSTatus(data, TodoStatus.todo);
+                }, builder:
+                    (BuildContext context, List<Todo> incoming, rejected) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: double.maxFinite,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          "Todos",
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
+                      ),
+                      todos(context),
                     ],
                   );
                 })),
@@ -370,28 +370,32 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
     });
   }
 
+  // Widget todoChip(
+  //     Todo todo, Color color, BuildContext context, bool isDragging) {
+  //   DateTime today = DateTime.now();
+  //   if (TodoHelper.isOverDue(todo.due)) {
+  //     return todoChipOverdue(todo, context, isDragging);
+  //   } else {
+  //     return todoChipFuture(todo, context, isDragging);
+  //   }
+  // }
+
   Widget todoChip(
       Todo todo, Color color, BuildContext context, bool isDragging) {
-    DateTime today = DateTime.now();
-    if (TodoHelper.isOverDue(todo.due)) {
-      return todoChipOverdue(todo, context, isDragging);
-    } else {
-      return todoChipFuture(todo, context, isDragging);
-    }
-  }
-
-  Widget todoChipOverdue(Todo todo, BuildContext context, bool isDragging) {
     int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
     return InkWell(
         child: Chip(
           backgroundColor: Colors.white,
-          avatar: CircleAvatar(
-            backgroundColor: isDragging ? Colors.grey[400] : Colors.red[300],
-            child: new IconTheme(
-              data: new IconThemeData(color: Colors.white),
-              child: Icon(Icons.priority_high),
-            ),
-          ),
+          avatar: TodoHelper.isOverDue(todo.due)
+              ? CircleAvatar(
+                  backgroundColor:
+                      isDragging ? Colors.grey[400] : Colors.red[300],
+                  child: new IconTheme(
+                    data: new IconThemeData(color: Colors.white),
+                    child: Icon(Icons.priority_high),
+                  ),
+                )
+              : null,
           shape: StadiumBorder(
               side:
                   // BorderSide(color: new Color(todo.projectColor), width: 2.0)),
@@ -407,9 +411,13 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
               children: <TextSpan>[
                 TextSpan(
                     text: ' ' +
-                        (days == 1
-                            ? 'Tomorrow'
-                            : days.toString() +
+                        (
+                            // days == 1
+                            //   ?
+                            // 'Tomorrow'
+                            // : days.toString() +
+                            //     ' day'
+                            days.toString() +
                                 ' day' +
                                 ((days == 1 || days == -1) ? '' : 's')),
                     style: TextStyle(
@@ -426,43 +434,47 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
         });
   }
 
-  Widget todoChipFuture(Todo todo, BuildContext context, bool isDragging) {
-    int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
-    return InkWell(
-        child: Chip(
-            backgroundColor: Colors.white,
-            shape: StadiumBorder(
-                side: BorderSide(
-                    color: isDragging
-                        ? Colors.grey[300]
-                        : new Color(todo.projectColor),
-                    width: 2.0)),
-            label: RichText(
-              text: TextSpan(
-                text: todo.title,
-                style: TextStyle(color: Colors.black),
-                children: <TextSpan>[
-                  TextSpan(
-                      text: ' ' +
-                          ((days) == 1
-                              ? 'Tomorrow'
-                              : (days).toString() +
-                                  ' day' +
-                                  (((days) == 1) ? '' : 's')),
-                      style: TextStyle(
-                          color: isDragging
-                              ? Colors.grey[400]
-                              : ((days) > 0)
-                                  ? Colors.green
-                                  : Colors.red)),
-                ],
-              ),
-            )),
-        onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
-        });
-  }
+  // Widget todoChipFuture(Todo todo, BuildContext context, bool isDragging) {
+  //   int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
+  //   return InkWell(
+  //       child: Chip(
+  //           backgroundColor: Colors.white,
+  //           shape: StadiumBorder(
+  //               side: BorderSide(
+  //                   color: isDragging
+  //                       ? Colors.grey[300]
+  //                       : new Color(todo.projectColor),
+  //                   width: 2.0)),
+  //           label: RichText(
+  //             text: TextSpan(
+  //               text: todo.title,
+  //               style: TextStyle(color: Colors.black),
+  //               children: <TextSpan>[
+  //                 TextSpan(
+  //                     text: ' ' +
+  //                         (
+  //                             // (days) == 1
+  //                             // ?
+  //                             // 'Tomorrow'
+  //                             // : (days).toString() +
+  //                             //     ' day'
+  //                             days.toString() +
+  //                                 ' day' +
+  //                                 (((days) == 1) ? '' : 's')),
+  //                     style: TextStyle(
+  //                         color: isDragging
+  //                             ? Colors.grey[400]
+  //                             : ((days) > 0)
+  //                                 ? Colors.green
+  //                                 : Colors.red)),
+  //               ],
+  //             ),
+  //           )),
+  //       onTap: () {
+  //         Navigator.push(context,
+  //             MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+  //       });
+  // }
 
   Widget ongoingChip(Todo todo, BuildContext context, bool isDragging) {
     return InkWell(

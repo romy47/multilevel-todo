@@ -4,33 +4,19 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:second_attempt/services/authentication.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
-class Login extends StatefulWidget {
+class ForgotPasssword extends StatefulWidget {
   @override
   _State createState() => _State();
 }
 
-class _State extends State<Login> {
+class _State extends State<ForgotPasssword> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String error;
-// @protected
-// @mustCallSuper
-// void initState() {
-//   super.initState();
-// String s = ModalRoute.of(_scaffoldKey).settings.arguments;
-
-// }
 
   @override
   Widget build(BuildContext context) {
-    String arg = ModalRoute.of(context).settings.arguments;
-    if (arg != null && arg == 'reset_password') {
-      setState(() {
-        error = 'A link to reset your password has been sent to your email';
-      });
-    }
-
     return Scaffold(
         // appBar: AppBar(
         //   title: Text('Sample App'),
@@ -54,7 +40,7 @@ class _State extends State<Login> {
                     alignment: Alignment.center,
                     padding: EdgeInsets.all(10),
                     child: Text(
-                      'Sign in',
+                      'Reset Password',
                       style: TextStyle(fontSize: 20),
                     )),
                 showAlert(),
@@ -68,56 +54,36 @@ class _State extends State<Login> {
                     ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
-                    ),
-                  ),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacementNamed('/reset');
-                  },
-                  textColor: Colors.blue,
-                  child: Text('Forgot Password'),
-                ),
+                // FlatButton(
+                //   onPressed: () {
+                //     resetPassword();
+                //   },
+                //   textColor: Colors.blue,
+                //   child: Text('Forgot Password'),
+                // ),
                 Container(
                     height: 50,
                     padding: EdgeInsets.fromLTRB(45, 5, 45, 5),
                     child: RaisedButton(
                       textColor: Colors.white,
                       color: Colors.blue,
-                      child: Text('Login'),
+                      child: Text('Reset Password'),
                       onPressed: () {
-                        submitLogin();
+                        resetPassword();
                       },
                     )),
                 Container(
-                  padding: EdgeInsets.fromLTRB(46, 0, 46, 0),
-                  child: SignInButton(
-                    Buttons.Google,
-                    onPressed: () {
-                      googleSignIn();
-                    },
-                  ),
-                ),
-                Container(
                     child: Row(
                   children: <Widget>[
-                    Text('Does not have account?'),
+                    Text('Get back to'),
                     FlatButton(
                       textColor: Colors.blue,
                       child: Text(
-                        'Sign up',
+                        'Login',
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushReplacementNamed('/signUp');
+                        Navigator.of(context).pushReplacementNamed('/login');
                       },
                     )
                   ],
@@ -127,10 +93,11 @@ class _State extends State<Login> {
             )));
   }
 
-  void submitLogin() async {
+  void resetPassword() async {
     try {
-      String uid =
-          await emailSignin(nameController.text, passwordController.text);
+      await sendPasswordResetEmail(nameController.text);
+      Navigator.of(context)
+          .pushReplacementNamed('/login', arguments: 'reset_password');
     } catch (e) {
       setState(() {
         error = e.message;

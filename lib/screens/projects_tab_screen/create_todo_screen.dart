@@ -48,6 +48,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
+  final _todoNotesTextController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   // List<String> repeatOptions = ['Daily', 'Weekly'];
   List<String> dueDateOptions = ['Today', 'Tomorrow', 'Next Week', 'Custom'];
@@ -77,80 +78,85 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
             title: Text('Create Todo'),
           ),
           body: Container(
-            margin: EdgeInsets.all(10.0),
-            child: Column(children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  // icon: Icon(Icons.),
-                  labelText: 'Task Name',
-                ),
-                validator: (value) {
-                  if (value.trim().isEmpty) {
-                    return 'Please provide a name';
-                  } else {
-                    return null;
-                  }
-                },
-                controller: _todoTitleTextController,
-              ),
-              projectDropDown(context),
-              dueDateDropDown(context),
-              buildWeeklyRepeatCheckBoxes(),
-              // Container(
-              //     margin: EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 0),
-              //     child: CheckboxListTile(
-              //       title: Text("Finished"),
-              //       value: false,
-              //       onChanged: (newValue) {
-              //         setState(() {
-              //           //  checkedValue = newValue;
-              //         });
-              //       },
-              //       controlAffinity: ListTileControlAffinity
-              //           .leading, //  <-- leading Che ckbox
-              //     )),
-              Container(
-                  height: 50,
-                  width: double.maxFinite,
-                  margin: EdgeInsets.only(top: 20),
-                  padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: RaisedButton(
-                    textColor: Colors.white,
-                    color: Colors.blue,
-                    child: Text('Save Todo'),
-                    onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        print(weekDaysValue.toString());
-                        print(isRepeat);
-
-                        DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                            .addTodo(new Todo(
-                                '',
-                                this.selectedProjectId,
-                                _todoTitleTextController.text,
-                                null,
-                                null,
-                                TodoStatus.todo.value,
-                                this.selectedDueDate,
-                                0,
-                                isRepeat,
-                                weekDaysValue,
-                                new DateTime(
-                                  this.selectedDueDate.year,
-                                  this.selectedDueDate.month,
-                                  this.selectedDueDate.day,
-                                ),
-                                new DateTime(
-                                  DateTime.now().year + 100,
-                                  DateTime.now().month,
-                                  DateTime.now().day,
-                                )));
-                        Navigator.of(context).pop();
+              margin: EdgeInsets.all(10.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                      // icon: Icon(Icons.),
+                      labelText: 'Task Name',
+                    ),
+                    validator: (value) {
+                      if (value.trim().isEmpty) {
+                        return 'Please provide a name';
+                      } else {
+                        return null;
                       }
                     },
-                  )),
-            ]),
-          ),
+                    controller: _todoTitleTextController,
+                  ),
+                  projectDropDown(context),
+                  dueDateDropDown(context),
+                  buildWeeklyRepeatCheckBoxes(),
+                  TextFormField(
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      // icon: Icon(Icons.),
+                      labelText: 'Notes',
+                    ),
+                    validator: (value) {
+                      if (value.trim().isEmpty) {
+                        return 'Please provide a name';
+                      } else {
+                        return null;
+                      }
+                    },
+                    controller: _todoNotesTextController,
+                  ),
+                  Container(
+                      height: 50,
+                      width: double.maxFinite,
+                      margin: EdgeInsets.only(top: 20),
+                      padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                      child: RaisedButton(
+                        textColor: Colors.white,
+                        color: Colors.blue,
+                        child: Text('Save Todo'),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            print(weekDaysValue.toString());
+                            print(isRepeat);
+
+                            DatabaseServices(
+                                    FirebaseAuth.instance.currentUser.uid)
+                                .addTodo(new Todo(
+                                    '',
+                                    this.selectedProjectId,
+                                    _todoTitleTextController.text,
+                                    null,
+                                    null,
+                                    TodoStatus.todo.value,
+                                    this.selectedDueDate,
+                                    0,
+                                    isRepeat,
+                                    weekDaysValue,
+                                    new DateTime(
+                                      this.selectedDueDate.year,
+                                      this.selectedDueDate.month,
+                                      this.selectedDueDate.day,
+                                    ),
+                                    new DateTime(
+                                      DateTime.now().year + 100,
+                                      DateTime.now().month,
+                                      DateTime.now().day,
+                                    )));
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      )),
+                ]),
+              )),
         ));
   }
 
