@@ -213,7 +213,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: Text(
-                          "Todos",
+                          "Upcoming Todos",
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ),
@@ -319,31 +319,34 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     (td.isRepeat == true && TodoHelper.isOverDue(td.due)) ==
                     false)
                 .toList();
-            return Wrap(
-              children: TodoHelper.getTasksWithProjectByLevel(
-                      widget.projects,
-                      (todos == null) ? [] : todos,
-                      TodoStatus.todo,
-                      widget.projectId)
-                  .map((e) => Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 5.0),
-                        child: Draggable(
-                          data: e,
-                          feedback: Material(
-                            color: Colors.transparent,
-                            child: todoChip(
-                                e, new Color(e.projectColor), context, false),
-                          ),
-                          child: todoChip(
-                              e, new Color(e.projectColor), context, false),
-                          childWhenDragging: todoChip(
-                              e, new Color(e.projectColor), context, true),
-                        ),
-                      ))
-                  .toList()
-                  .cast<Widget>(),
-            );
+            todos = TodoHelper.getTasksWithProjectByLevel(
+                widget.projects,
+                (todos == null) ? [] : todos,
+                TodoStatus.todo,
+                widget.projectId);
+            return (todos.length > 0)
+                ? Wrap(
+                    children: todos
+                        .map((e) => Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 5.0),
+                              child: Draggable(
+                                data: e,
+                                feedback: Material(
+                                  color: Colors.transparent,
+                                  child: todoChip(e, new Color(e.projectColor),
+                                      context, false),
+                                ),
+                                child: todoChip(e, new Color(e.projectColor),
+                                    context, false),
+                                childWhenDragging: todoChip(e,
+                                    new Color(e.projectColor), context, true),
+                              ),
+                            ))
+                        .toList()
+                        .cast<Widget>(),
+                  )
+                : getPlaceholderText("No upcoming task available");
             // });
           })),
     ));
@@ -525,29 +528,32 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                 child: Consumer<List<Todo>>(
                   builder: (context, todos, child) {
                     todos = (todos == null) ? [] : todos;
-                    return Wrap(
-                      children: TodoHelper.getTasksWithProjectByLevel(
-                              widget.projects,
-                              todos,
-                              TodoStatus.onGoing,
-                              widget.projectId)
-                          .map((e) => Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 0.0, horizontal: 5.0),
-                                child: Draggable(
-                                  data: e,
-                                  feedback: Material(
-                                    color: Colors.transparent,
-                                    child: ongoingChip(e, context, false),
-                                  ),
-                                  child: ongoingChip(e, context, false),
-                                  childWhenDragging:
-                                      ongoingChip(e, context, true),
-                                ),
-                              ))
-                          .toList()
-                          .cast<Widget>(),
-                    );
+                    todos = TodoHelper.getTasksWithProjectByLevel(
+                        widget.projects,
+                        todos,
+                        TodoStatus.onGoing,
+                        widget.projectId);
+                    return (todos.length > 0)
+                        ? Wrap(
+                            children: todos
+                                .map((e) => Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 0.0, horizontal: 5.0),
+                                      child: Draggable(
+                                        data: e,
+                                        feedback: Material(
+                                          color: Colors.transparent,
+                                          child: ongoingChip(e, context, false),
+                                        ),
+                                        child: ongoingChip(e, context, false),
+                                        childWhenDragging:
+                                            ongoingChip(e, context, true),
+                                      ),
+                                    ))
+                                .toList()
+                                .cast<Widget>(),
+                          )
+                        : getPlaceholderText('No task is due today');
                   },
                 )
                 // }),
@@ -566,27 +572,30 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
           child: Consumer<List<Todo>>(
             builder: (context, todos, child) {
               todos = (todos == null) ? [] : todos;
+              todos = TodoHelper.getTasksWithProjectByLevel(widget.projects,
+                  todos, TodoStatus.finished, widget.projectId);
 
-              return Wrap(
-                children: TodoHelper.getTasksWithProjectByLevel(widget.projects,
-                        todos, TodoStatus.finished, widget.projectId)
-                    .map((e) => Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.0, horizontal: 5.0),
-                          // child: Draggable(
-                          //   data: e,
-                          //   feedback: Material(
-                          //     color: Colors.transparent,
-                          //     child: finishedChip(e, context, false),
-                          //   ),
-                          //   child: finishedChip(e, context, false),
-                          //   childWhenDragging: finishedChip(e, context, true),
-                          // ),
-                          child: finishedChip(e, context, false),
-                        ))
-                    .toList()
-                    .cast<Widget>(),
-              );
+              return (todos.length > 0)
+                  ? Wrap(
+                      children: todos
+                          .map((e) => Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.0, horizontal: 5.0),
+                                // child: Draggable(
+                                //   data: e,
+                                //   feedback: Material(
+                                //     color: Colors.transparent,
+                                //     child: finishedChip(e, context, false),
+                                //   ),
+                                //   child: finishedChip(e, context, false),
+                                //   childWhenDragging: finishedChip(e, context, true),
+                                // ),
+                                child: finishedChip(e, context, false),
+                              ))
+                          .toList()
+                          .cast<Widget>(),
+                    )
+                  : getPlaceholderText('No task is done today');
             },
           )
           // })
@@ -630,5 +639,17 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
     // todos.forEach((todo) {
     // DatabaseServices(FirebaseAuth.instance.currentUser.uid).editTodo(todo);
     // });
+  }
+
+  Widget getPlaceholderText(String message) {
+    return Container(
+        margin: EdgeInsets.only(top: 14.0),
+        child: Center(
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+          ),
+        ));
   }
 }
