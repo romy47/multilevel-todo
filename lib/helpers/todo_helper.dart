@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:second_attempt/helpers/notification-helper.dart';
+import 'package:second_attempt/models/common.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/services/database_service.dart';
@@ -274,5 +275,68 @@ class TodoHelper {
               dueToday[0].title +
               '"');
     });
+  }
+
+  static String getAlertText(int status, todo) {
+    String res = '';
+    int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
+    if (status == AlertStatus.overdue.value) {
+      res = 'This task is overdue by ' +
+          days.abs().toString() +
+          ((days.abs() < 2) ? ' day' : ' days');
+    } else if (status == AlertStatus.finished.value) {
+      res = 'This task is already completed';
+    } else if (status == AlertStatus.today.value) {
+      res = 'This task is due today';
+    } else if (status == AlertStatus.future.value) {
+      res = 'This task is due ' +
+          ((days.abs() < 2)
+              ? 'Tomorrow'
+              : 'in ' +
+                  days.abs().toString() +
+                  ' day' +
+                  ((days.abs() > 1) ? 's' : ''));
+    }
+    return res;
+  }
+
+  static Icon getAlertIcon(int status) {
+    Icon ic = Icon(Icons.error_outline);
+    if (status == AlertStatus.overdue.value) {
+      ic = Icon(
+        Icons.error,
+        color: TodoHelper.getAlertColor(status),
+      );
+    } else if (status == AlertStatus.finished.value) {
+      ic = Icon(
+        Icons.check_box,
+        color: TodoHelper.getAlertColor(status),
+      );
+    } else if (status == AlertStatus.today.value) {
+      ic = Icon(
+        Icons.today,
+        color: TodoHelper.getAlertColor(status),
+      );
+    } else if (status == AlertStatus.future.value) {
+      ic = Icon(
+        Icons.hourglass_top,
+        color: TodoHelper.getAlertColor(status),
+      );
+    }
+    return ic;
+  }
+
+  static Color getAlertColor(int status) {
+    Color col = Colors.amber;
+    if (status == AlertStatus.overdue.value) {
+      col = Colors.red[300];
+    } else if (status == AlertStatus.finished.value) {
+      col = Colors.grey[700];
+    } else if (status == AlertStatus.today.value) {
+      col = Colors.amber[700];
+    } else if (status == AlertStatus.future.value) {
+      col = Colors.green[700];
+    }
+    return col;
   }
 }

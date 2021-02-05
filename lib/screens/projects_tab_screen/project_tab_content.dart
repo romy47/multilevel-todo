@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/helpers/todo_helper.dart';
+import 'package:second_attempt/models/common.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/screens/edit_todo_screen/edit_todo_screen.dart';
@@ -383,98 +384,73 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
   Widget todoChip(
       Todo todo, Color color, BuildContext context, bool isDragging) {
     int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
-    return InkWell(
-        child: Chip(
-          backgroundColor: Colors.white,
-          avatar: TodoHelper.isOverDue(todo.due)
-              ? CircleAvatar(
-                  backgroundColor:
-                      isDragging ? Colors.grey[400] : Colors.red[300],
-                  child: new IconTheme(
-                    data: new IconThemeData(color: Colors.white),
-                    child: Icon(Icons.priority_high),
-                  ),
-                )
-              : null,
-          shape: StadiumBorder(
-              side:
-                  // BorderSide(color: new Color(todo.projectColor), width: 2.0)),
-                  BorderSide(
-                      color: isDragging
-                          ? Colors.grey[300]
-                          : new Color(todo.projectColor),
-                      width: 2.0)),
-          label: RichText(
-            text: TextSpan(
-              text: todo.title,
-              style: TextStyle(color: Colors.black),
-              children: <TextSpan>[
-                TextSpan(
-                    text: ' ' +
-                        (
-                            // days == 1
-                            //   ?
-                            // 'Tomorrow'
-                            // : days.toString() +
-                            //     ' day'
-                            days.toString() +
-                                ' day' +
-                                ((days == 1 || days == -1) ? '' : 's')),
-                    style: TextStyle(
-                        color: isDragging
-                            ? Colors.grey[400]
-                            : ((days > 0) ? Colors.green : Colors.red))),
-              ],
+    return Stack(
+      children: <Widget>[
+        InkWell(
+            child: Chip(
+              backgroundColor: Colors.white,
+              avatar: TodoHelper.isOverDue(todo.due)
+                  ? CircleAvatar(
+                      backgroundColor:
+                          isDragging ? Colors.grey[400] : Colors.red[300],
+                      child: new IconTheme(
+                        data: new IconThemeData(color: Colors.white),
+                        child: Icon(Icons.priority_high),
+                      ),
+                    )
+                  : null,
+              shape: StadiumBorder(
+                  side:
+                      // BorderSide(color: new Color(todo.projectColor), width: 2.0)),
+                      BorderSide(
+                          color: isDragging
+                              ? Colors.grey[300]
+                              : new Color(todo.projectColor),
+                          width: 2.0)),
+              label: RichText(
+                text: TextSpan(
+                  text: todo.title,
+                  style: TextStyle(color: Colors.black),
+                  children: <TextSpan>[],
+                ),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditTodoWrapper(
+                          todo,
+                          TodoHelper.isOverDue(todo.due)
+                              ? AlertStatus.overdue.value
+                              : AlertStatus.future.value)));
+            }),
+        new Positioned(
+          right: 0,
+          top: 0,
+          child: new Container(
+            padding: EdgeInsets.all(3),
+            decoration: new BoxDecoration(
+              color: ((days > 0) ? Colors.green : Colors.red),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            constraints: BoxConstraints(
+              minWidth: 20,
+              minHeight: 20,
+            ),
+            child: new Text(
+              days.toString(),
+              style: new TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
-        ),
-        onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
-        });
+        )
+      ],
+    );
   }
-
-  // Widget todoChipFuture(Todo todo, BuildContext context, bool isDragging) {
-  //   int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
-  //   return InkWell(
-  //       child: Chip(
-  //           backgroundColor: Colors.white,
-  //           shape: StadiumBorder(
-  //               side: BorderSide(
-  //                   color: isDragging
-  //                       ? Colors.grey[300]
-  //                       : new Color(todo.projectColor),
-  //                   width: 2.0)),
-  //           label: RichText(
-  //             text: TextSpan(
-  //               text: todo.title,
-  //               style: TextStyle(color: Colors.black),
-  //               children: <TextSpan>[
-  //                 TextSpan(
-  //                     text: ' ' +
-  //                         (
-  //                             // (days) == 1
-  //                             // ?
-  //                             // 'Tomorrow'
-  //                             // : (days).toString() +
-  //                             //     ' day'
-  //                             days.toString() +
-  //                                 ' day' +
-  //                                 (((days) == 1) ? '' : 's')),
-  //                     style: TextStyle(
-  //                         color: isDragging
-  //                             ? Colors.grey[400]
-  //                             : ((days) > 0)
-  //                                 ? Colors.green
-  //                                 : Colors.red)),
-  //               ],
-  //             ),
-  //           )),
-  //       onTap: () {
-  //         Navigator.push(context,
-  //             MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
-  //       });
-  // }
 
   Widget ongoingChip(Todo todo, BuildContext context, bool isDragging) {
     return InkWell(
@@ -486,7 +462,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                         : new Color(todo.projectColor),
                     width: 2.0)),
             backgroundColor: Colors.white,
-            // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
             label: RichText(
               text: TextSpan(
                 text: todo.title,
@@ -497,8 +472,11 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
               ),
             )),
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditTodoWrapper(todo, AlertStatus.today.value)));
         });
   }
 
@@ -528,8 +506,11 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
               ),
             )),
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => EditTodoWrapper(todo)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditTodoWrapper(todo, AlertStatus.finished.value)));
         });
   }
 

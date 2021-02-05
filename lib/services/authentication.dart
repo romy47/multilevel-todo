@@ -23,24 +23,24 @@ googleSignIn() async {
 }
 
 Future<String> emailSignup(String email, String password, String name) async {
-  try {
-    UserCredential currentUser = await fireBaseAuth
-        .createUserWithEmailAndPassword(email: email, password: password);
-    User firebaseUser = currentUser.user;
-    await firebaseUser.updateProfile(displayName: name);
-    await firebaseUser.reload();
-    return firebaseUser.uid;
-  } on FirebaseAuthException catch (e) {
-    if (e.code == 'weak-password') {
-      print('The password provided is too weak.');
-      return 'weak-password';
-    } else if (e.code == 'email-already-in-use') {
-      print('The account already exists for that email.');
-      return 'email-already-in-use';
-    }
-  } catch (e) {
-    print(e);
-  }
+  // try {
+  UserCredential currentUser = await fireBaseAuth
+      .createUserWithEmailAndPassword(email: email, password: password);
+  User firebaseUser = currentUser.user;
+  await firebaseUser.updateProfile(displayName: name);
+  await firebaseUser.reload();
+  return firebaseUser.uid;
+  // } on FirebaseAuthException catch (e) {
+  //   if (e.code == 'weak-password') {
+  //     print('The password provided is too weak.');
+  //     return 'weak-password';
+  //   } else if (e.code == 'email-already-in-use') {
+  //     print('The account already exists for that email.');
+  //     return 'email-already-in-use';
+  //   }
+  // } catch (e) {
+  //   print(e);
+  // }
 }
 
 Future<String> emailSignin(String email, String password) async {

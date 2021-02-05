@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -12,6 +13,7 @@ class _State extends State<Signup> {
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  String error;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class _State extends State<Signup> {
                       'Sign Up',
                       style: TextStyle(fontSize: 20),
                     )),
+                showAlert(),
                 Container(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -114,27 +117,55 @@ class _State extends State<Signup> {
   }
 
   void submitSignUp() async {
-    print('Hu');
-    String uid = await emailSignup(
-        emailController.text, passwordController.text, nameController.text);
-    print('Signed User Id' + uid);
-    if (uid == 'email-already-in-use') {
-      _scaffoldKey.currentState.showSnackBar(SnackBar(
-        content: RichText(
-          text: TextSpan(
-            style: TextStyle(fontSize: 18, color: Colors.red),
-            children: <TextSpan>[
-              // TextSpan(
-              //   text: 'Due date of ',
-              // ),
-              TextSpan(
-                text: 'An account with this email already exists. Try Sign-in.',
-              ),
-            ],
-          ),
-        ),
-        backgroundColor: Colors.blue[200],
-      ));
+    try {
+      String uid = await emailSignup(
+          emailController.text, passwordController.text, nameController.text);
+    } catch (e) {
+      setState(() {
+        error = e.message;
+      });
     }
+  }
+
+  Widget showAlert() {
+    if (error != null) {
+      return Container(
+        color: Colors.amber,
+        width: double.infinity,
+        // height: 50.0,
+        padding: EdgeInsets.all(8.0),
+        margin: EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+                padding: EdgeInsets.only(right: 8.0),
+                child: Icon(Icons.error_outline)),
+            Expanded(
+              // height: 17.0,
+              child: AutoSizeText(
+                error,
+                style: TextStyle(fontSize: 16.0),
+                maxLines: 2,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  setState(() {
+                    error = null;
+                  });
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    return SizedBox(
+      height: 0,
+    );
   }
 }

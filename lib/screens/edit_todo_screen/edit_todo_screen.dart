@@ -1,8 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/helpers/todo_helper.dart';
+import 'package:second_attempt/models/common.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
 import 'package:second_attempt/services/database_service.dart';
@@ -11,7 +13,8 @@ class EditTodoWrapper extends StatefulWidget {
   @override
   _EditTodoWrapperState createState() => _EditTodoWrapperState();
   final Todo todo;
-  const EditTodoWrapper(this.todo);
+  final int alertStatus;
+  const EditTodoWrapper(this.todo, this.alertStatus);
 }
 
 class _EditTodoWrapperState extends State<EditTodoWrapper> {
@@ -27,6 +30,7 @@ class _EditTodoWrapperState extends State<EditTodoWrapper> {
         builder: (context, projects, child) => EditTodoScreen(
           projects: projects == null ? [] : projects,
           todo: widget.todo,
+          alertStatus: widget.alertStatus,
         ),
       ),
     );
@@ -36,9 +40,11 @@ class _EditTodoWrapperState extends State<EditTodoWrapper> {
 class EditTodoScreen extends StatefulWidget {
   final List<Project> projects;
   final Todo todo;
+  final int alertStatus;
   const EditTodoScreen({
     @required this.projects,
     @required this.todo,
+    @required this.alertStatus,
     Key key,
   }) : super(key: key);
   @override
@@ -51,7 +57,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
   String selectedDueDateOption;
   String selectedRepeat;
   bool isFinished;
-
+  int alertStatus;
   DateTime selectedDueDate = new DateTime.now();
   final _todoTitleTextController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -63,6 +69,9 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      alertStatus = widget.alertStatus;
+    });
     DateTime now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);
     DateTime tomorrow = today.add(Duration(days: 1));
@@ -94,6 +103,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
           body: Container(
             margin: EdgeInsets.all(10.0),
             child: Column(children: [
+              showAlert(),
               TextFormField(
                 decoration: InputDecoration(
                   // icon: Icon(Icons.),
@@ -374,5 +384,59 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
       setState(() {
         this.selectedDueDate = picked;
       });
+  }
+
+  Widget showAlert() {
+    if (alertStatus != 0) {
+      return Container(
+        // color: Colors.amber,
+        width: double.infinity,
+        // height: 50.0,
+        padding: EdgeInsets.all(5.0),
+        // margin: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: TodoHelper.getAlertColor(alertStatus),
+            width: 2.0,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+                padding: EdgeInsets.only(right: 8.0),
+                child: TodoHelper.getAlertIcon(alertStatus)),
+            Expanded(
+              // height: 17.0,
+              child: AutoSizeText(
+                TodoHelper.getAlertText(alertStatus, widget.todo),
+                style: TextStyle(
+                    fontSize: 16.0,
+                    color: TodoHelper.getAlertColor(alertStatus),
+                    fontWeight: FontWeight.bold),
+                maxLines: 2,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: TodoHelper.getAlertColor(alertStatus),
+                ),
+                onPressed: () {
+                  setState(() {
+                    alertStatus = AlertStatus.noAlert.value;
+                  });
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    return SizedBox(
+      height: 0,
+    );
   }
 }
