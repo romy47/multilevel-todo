@@ -13,6 +13,7 @@ class Todo {
   List<bool> weekDays;
   DateTime createdAt;
   DateTime finishedAt;
+  DateTime tempDue;
   Todo(
     this.id,
     this.projectId,
@@ -28,6 +29,7 @@ class Todo {
     this.finishedAt,
   ) {
     this.createdAt = DateTime.now();
+    this.tempDue = this.due;
     // this.repeat = TodoHelper.getEmptRepeat();
   }
   Todo.fromJson(Map<String, dynamic> parsedJSON)
@@ -49,6 +51,9 @@ class Todo {
             ? TodoHelper.getEmptRepeat()
             : List.from(parsedJSON['weekDays']),
         createdAt = parsedJSON['createdAt'].toDate().toLocal(),
+        tempDue = parsedJSON['tempDue'] == null
+            ? parsedJSON['due'].toDate().toLocal()
+            : parsedJSON['tempDue'].toDate().toLocal(),
         finishedAt = parsedJSON['finishedAt'] == null
             ? null
             : parsedJSON['finishedAt'].toDate().toLocal();
@@ -65,6 +70,7 @@ class Todo {
         'isRepeat': isRepeat,
         'weekDays': weekDays,
         'createdAt': createdAt.toUtc(),
+        'tempDue': tempDue.toUtc(),
         'finishedAt': finishedAt.toUtc(),
       };
 

@@ -76,40 +76,37 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                   });
                   return true;
                 }, onAccept: (data) {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: RichText(
-                      text: TextSpan(
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                        children: <TextSpan>[
-                          // TextSpan(
-                          //   text: 'Due date of ',
-                          // ),
-                          TextSpan(
-                            text: data.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              // color: Colors.green[100]
+                  if (TodoHelper.isItToday(data.due) == false) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: 'Task ',
                             ),
-                          ),
-                          TextSpan(
-                            text: ' is due ',
-                          ),
-                          TextSpan(
-                              text: "Today",
+                            TextSpan(
+                              text: "' " + data.title + " '",
                               style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                // color: Colors.green[300]
-                              )),
-                        ],
+                                  fontStyle: FontStyle.italic,
+                                  // color: Colors.red[300]
+                                  fontWeight: FontWeight.w900),
+                            ),
+                            TextSpan(
+                              text: '  is due ',
+                            ),
+                            TextSpan(text: "Today"),
+                          ],
+                        ),
                       ),
-                    ),
-                    backgroundColor: Colors.blue[200],
-                  ));
-                  setState(() {
-                    onGoingHighlighted = false;
-                  });
-                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                      .changeTodoSTatus(data, TodoStatus.onGoing);
+                      backgroundColor: Colors.blue[500],
+                    ));
+                    setState(() {
+                      onGoingHighlighted = false;
+                    });
+                    DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                        .changeTodoSTatus(data, TodoStatus.onGoing);
+                  }
                 }, builder:
                     (BuildContext context, List<Todo> incoming, rejected) {
                   return Column(
@@ -166,42 +163,43 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                   });
                   return true;
                 }, onAccept: (data) {
-                  if (data.status != TodoStatus.todo.value) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: RichText(
-                        text: TextSpan(
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                          children: <TextSpan>[
-                            // TextSpan(
-                            //   text: 'Due date of ',
-                            // ),
-                            TextSpan(
-                              text: data.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                // color: Colors.green[100]
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' is due ',
-                            ),
-                            TextSpan(
-                                text: "Tomorrow",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  // color: Colors.green[300]
-                                )),
-                          ],
-                        ),
-                      ),
-                      backgroundColor: Colors.blue[200],
-                    ));
-                  }
                   setState(() {
                     todoHighlighted = false;
                   });
-                  DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                      .changeTodoSTatus(data, TodoStatus.todo);
+                  print('katukatu: ' + data.status.toString());
+                  if (TodoHelper.isItToday(data.due) == true) {
+                    Todo changedTodo =
+                        DatabaseServices(FirebaseAuth.instance.currentUser.uid)
+                            .changeTodoSTatus(data, TodoStatus.todo);
+                    int days = TodoHelper.getDifferenceInDaysFromToday(
+                        changedTodo.due);
+                    print('katu kutu');
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: 'Task ',
+                            ),
+                            TextSpan(
+                              text: "' " + data.title + " '",
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  // color: Colors.red[300]
+                                  fontWeight: FontWeight.w900),
+                            ),
+                            TextSpan(
+                              text: '  is due ' +
+                                  TodoHelper.dueInDaysHumanReadableEnglish(
+                                      changedTodo),
+                            ),
+                          ],
+                        ),
+                      ),
+                      backgroundColor: Colors.blue[500],
+                    ));
+                  }
                 }, builder:
                     (BuildContext context, List<Todo> incoming, rejected) {
                   return Column(
@@ -265,6 +263,30 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     Todo finishedTodo =
                         DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                             .changeTodoSTatus(data, TodoStatus.finished);
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: 'Task ',
+                            ),
+                            TextSpan(
+                              text: "' " + data.title + " '",
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  // color: Colors.red[300]
+                                  fontWeight: FontWeight.w900),
+                            ),
+                            TextSpan(
+                              text: '  is completed!',
+                            ),
+                            // TextSpan(text: "Today"),
+                          ],
+                        ),
+                      ),
+                      backgroundColor: Colors.green[500],
+                    ));
                     if (finishedTodo.isRepeat) {
                       repeatTodo(finishedTodo);
                     }
@@ -364,6 +386,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
         int indx =
             _weekDays.indexWhere((wd) => wd == DateFormat('EEE').format(day));
         if (td.weekDays[indx] == true) {
+          td.tempDue = day;
           td.due = day;
           break;
         }
@@ -613,6 +636,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
       int indx =
           _weekDays.indexWhere((wd) => wd == DateFormat('EEE').format(day));
       if (todo.weekDays[indx] == true) {
+        todo.tempDue = day;
         todo.due = day;
         break;
       }

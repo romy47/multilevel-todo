@@ -220,7 +220,9 @@ class DatabaseServices {
             // State change to tommorrow
             print('Tomorrow Baby!!!!');
 
-            todo.due = tomorrow;
+            todo.due = TodoHelper.isSameDay(todo.tempDue, todo.due)
+                ? tomorrow
+                : todo.tempDue;
             todo.status = TodoStatus.todo.value;
             ref.update(todo.toJson()).then((value) => {});
           }

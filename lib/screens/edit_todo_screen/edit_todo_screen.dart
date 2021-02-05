@@ -178,6 +178,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
                                     widget.todo.projectId =
                                         this.selectedProjectId;
                                     widget.todo.due = this.selectedDueDate;
+                                    widget.todo.tempDue = this.selectedDueDate;
                                     if (this.isFinished) {
                                       widget.todo.finishedAt = DateTime.now();
                                       widget.todo.status =

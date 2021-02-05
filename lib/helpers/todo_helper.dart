@@ -339,4 +339,14 @@ class TodoHelper {
     }
     return col;
   }
+
+  static String dueInDaysHumanReadableEnglish(Todo todo) {
+    int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
+    return ((days.abs() < 2)
+        ? 'tomorrow'
+        : 'in ' +
+            days.abs().toString() +
+            ' day' +
+            ((days.abs() > 1) ? 's' : ''));
+  }
 }
