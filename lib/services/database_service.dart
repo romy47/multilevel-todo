@@ -187,7 +187,7 @@ class DatabaseServices {
         .collection('todo')
         .doc(todo.id);
 
-    // Finishing a Todo
+    // Finishing a Todo.
     if (status == TodoStatus.finished) {
       todo.status = status.value;
 
