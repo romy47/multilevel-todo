@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:second_attempt/providers/todo_provider.dart';
@@ -94,29 +95,136 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                child: Text('User Name'),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
+                  margin: EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: AssetImage(
+                              'assets/images/drawer_header_bg.jpg'))),
+                  child: Stack(children: <Widget>[
+                    Positioned(
+                        bottom: 12.0,
+                        left: 16.0,
+                        child: Text(
+                            FirebaseAuth.instance.currentUser.displayName !=
+                                    null
+                                ? FirebaseAuth.instance.currentUser.displayName
+                                : 'Rapido',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w500))),
+                  ])),
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.logout),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Logout',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    )
+                  ],
                 ),
-              ),
-              ListTile(
-                title: Text('Login'),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
+                  signoutUser();
                 },
               ),
               ListTile(
-                title: Text('Sign up'),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.stars),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Features',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Signup()));
+                  signoutUser();
                 },
               ),
               ListTile(
-                title: Text('Log out'),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.bug_report),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Report an issue',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  signoutUser();
+                },
+              ),
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.info),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'About',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  signoutUser();
+                },
+              ),
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.rate_review),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Rate the app',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  signoutUser();
+                },
+              ),
+              ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.contact_mail),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Contact',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   signoutUser();
