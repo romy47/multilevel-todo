@@ -32,21 +32,11 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
-            // fit: FlexFit.tight,
             flex: 2,
             child: Container(
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.grey),
-
-                    // bottom: BorderSide(
-                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
-                    // top: BorderSide(
-                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
-                    // left: BorderSide(
-                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
-                    // right: BorderSide(
-                    //     color: onGoingHighlighted ? Colors.green : Colors.grey),
                   ),
                   boxShadow: [
                     onGoingHighlighted
@@ -247,8 +237,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     ],
                   ),
                   width: double.maxFinite,
-                  // color: Colors.green[100],
-                  // color: Colors.white,
                   child: DragTarget(onWillAccept: (data) {
                     setState(() {
                       finishedHighlighted = true;
@@ -258,8 +246,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     setState(() {
                       finishedHighlighted = false;
                     });
-                    // Provider.of<TodoProvider>(context, listen: false)
-                    //     .changeTodoSTatus(data, TodoStatus.finished);
                     Todo finishedTodo =
                         DatabaseServices(FirebaseAuth.instance.currentUser.uid)
                             .changeTodoSTatus(data, TodoStatus.finished);
@@ -281,7 +267,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                             TextSpan(
                               text: '  is completed!',
                             ),
-                            // TextSpan(text: "Today"),
                           ],
                         ),
                       ),
@@ -317,18 +302,14 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
         ],
       ),
     );
-    // bottomSheet: Container(height: 100.0, child: ProjectSlider()),
   }
 
   Widget todos(BuildContext context) {
     return Expanded(
-        // fit: FlexFit.tight,
         child: SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
           width: double.infinity,
-          // child:
-          // Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(builder: (context, todos, child) {
             todos = (todos == null) ? [] : todos;
             List<Todo> todoDueRepeat = todos
@@ -397,16 +378,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
     });
   }
 
-  // Widget todoChip(
-  //     Todo todo, Color color, BuildContext context, bool isDragging) {
-  //   DateTime today = DateTime.now();
-  //   if (TodoHelper.isOverDue(todo.due)) {
-  //     return todoChipOverdue(todo, context, isDragging);
-  //   } else {
-  //     return todoChipFuture(todo, context, isDragging);
-  //   }
-  // }
-
   Widget todoChip(
       Todo todo, Color color, BuildContext context, bool isDragging) {
     int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
@@ -426,13 +397,11 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     )
                   : null,
               shape: StadiumBorder(
-                  side:
-                      // BorderSide(color: new Color(todo.projectColor), width: 2.0)),
-                      BorderSide(
-                          color: isDragging
-                              ? Colors.grey[300]
-                              : new Color(todo.projectColor),
-                          width: 2.0)),
+                  side: BorderSide(
+                      color: isDragging
+                          ? Colors.grey[300]
+                          : new Color(todo.projectColor),
+                      width: 2.0)),
               label: RichText(
                 text: TextSpan(
                   text: todo.title,
@@ -516,8 +485,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                         : new Color(todo.projectColor),
                     width: 2.0)),
             backgroundColor: Colors.white,
-            // avatar: TodoHelper.getCircularAvatarFromTodo(todo),
-            // label: Text(todo.title),
             label: RichText(
               text: TextSpan(
                 text: todo.title,
@@ -527,7 +494,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                 ),
                 children: <TextSpan>[
                   TextSpan(text: '', style: TextStyle(color: Colors.red)),
-                  // TextSpan(text: ' world!'),
                 ],
               ),
             )),
@@ -547,7 +513,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
             scrollDirection: Axis.vertical,
             child: Container(
                 width: double.infinity,
-                // child: Consumer<List<Project>>(builder: (context, projects, child) {
                 child: Consumer<List<Todo>>(
                   builder: (context, todos, child) {
                     todos = (todos == null) ? [] : todos;
@@ -590,8 +555,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
       scrollDirection: Axis.vertical,
       child: Container(
           width: double.infinity,
-          // constraints: BoxConstraints.expand(height: 200.0),
-          // child: Consumer<List<Project>>(builder: (context, projects, child) {
           child: Consumer<List<Todo>>(
             builder: (context, todos, child) {
               todos = (todos == null) ? [] : todos;
@@ -604,15 +567,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                           .map((e) => Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0.0, horizontal: 5.0),
-                                // child: Draggable(
-                                //   data: e,
-                                //   feedback: Material(
-                                //     color: Colors.transparent,
-                                //     child: finishedChip(e, context, false),
-                                //   ),
-                                //   child: finishedChip(e, context, false),
-                                //   childWhenDragging: finishedChip(e, context, true),
-                                // ),
                                 child: finishedChip(e, context, false),
                               ))
                           .toList()
@@ -659,10 +613,6 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
           DateTime.now().month,
           DateTime.now().day,
         )));
-
-    // todos.forEach((todo) {
-    // DatabaseServices(FirebaseAuth.instance.currentUser.uid).editTodo(todo);
-    // });
   }
 
   Widget getPlaceholderText(String message) {
