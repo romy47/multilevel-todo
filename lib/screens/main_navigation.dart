@@ -5,6 +5,7 @@ import 'package:second_attempt/providers/todo_provider.dart';
 import 'package:second_attempt/screens/projects_list_screen/projects_screen.dart';
 import 'package:second_attempt/screens/projects_tab_screen/projects_tab_screen.dart';
 import 'package:second_attempt/screens/timeline_screen/timeline_screen.dart';
+import 'package:second_attempt/screens/tutorial/tutorial.dart';
 import 'auth_screen/signup.dart';
 import 'package:second_attempt/services/authentication.dart';
 import 'dashboard_screen/dashboard_screen.dart';
@@ -139,11 +140,11 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.stars),
+                    Icon(Icons.help),
                     Padding(
                       padding: EdgeInsets.only(left: 8.0),
                       child: Text(
-                        'Features',
+                        'Tutorial',
                         style: TextStyle(fontSize: 15),
                       ),
                     )
@@ -151,7 +152,8 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  signoutUser();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Tutorial()));
                 },
               ),
               ListTile(
