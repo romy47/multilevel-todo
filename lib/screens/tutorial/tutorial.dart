@@ -1,9 +1,17 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
 import 'package:second_attempt/helpers/tutorial_helper.dart';
+import 'package:second_attempt/models/common.dart';
 import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/models/todo_model.dart';
+import 'package:second_attempt/providers/todo_provider.dart';
+import 'package:second_attempt/screens/edit_todo_screen/edit_todo_screen.dart';
+import 'package:second_attempt/screens/projects_tab_screen/projects_tab_screen.dart';
+import 'package:second_attempt/services/database_service.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
@@ -52,20 +60,36 @@ class _TutorialContentState extends State<TutorialContent> {
     GlobalKey one = GlobalKey();
     GlobalKey two = GlobalKey();
     GlobalKey three = GlobalKey();
-    List<GlobalKey> keys = [one, two, three];
+    GlobalKey four = GlobalKey();
+    GlobalKey five = GlobalKey();
+    GlobalKey six = GlobalKey();
+    GlobalKey seven = GlobalKey();
+    List<GlobalKey> keys = [one, two, three, four, five, six, seven];
     List<Project> projects = TutorialHelper.getProjects();
+    List<Todo> todos = TutorialHelper.getTodos();
+    todos.forEach((td) {
+      Provider.of<TodoProvider>(context, listen: false).addNewTodo(td);
+    });
+    // List<Todo> todos = TutorialHelper.getTodos();
 //     Timer timer = new Timer(new Duration(seconds: 5), () {
 //    debugPrint("Print after 5 seconds");
 // });
     WidgetsBinding.instance
         .addPostFrameCallback((_) => new Timer(new Duration(seconds: 3), () {
-              ShowCaseWidget.of(context).startShowCase([one, two, three]);
+              ShowCaseWidget.of(context)
+                  .startShowCase([one, two, three, four, five, six]);
             }));
 
     return KeysToBeInherited(
         one: one,
         two: two,
         three: three,
+        four: four,
+        five: five,
+        six: six,
+        seven: seven,
+        projects: projects,
+        todos: todos,
         child: Scaffold(
           appBar: new AppBar(
             title: new Text(
@@ -84,7 +108,7 @@ class _TutorialContentState extends State<TutorialContent> {
             ),
             pageBuilder: (context, index) => Center(
                 // child: Text(projects[index].title)),
-                child: TabInside()),
+                child: TabInside(projects[index].id)),
             onPositionChange: (index) {
               initPosition = index;
             },
@@ -267,6 +291,8 @@ class _CustomTabsState extends State<CustomTabView>
 }
 
 class TabInside extends StatefulWidget {
+  final String projectId;
+  TabInside(this.projectId);
   @override
   _TabInsideState createState() => _TabInsideState();
 }
@@ -275,68 +301,182 @@ class _TabInsideState extends State<TabInside> {
   bool onGoingHighlighted = false;
   bool todoHighlighted = false;
   bool finishedHighlighted = false;
-  final String projectId = 'all';
+  // final String projectId = '1';
   final List<Project> projects = TutorialHelper.getProjects();
-
+  // List<Todo> statetodos = [];
+  // List<Todo> statetodosTodo = [];
+  // List<Todo> statetodosOnGoing = [];
+  // List<Todo> statetodosFinished = [];
   @override
   Widget build(BuildContext context) {
-    var keyTwo = KeysToBeInherited.of(context).two;
+    var keyTwo = (widget.projectId == '1')
+        ? KeysToBeInherited.of(context).two
+        : GlobalKey();
 
-    // return Showcase(
-    //   child: RaisedButton(
-    //     child: Icon(Icons.play_arrow),
-    //     onPressed: () {
-    //       WidgetsBinding.instance.addPostFrameCallback(
-    //           (_) => ShowCaseWidget.of(context).startShowCase([keyTwo]));
-    //     },
-    //   ),
-    //   description: 'asasas',
-    //   key: KeysToBeInherited.of(context).two,
-    // );
+    // setState(() {
+    //   statetodos = KeysToBeInherited.of(context).todos;
+    //   statetodosTodo = TodoHelper.getTasksWithProjectByLevel(projects,
+    //       (todos == null) ? [] : statetodos, TodoStatus.todo, widget.projectId);
+    //   statetodosOnGoing = TodoHelper.getTasksWithProjectByLevel(
+    //       projects,
+    //       (todos == null) ? [] : statetodos,
+    //       TodoStatus.onGoing,
+    //       widget.projectId);
+    //   statetodosFinished = TodoHelper.getTasksWithProjectByLevel(
+    //       projects,
+    //       (todos == null) ? [] : statetodos,
+    //       TodoStatus.finished,
+    //       widget.projectId);
+    // });
+
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
-            flex: 2,
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey),
-                  ),
-                  boxShadow: [
-                    onGoingHighlighted
-                        ? BoxShadow(
-                            color: Colors.green.withOpacity(0.2),
-                            spreadRadius: 10,
-                            blurRadius: 7,
-                            offset: Offset(6, 1), // changes position of shadow
-                          )
-                        : BoxShadow(
-                            color: Colors.green.withOpacity(0),
-                            spreadRadius: 0,
-                            blurRadius: 0,
-                            offset: Offset(0, 0), // changes position of shadow
+              flex: 2,
+              child: Showcase(
+                key: (widget.projectId == '1')
+                    ? KeysToBeInherited.of(context).five
+                    : GlobalKey(),
+                title: "Today's Todos",
+                description: 'Dragging a todo in here will make it due today.',
+                child: Showcase(
+                    key: KeysToBeInherited.of(context).six,
+                    title: "Drag a To-do item",
+                    // titleTextStyle:
+                    //     TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    // textColor: Colors.blue[700],
+                    description:
+                        "Drag a to-do form 'toda's goal' section to  \n 'upcoming todos' section.",
+                    child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Colors.grey),
                           ),
-                  ],
-                ),
-                width: double.maxFinite,
-                child: DragTarget(
-                    onWillAccept: (data) {
+                          boxShadow: [
+                            onGoingHighlighted
+                                ? BoxShadow(
+                                    color: Colors.green.withOpacity(0.2),
+                                    spreadRadius: 10,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        6, 1), // changes position of shadow
+                                  )
+                                : BoxShadow(
+                                    color: Colors.green.withOpacity(0),
+                                    spreadRadius: 0,
+                                    blurRadius: 0,
+                                    offset: Offset(
+                                        0, 0), // changes position of shadow
+                                  ),
+                          ],
+                        ),
+                        width: double.maxFinite,
+                        child: DragTarget(onWillAccept: (data) {
+                          setState(() {
+                            onGoingHighlighted = true;
+                          });
+                          return true;
+                        }, onLeave: (data) {
+                          setState(() {
+                            onGoingHighlighted = false;
+                          });
+                          return true;
+                        }, onAccept: (data) {
+                          setState(() {
+                            Todo todo = new DatabaseServices(
+                                    FirebaseAuth.instance.currentUser.uid)
+                                .changeTodoSTatus(
+                                    data, TodoStatus.onGoing, false);
+                            print('###########' + todo.toString());
+                            Provider.of<TodoProvider>(context, listen: false)
+                                .changeTodoSTatusTutorial(todo);
+                          });
+                        }, builder: (BuildContext context, List<Todo> incoming,
+                            rejected) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: double.maxFinite,
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  "Today's Goal",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black),
+                                ),
+                              ),
+                              // Container()
+                              onGoing(context)
+                            ],
+                          );
+                        }))),
+              )),
+          Expanded(
+            // fit: FlexFit.tight,
+            flex: 4,
+            child: Showcase(
+                key: (widget.projectId == '1')
+                    ? KeysToBeInherited.of(context).four
+                    : GlobalKey(),
+                title: 'Upcoming Todos',
+                description:
+                    'Dragging a todo in here will change the due \n date to be tommorrow.',
+                child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey),
+                      ),
+                      boxShadow: [
+                        todoHighlighted
+                            ? BoxShadow(
+                                color: Colors.green.withOpacity(0.2),
+                                spreadRadius: 10,
+                                blurRadius: 7,
+                                offset:
+                                    Offset(6, 1), // changes position of shadow
+                              )
+                            : BoxShadow(
+                                color: Colors.green.withOpacity(0),
+                                spreadRadius: 0,
+                                blurRadius: 0,
+                                offset:
+                                    Offset(0, 0), // changes position of shadow
+                              ),
+                      ],
+                    ),
+                    width: double.maxFinite,
+                    child: DragTarget(onWillAccept: (data) {
                       setState(() {
-                        onGoingHighlighted = true;
+                        todoHighlighted = true;
                       });
                       return true;
-                    },
-                    onLeave: (data) {
+                    }, onLeave: (data) {
                       setState(() {
-                        onGoingHighlighted = false;
+                        todoHighlighted = false;
                       });
                       return true;
-                    },
-                    onAccept: (data) {},
-                    builder:
+                    }, onAccept: (data) {
+                      setState(() {
+                        todoHighlighted = false;
+
+                        Todo todo = new DatabaseServices(
+                                FirebaseAuth.instance.currentUser.uid)
+                            .changeTodoSTatus(data, TodoStatus.todo, false);
+                        print('###########' + todo.toString());
+                        Provider.of<TodoProvider>(context, listen: false)
+                            .changeTodoSTatusTutorial(todo);
+                      });
+                      WidgetsBinding.instance.addPostFrameCallback(
+                          (_) => new Timer(new Duration(seconds: 1), () {
+                                ShowCaseWidget.of(context).startShowCase(
+                                    [KeysToBeInherited.of(context).seven]);
+                              }));
+                    }, builder:
                         (BuildContext context, List<Todo> incoming, rejected) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,123 +487,105 @@ class _TabInsideState extends State<TabInside> {
                             alignment: Alignment.center,
                             padding: EdgeInsets.symmetric(vertical: 8),
                             child: Text(
-                              "Today's Goal",
+                              "Upcoming Todos",
                               style:
                                   TextStyle(fontSize: 18, color: Colors.black),
                             ),
                           ),
-                          Container()
+                          todos(context),
                         ],
                       );
-                    })),
-          ),
-          Expanded(
-            // fit: FlexFit.tight,
-            flex: 4,
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey),
-                  ),
-                  boxShadow: [
-                    todoHighlighted
-                        ? BoxShadow(
-                            color: Colors.green.withOpacity(0.2),
-                            spreadRadius: 10,
-                            blurRadius: 7,
-                            offset: Offset(6, 1), // changes position of shadow
-                          )
-                        : BoxShadow(
-                            color: Colors.green.withOpacity(0),
-                            spreadRadius: 0,
-                            blurRadius: 0,
-                            offset: Offset(0, 0), // changes position of shadow
-                          ),
-                  ],
-                ),
-                width: double.maxFinite,
-                child: DragTarget(onWillAccept: (data) {
-                  setState(() {
-                    todoHighlighted = true;
-                  });
-                  return true;
-                }, onLeave: (data) {
-                  setState(() {
-                    todoHighlighted = false;
-                  });
-                  return true;
-                }, onAccept: (data) {
-                  setState(() {
-                    todoHighlighted = false;
-                  });
-                }, builder:
-                    (BuildContext context, List<Todo> incoming, rejected) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: double.maxFinite,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Upcoming Todos",
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                        ),
-                      ),
-                      Container(),
-                    ],
-                  );
-                })),
+                    }))),
           ),
           Expanded(
               // fit: FlexFit.tight,
               flex: 2,
               child: Showcase(
-                  key: KeysToBeInherited.of(context).three,
+                  key: (widget.projectId == '1')
+                      ? KeysToBeInherited.of(context).three
+                      : GlobalKey(),
                   title: 'Completed Todos',
                   description:
                       'Dragging a todo in here will mark it as completed.',
-                  child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: Colors.grey),
-                        ),
-                        boxShadow: [
-                          finishedHighlighted
-                              ? BoxShadow(
-                                  color: Colors.green.withOpacity(0.2),
-                                  spreadRadius: 10,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      6, 1), // changes position of shadow
-                                )
-                              : BoxShadow(
-                                  color: Colors.green.withOpacity(0),
-                                  spreadRadius: 0,
-                                  blurRadius: 0,
-                                  offset: Offset(
-                                      0, 0), // changes position of shadow
-                                ),
-                        ],
-                      ),
-                      width: double.maxFinite,
-                      child: DragTarget(
-                          onWillAccept: (data) {
+                  child: Showcase(
+                      key: KeysToBeInherited.of(context).seven,
+                      title: "Finish a To-do",
+                      // titleTextStyle:
+                      //     TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      // textColor: Colors.blue[700],
+                      description:
+                          "Drag a to-do to this section when it is done.",
+                      child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: Colors.grey),
+                            ),
+                            boxShadow: [
+                              finishedHighlighted
+                                  ? BoxShadow(
+                                      color: Colors.green.withOpacity(0.2),
+                                      spreadRadius: 10,
+                                      blurRadius: 7,
+                                      offset: Offset(
+                                          6, 1), // changes position of shadow
+                                    )
+                                  : BoxShadow(
+                                      color: Colors.green.withOpacity(0),
+                                      spreadRadius: 0,
+                                      blurRadius: 0,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                            ],
+                          ),
+                          width: double.maxFinite,
+                          child: DragTarget(onWillAccept: (data) {
                             setState(() {
                               finishedHighlighted = true;
                             });
                             return true;
-                          },
-                          onAccept: (data) {},
-                          onLeave: (data) {
+                          }, onAccept: (data) {
+                            setState(() {
+                              todoHighlighted = false;
+
+                              Todo todo = new DatabaseServices(
+                                      FirebaseAuth.instance.currentUser.uid)
+                                  .changeTodoSTatus(
+                                      data, TodoStatus.finished, false);
+                              print('###########' + todo.toString());
+                              Provider.of<TodoProvider>(context, listen: false)
+                                  .changeTodoSTatusTutorial(todo);
+                            });
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text:
+                                          'You have completed the Tutoarial. Now lets create some To-do`s.',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              backgroundColor: Colors.blue[500],
+                            ));
+                            WidgetsBinding.instance.addPostFrameCallback(
+                                (_) => new Timer(new Duration(seconds: 2), () {
+                                      Navigator.pop(context);
+                                      // Navigator.push(
+                                      //     context
+                                      // MaterialPageRoute(
+                                      //     builder: (context) => ProjectsTab()));
+                                    }));
+                          }, onLeave: (data) {
                             setState(() {
                               finishedHighlighted = false;
                             });
                             return true;
-                          },
-                          builder: (BuildContext context, List<Todo> incoming,
-                              rejected) {
+                          }, builder: (BuildContext context,
+                              List<Todo> incoming, rejected) {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -478,13 +600,262 @@ class _TabInsideState extends State<TabInside> {
                                         fontSize: 18, color: Colors.black),
                                   ),
                                 ),
-                                Container(),
+                                // Container(),
+                                finished(context),
                               ],
                             );
-                          })))),
+                          }))))),
         ],
       ),
     );
+  }
+
+  Widget todos(BuildContext context) {
+    List<Project> projects = KeysToBeInherited.of(context).projects;
+    return Consumer<List<Project>>(builder: (context, todos, child) {
+      List<Todo> statetodosTodo =
+          Provider.of<TodoProvider>(context, listen: false)
+              .getTasksByLevel(TodoStatus.todo, 'all', projects);
+      return Expanded(
+          child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+            width: double.infinity,
+            child: (statetodosTodo.length > 0)
+                ? Wrap(
+                    children: statetodosTodo
+                        .map((e) => Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 5.0),
+                              child: Draggable(
+                                data: e,
+                                feedback: Material(
+                                  color: Colors.transparent,
+                                  child: todoChip(e, new Color(e.projectColor),
+                                      context, false),
+                                ),
+                                child: todoChip(e, new Color(e.projectColor),
+                                    context, false),
+                                childWhenDragging: todoChip(e,
+                                    new Color(e.projectColor), context, true),
+                              ),
+                            ))
+                        .toList()
+                        .cast<Widget>(),
+                  )
+                : getPlaceholderText("No upcoming task available")
+            // });
+            ),
+      ));
+    });
+  }
+
+  Widget onGoing(BuildContext context) {
+    return Consumer<List<Project>>(builder: (context, todos, child) {
+      List<Todo> statetodosOnGoing =
+          Provider.of<TodoProvider>(context, listen: false)
+              .getTasksByLevel(TodoStatus.onGoing, 'all', projects);
+      return Expanded(
+          // fit: FlexFit.tight,
+          child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Container(
+                  width: double.infinity,
+                  child: (statetodosOnGoing.length > 0)
+                      ? Wrap(
+                          children: statetodosOnGoing
+                              .map((e) => Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 0.0, horizontal: 5.0),
+                                    child: Draggable(
+                                      data: e,
+                                      feedback: Material(
+                                        color: Colors.transparent,
+                                        child: ongoingChip(e, context, false),
+                                      ),
+                                      child: ongoingChip(e, context, false),
+                                      childWhenDragging:
+                                          ongoingChip(e, context, true),
+                                    ),
+                                  ))
+                              .toList()
+                              .cast<Widget>(),
+                        )
+                      : getPlaceholderText('No task is due today'))
+              // }),
+              ));
+    });
+  }
+
+  Widget finished(BuildContext context) {
+    List<Project> projects = KeysToBeInherited.of(context).projects;
+    return Consumer<List<Project>>(builder: (context, todos, child) {
+      List<Todo> finishedTodo =
+          Provider.of<TodoProvider>(context, listen: false)
+              .getTasksByLevel(TodoStatus.finished, 'all', projects);
+      return Expanded(
+          // fit: FlexFit.tight,
+          child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+            width: double.infinity,
+            child: (finishedTodo.length > 0)
+                ? Wrap(
+                    children: finishedTodo
+                        .map((e) => Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 5.0),
+                              child: finishedChip(e, context, false),
+                            ))
+                        .toList()
+                        .cast<Widget>(),
+                  )
+                : getPlaceholderText('No task is done today')
+
+            // })
+            ),
+      ));
+    });
+  }
+
+  Widget ongoingChip(Todo todo, BuildContext context, bool isDragging) {
+    return InkWell(
+        child: Chip(
+            shape: StadiumBorder(
+                side: BorderSide(
+                    color: isDragging
+                        ? Colors.grey[300]
+                        : new Color(todo.projectColor),
+                    width: 2.0)),
+            backgroundColor: Colors.white,
+            label: RichText(
+              text: TextSpan(
+                text: todo.title,
+                style: TextStyle(color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(text: '', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            )),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditTodoWrapper(todo, AlertStatus.today.value)));
+        });
+  }
+
+  Widget finishedChip(Todo todo, BuildContext context, bool isDragging) {
+    return InkWell(
+        child: Chip(
+            shape: StadiumBorder(
+                side: BorderSide(
+                    color: isDragging
+                        ? Colors.grey[300]
+                        : new Color(todo.projectColor),
+                    width: 2.0)),
+            backgroundColor: Colors.white,
+            label: RichText(
+              text: TextSpan(
+                text: todo.title,
+                style: TextStyle(
+                  color: Colors.black,
+                  decoration: TextDecoration.lineThrough,
+                ),
+                children: <TextSpan>[
+                  TextSpan(text: '', style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            )),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditTodoWrapper(todo, AlertStatus.finished.value)));
+        });
+  }
+
+  Widget todoChip(
+      Todo todo, Color color, BuildContext context, bool isDragging) {
+    int days = TodoHelper.getDifferenceInDaysFromToday(todo.due);
+    return Stack(
+      children: <Widget>[
+        InkWell(
+            child: Chip(
+              backgroundColor: Colors.white,
+              avatar: TodoHelper.isOverDue(todo.due)
+                  ? CircleAvatar(
+                      backgroundColor:
+                          isDragging ? Colors.grey[400] : Colors.red[300],
+                      child: new IconTheme(
+                        data: new IconThemeData(color: Colors.white),
+                        child: Icon(Icons.priority_high),
+                      ),
+                    )
+                  : null,
+              shape: StadiumBorder(
+                  side: BorderSide(
+                      color: isDragging
+                          ? Colors.grey[300]
+                          : new Color(todo.projectColor),
+                      width: 2.0)),
+              label: RichText(
+                text: TextSpan(
+                  text: todo.title,
+                  style: TextStyle(color: Colors.black),
+                  children: <TextSpan>[],
+                ),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditTodoWrapper(
+                          todo,
+                          TodoHelper.isOverDue(todo.due)
+                              ? AlertStatus.overdue.value
+                              : AlertStatus.future.value)));
+            }),
+        new Positioned(
+          right: 0,
+          top: 0,
+          child: new Container(
+            padding: EdgeInsets.all(3),
+            decoration: new BoxDecoration(
+              color: ((days > 0) ? Colors.green : Colors.red),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            constraints: BoxConstraints(
+              minWidth: 20,
+              minHeight: 20,
+            ),
+            child: new Text(
+              days.toString(),
+              style: new TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget getPlaceholderText(String message) {
+    return Container(
+        margin: EdgeInsets.only(top: 14.0),
+        child: Center(
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+          ),
+        ));
   }
 }
 
@@ -492,10 +863,22 @@ class KeysToBeInherited extends InheritedWidget {
   final GlobalKey one;
   final GlobalKey two;
   final GlobalKey three;
+  final GlobalKey four;
+  final GlobalKey five;
+  final GlobalKey six;
+  final GlobalKey seven;
+  final List<Project> projects;
+  final List<Todo> todos;
   KeysToBeInherited({
     this.one,
     this.two,
     this.three,
+    this.four,
+    this.five,
+    this.six,
+    this.seven,
+    this.projects,
+    this.todos,
     Widget child,
   }) : super(child: child);
 

@@ -485,82 +485,82 @@ class DonutPieChart extends StatelessWidget {
   }
 }
 
-class DonutPieChartComppleted extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
+// class DonutPieChartComppleted extends StatelessWidget {
+//   final List<charts.Series> seriesList;
+//   final bool animate;
 
-  DonutPieChartComppleted(this.seriesList, {this.animate});
+//   DonutPieChartComppleted(this.seriesList, {this.animate});
 
-  @override
-  Widget build(BuildContext context) {
-    return new charts.PieChart(
-      _createTodoCompletionData(context),
-      animate: animate,
-      defaultRenderer: new charts.ArcRendererConfig(
-        arcWidth: 15,
-        strokeWidthPx: 0,
-      ),
-      behaviors: [
-        new charts.DatumLegend(
-          position: charts.BehaviorPosition.bottom,
-          outsideJustification: charts.OutsideJustification.middleDrawArea,
-          horizontalFirst: false,
-          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-          showMeasures: true,
-          desiredMaxColumns: 2,
-          desiredMaxRows: 2,
-          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-          measureFormatter: (num value) {
-            return value == null ? '-' : "$value";
-          },
-          entryTextStyle: charts.TextStyleSpec(
-              color: charts.MaterialPalette.black,
-              fontFamily: 'Roboto',
-              fontSize: 16),
-        ),
-      ],
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return new charts.PieChart(
+//       _createTodoCompletionData(context),
+//       animate: animate,
+//       defaultRenderer: new charts.ArcRendererConfig(
+//         arcWidth: 15,
+//         strokeWidthPx: 0,
+//       ),
+//       behaviors: [
+//         new charts.DatumLegend(
+//           position: charts.BehaviorPosition.bottom,
+//           outsideJustification: charts.OutsideJustification.middleDrawArea,
+//           horizontalFirst: false,
+//           cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+//           showMeasures: true,
+//           desiredMaxColumns: 2,
+//           desiredMaxRows: 2,
+//           legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+//           measureFormatter: (num value) {
+//             return value == null ? '-' : "$value";
+//           },
+//           entryTextStyle: charts.TextStyleSpec(
+//               color: charts.MaterialPalette.black,
+//               fontFamily: 'Roboto',
+//               fontSize: 16),
+//         ),
+//       ],
+//     );
+//   }
 
-  factory DonutPieChartComppleted.withSampleData(context) {
-    return new DonutPieChartComppleted(
-      _createTodoCompletionData(context),
-      animate: true,
-    );
-  }
+//   factory DonutPieChartComppleted.withSampleData(context) {
+//     return new DonutPieChartComppleted(
+//       _createTodoCompletionData(context),
+//       animate: true,
+//     );
+//   }
 
-  static List<charts.Series<TodoCompletion, String>> _createTodoCompletionData(
-      context) {
-    List<TodoCompletion> data = [];
+//   static List<charts.Series<TodoCompletion, String>> _createTodoCompletionData(
+//       context) {
+//     List<TodoCompletion> data = [];
 
-    Provider.of<HomeTabProvider>(context, listen: false)
-        .projects
-        .forEach((pro) {
-      if (Provider.of<TodoProvider>(context, listen: false)
-              .getTasksByLevel(TodoStatus.finished, pro.id)
-              .length >
-          0) {
-        data.add(new TodoCompletion(
-            pro.title,
-            Provider.of<TodoProvider>(context, listen: false)
-                .getTasksByLevel(TodoStatus.finished, pro.id)
-                .length,
-            new Color(pro.color)));
-      }
-    });
-    return [
-      new charts.Series<TodoCompletion, String>(
-        id: 'completion2',
-        domainFn: (TodoCompletion todo, _) => todo.category,
-        measureFn: (TodoCompletion todo, _) => todo.amount,
-        data: data,
-        colorFn: (TodoCompletion todo, _) =>
-            charts.ColorUtil.fromDartColor(todo.color),
-        labelAccessorFn: (TodoCompletion todo, _) => '${todo.amount}',
-      )
-    ];
-  }
-}
+//     Provider.of<HomeTabProvider>(context, listen: false)
+//         .projects
+//         .forEach((pro) {
+//       if (Provider.of<TodoProvider>(context, listen: false)
+//               .getTasksByLevel(TodoStatus.finished, pro.id)
+//               .length >
+//           0) {
+//         data.add(new TodoCompletion(
+//             pro.title,
+//             Provider.of<TodoProvider>(context, listen: false)
+//                 .getTasksByLevel(TodoStatus.finished, pro.id)
+//                 .length,
+//             new Color(pro.color)));
+//       }
+//     });
+//     return [
+//       new charts.Series<TodoCompletion, String>(
+//         id: 'completion2',
+//         domainFn: (TodoCompletion todo, _) => todo.category,
+//         measureFn: (TodoCompletion todo, _) => todo.amount,
+//         data: data,
+//         colorFn: (TodoCompletion todo, _) =>
+//             charts.ColorUtil.fromDartColor(todo.color),
+//         labelAccessorFn: (TodoCompletion todo, _) => '${todo.amount}',
+//       )
+//     ];
+//   }
+// }
 
 class TodoCompletion {
   final String category;

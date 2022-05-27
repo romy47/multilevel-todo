@@ -8,11 +8,12 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 
     <application
         android:name=".Application"
-        android:label="second_attempt"
+        android:label="Task Doer"
         android:icon="@mipmap/ic_launcher">
 
         <service

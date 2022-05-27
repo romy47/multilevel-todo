@@ -72,7 +72,7 @@ class _CreateProjectState extends State<CreateProject> {
                     onPressed: () => {
                       showDialog(
                           context: context,
-                          child: AlertDialog(
+                          builder: (ctx) => AlertDialog(
                               title: const Text('Pick a Color'),
                               content: SingleChildScrollView(
                                 child: SizedBox(

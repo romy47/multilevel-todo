@@ -1,4 +1,4 @@
-import 'package:android_alarm_manager/android_alarm_manager.dart';
+// import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +16,9 @@ import 'models/todo_model.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await AndroidAlarmManager.initialize();
+  // await AndroidAlarmManager.initialize();
   runApp(MyApp());
-  await AndroidAlarmManager.periodic(const Duration(hours: 2), 112, showPrint);
+  // await AndroidAlarmManager.periodic(const Duration(hours: 2), 112, showPrint);
 }
 
 void showPrint() async {

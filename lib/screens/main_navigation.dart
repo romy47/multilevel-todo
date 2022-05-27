@@ -24,7 +24,7 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
   List<Widget> _widgetOptions = <Widget>[
     ProjectsTab(),
     Projects(),
-    Dashboard(),
+    // Dashboard(),
     // Consumer<TodoProvider>(
     //   builder: (context, todoProvider, _) => ProjectTimeline(
     //     todoProvider: todoProvider,
@@ -33,9 +33,9 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
     TimelineScreen(),
   ];
   final List<String> titleList = [
-    "Rapido",
+    "Todo dodo",
     "Projects",
-    "Dashboard",
+    // "Dashboard",
     "Timeline"
   ];
   String currentTitle;
@@ -75,11 +75,11 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
                 icon: SizedBox(width: 10, height: 10, child: Icon(Icons.list)),
                 label: 'P',
               ),
-              BottomNavigationBarItem(
-                icon: SizedBox(
-                    width: 10, height: 10, child: Icon(Icons.dashboard)),
-                label: 'D',
-              ),
+              // BottomNavigationBarItem(
+              //   icon: SizedBox(
+              //       width: 10, height: 10, child: Icon(Icons.dashboard)),
+              //   label: 'D',
+              // ),
               BottomNavigationBarItem(
                 icon: SizedBox(
                     width: 10, height: 10, child: Icon(Icons.timeline)),
@@ -111,7 +111,7 @@ class AppNavigationStateBar extends State<AppNavigationBar> {
                             FirebaseAuth.instance.currentUser.displayName !=
                                     null
                                 ? FirebaseAuth.instance.currentUser.displayName
-                                : 'Rapido',
+                                : 'Todo dodo',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20.0,

@@ -1,7 +1,7 @@
 package com.example.second_attempt
 import io.flutter.app.FlutterApplication
-import io.flutter.plugins.androidalarmmanager.AlarmService
-import io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin
+// import io.flutter.plugins.androidalarmmanager.AlarmService
+// import io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin
 
 
 import io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestorePlugin
@@ -17,7 +17,7 @@ class Application : FlutterApplication(), io.flutter.plugin.common.PluginRegistr
 
     override fun onCreate() {
         super.onCreate()
-        AlarmService.setPluginRegistrant(this)
+        // AlarmService.setPluginRegistrant(this)
     }
 
     override fun registerWith(registry: io.flutter.plugin.common.PluginRegistry) {

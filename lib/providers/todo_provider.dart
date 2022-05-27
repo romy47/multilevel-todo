@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:second_attempt/helpers/todo_helper.dart';
+import 'package:second_attempt/models/project_model.dart';
 import 'package:second_attempt/services/database_service.dart';
 import '../models/todo_model.dart';
 
@@ -91,12 +93,10 @@ class TodoProvider extends ChangeNotifier {
   // Code for dashboard ends ***********************
 
   List<Todo> _todos = [];
-  List<Todo> getTasksByLevel(TodoStatus status, String projectId) {
-    List<Todo> tasks =
-        _todos.where((element) => element.status == status).toList();
-    if (projectId != 'all') {
-      tasks = tasks.where((element) => element.projectId == projectId).toList();
-    }
+  List<Todo> getTasksByLevel(
+      TodoStatus status, String projectId, List<Project> projects) {
+    List<Todo> tasks = TodoHelper.getTasksWithProjectByLevel(
+        projects, _todos, status, projectId);
     return tasks;
   }
 
@@ -106,6 +106,25 @@ class TodoProvider extends ChangeNotifier {
     if (status == TodoStatus.finished) {
       _todos[index].finishedAt = DateTime.now();
     }
+    notifyListeners();
+  }
+
+  void changeTodoSTatusTutorial(Todo todo) {
+    int index = _todos.indexWhere((element) => element.title == todo.title);
+    // _todos.insert(index, todo);
+    _todos[index].createdAt = todo.createdAt;
+    _todos[index].due = todo.due;
+    _todos[index].finishedAt = todo.finishedAt;
+    _todos[index].id = todo.id;
+    _todos[index].isRepeat = todo.isRepeat;
+    _todos[index].projectColor = todo.projectColor;
+    _todos[index].projectId = todo.projectId;
+    _todos[index].projectTitle = todo.projectTitle;
+    _todos[index].repeat = todo.repeat;
+    _todos[index].status = todo.status;
+    _todos[index].tempDue = todo.tempDue;
+    _todos[index].title = todo.title;
+    _todos[index].weekDays = todo.weekDays;
     notifyListeners();
   }
 

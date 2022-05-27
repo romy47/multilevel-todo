@@ -23,7 +23,6 @@ class TodoHelper {
 
   static List<Todo> getTasksWithProjectByLevel(List<Project> projects,
       List<Todo> tasks, TodoStatus status, String projectId) {
-    print(status);
     List<Todo> res = [];
     if (status == TodoStatus.todo) {
       res = tasks
@@ -266,14 +265,14 @@ class TodoHelper {
         }
       });
       print('Due Today ------>' + dueToday.length.toString());
-      NotificationHelper().showNotificationBtweenInterval(
-          'Tasks are waiting to be done!!',
-          'Hey, you have ' +
-              dueToday.length.toString() +
-              ' tasks due today including ' +
-              '"' +
-              dueToday[0].title +
-              '"');
+      // NotificationHelper().showNotificationBtweenInterval(
+      //     'Tasks are waiting to be done!!',
+      //     'Hey, you have ' +
+      //         dueToday.length.toString() +
+      //         ' tasks due today including ' +
+      //         '"' +
+      //         dueToday[0].title +
+      //         '"');
     });
   }
 

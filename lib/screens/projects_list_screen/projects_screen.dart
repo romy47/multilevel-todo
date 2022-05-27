@@ -85,18 +85,20 @@ class _ProjectsState extends State<Projects> {
                                     {
                                       showDialog(
                                           context: context,
-                                          child: CupertinoAlertDialog(
-                                              // title: const Text('Sorry'),
-                                              content: Text(
-                                                  'At least one project is required'),
-                                              actions: [
-                                                CupertinoDialogAction(
-                                                  child: Text('Ok'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                )
-                                              ])),
+                                          builder: (ctx) =>
+                                              CupertinoAlertDialog(
+                                                  // title: const Text('Sorry'),
+                                                  content: Text(
+                                                      'At least one project is required'),
+                                                  actions: [
+                                                    CupertinoDialogAction(
+                                                      child: Text('Ok'),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    )
+                                                  ])),
                                     }
                                 },
                                 icon: Icon(Icons.delete_outline),

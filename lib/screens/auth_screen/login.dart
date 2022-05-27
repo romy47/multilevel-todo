@@ -44,7 +44,7 @@ class _State extends State<Login> {
                     alignment: Alignment.center,
                     padding: EdgeInsets.all(10),
                     child: Text(
-                      'Rapid Todo',
+                      'Todo dodo',
                       style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.w500,

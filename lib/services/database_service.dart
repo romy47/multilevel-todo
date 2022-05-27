@@ -177,38 +177,45 @@ class DatabaseServices {
     ref.doc(todoId).delete();
   }
 
-  Todo changeTodoSTatus(Todo todo, TodoStatus status) {
+  Todo changeTodoSTatus(Todo todo, TodoStatus status, bool isUpdatable) {
     final now = DateTime.now();
     DateTime today = DateTime(now.year, now.month, now.day);
     DateTime tomorrow = today.add(Duration(days: 1));
-    DocumentReference ref = _fireStoreDataBase
-        .collection('todos')
-        .doc(uid)
-        .collection('todo')
-        .doc(todo.id);
-
+    DocumentReference ref;
+    if (isUpdatable) {
+      ref = _fireStoreDataBase
+          .collection('todos')
+          .doc(uid)
+          .collection('todo')
+          .doc(todo.id);
+    }
     // Finishing a Todo.
     if (status == TodoStatus.finished) {
       todo.status = status.value;
 
       todo.finishedAt = DateTime.now();
-      ref.update(todo.toJson()).then((value) => {});
+      if (isUpdatable) {
+        ref.update(todo.toJson()).then((value) => {});
+      }
     } else {
       if (todo.status == TodoStatus.finished.value) {
         // Rebirth of a Todo
         if (status == TodoStatus.todo) {
           // Rebirth tommorrow
           todo.createdAt = DateTime.now();
-
           todo.due = tomorrow;
           todo.status = TodoStatus.todo.value;
-          this.addTodo(todo);
+          if (isUpdatable) {
+            this.addTodo(todo);
+          }
         } else {
           // Rebirth today
           todo.createdAt = DateTime.now();
           todo.due = DateTime.now();
           todo.status = TodoStatus.onGoing.value;
-          this.addTodo(todo);
+          if (isUpdatable) {
+            this.addTodo(todo);
+          }
         }
       } else {
         // State changing of a Todo
@@ -224,14 +231,18 @@ class DatabaseServices {
                 ? tomorrow
                 : todo.tempDue;
             todo.status = TodoStatus.todo.value;
-            ref.update(todo.toJson()).then((value) => {});
+            if (isUpdatable) {
+              ref.update(todo.toJson()).then((value) => {});
+            }
           }
         } else {
           // State change to today
           print('Today Baby!!!!');
           todo.due = today;
           todo.status = TodoStatus.onGoing.value;
-          ref.update(todo.toJson()).then((value) => {});
+          if (isUpdatable) {
+            ref.update(todo.toJson()).then((value) => {});
+          }
         }
       }
     }

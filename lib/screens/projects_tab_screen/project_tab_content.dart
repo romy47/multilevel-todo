@@ -95,7 +95,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                       onGoingHighlighted = false;
                     });
                     DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                        .changeTodoSTatus(data, TodoStatus.onGoing);
+                        .changeTodoSTatus(data, TodoStatus.onGoing, true);
                   }
                 }, builder:
                     (BuildContext context, List<Todo> incoming, rejected) {
@@ -160,7 +160,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                   if (TodoHelper.isItToday(data.due) == true) {
                     Todo changedTodo =
                         DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                            .changeTodoSTatus(data, TodoStatus.todo);
+                            .changeTodoSTatus(data, TodoStatus.todo, true);
                     int days = TodoHelper.getDifferenceInDaysFromToday(
                         changedTodo.due);
                     print('katu kutu');
@@ -248,7 +248,7 @@ class _ProjectTabContentState extends State<ProjectTabContent> {
                     });
                     Todo finishedTodo =
                         DatabaseServices(FirebaseAuth.instance.currentUser.uid)
-                            .changeTodoSTatus(data, TodoStatus.finished);
+                            .changeTodoSTatus(data, TodoStatus.finished, true);
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: RichText(
                         text: TextSpan(
